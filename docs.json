@@ -1,10 +1,10 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Condor",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
+    "primary": "#00B1BB",
+    "light": "#5FFFD7",
     "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
@@ -14,55 +14,231 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Condor",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "condor/index",
+              "condor/installation",
+              "condor/usage"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Hummingbot API",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "hummingbot-api/index",
+              "hummingbot-api/installation",
+              "hummingbot-api/quickstart"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
+        "openapi": "/api-reference/openapi.json",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Overview",
             "pages": [
               "api-reference/introduction"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Accounts",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "GET /accounts",
+              "POST /accounts/add-account",
+              "POST /accounts/delete-account",
+              "GET /accounts/{account_name}/credentials",
+              "POST /accounts/add-credential/{account_name}/{connector_name}",
+              "POST /accounts/delete-credential/{account_name}/{connector_name}",
+              "GET /accounts/gateway/wallets",
+              "POST /accounts/gateway/add-wallet",
+              "DELETE /accounts/gateway/{chain}/{address}"
+            ]
+          },
+          {
+            "group": "Portfolio",
+            "pages": [
+              "POST /portfolio/state",
+              "POST /portfolio/history",
+              "POST /portfolio/distribution",
+              "POST /portfolio/accounts-distribution"
+            ]
+          },
+          {
+            "group": "Trading",
+            "pages": [
+              "POST /trading/orders",
+              "POST /trading/orders/active",
+              "POST /trading/orders/search",
+              "POST /trading/{account_name}/{connector_name}/orders/{client_order_id}/cancel",
+              "POST /trading/positions",
+              "POST /trading/trades",
+              "POST /trading/funding-payments",
+              "GET /trading/{account_name}/{connector_name}/position-mode",
+              "POST /trading/{account_name}/{connector_name}/position-mode",
+              "POST /trading/{account_name}/{connector_name}/leverage"
+            ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "GET /connectors",
+              "GET /connectors/{connector_name}/config-map",
+              "GET /connectors/{connector_name}/trading-rules",
+              "GET /connectors/{connector_name}/order-types"
+            ]
+          },
+          {
+            "group": "Market Data",
+            "pages": [
+              "POST /market-data/prices",
+              "POST /market-data/candles",
+              "POST /market-data/historical-candles",
+              "POST /market-data/funding-info",
+              "POST /market-data/order-book",
+              "POST /market-data/order-book/price-for-volume",
+              "POST /market-data/order-book/volume-for-price",
+              "POST /market-data/order-book/vwap-for-volume",
+              "POST /market-data/order-book/price-for-quote-volume",
+              "POST /market-data/order-book/quote-volume-for-price",
+              "GET /market-data/active-feeds",
+              "GET /market-data/available-candle-connectors",
+              "GET /market-data/settings"
+            ]
+          },
+          {
+            "group": "Bot Orchestration",
+            "pages": [
+              "GET /bot-orchestration/status",
+              "GET /bot-orchestration/mqtt",
+              "GET /bot-orchestration/bot-runs",
+              "GET /bot-orchestration/bot-runs/stats",
+              "GET /bot-orchestration/bot-runs/{bot_run_id}",
+              "GET /bot-orchestration/{bot_name}/status",
+              "GET /bot-orchestration/{bot_name}/history",
+              "POST /bot-orchestration/start-bot",
+              "POST /bot-orchestration/stop-bot",
+              "POST /bot-orchestration/stop-and-archive-bot/{bot_name}",
+              "POST /bot-orchestration/deploy-v2-controllers",
+              "POST /bot-orchestration/deploy-v2-script"
+            ]
+          },
+          {
+            "group": "Controllers",
+            "pages": [
+              "GET /controllers",
+              "GET /controllers/{controller_type}/{controller_name}",
+              "POST /controllers/{controller_type}/{controller_name}",
+              "DELETE /controllers/{controller_type}/{controller_name}",
+              "GET /controllers/{controller_type}/{controller_name}/config/template",
+              "POST /controllers/{controller_type}/{controller_name}/config/validate",
+              "GET /controllers/configs",
+              "GET /controllers/configs/{config_name}",
+              "POST /controllers/configs/{config_name}",
+              "DELETE /controllers/configs/{config_name}",
+              "GET /controllers/bots/{bot_name}/configs",
+              "POST /controllers/bots/{bot_name}/{controller_name}/config"
+            ]
+          },
+          {
+            "group": "Scripts",
+            "pages": [
+              "GET /scripts",
+              "GET /scripts/{script_name}",
+              "POST /scripts/{script_name}",
+              "DELETE /scripts/{script_name}",
+              "GET /scripts/{script_name}/config/template",
+              "GET /scripts/configs",
+              "GET /scripts/configs/{config_name}",
+              "POST /scripts/configs/{config_name}",
+              "DELETE /scripts/configs/{config_name}"
+            ]
+          },
+          {
+            "group": "Docker",
+            "pages": [
+              "GET /docker/running",
+              "GET /docker/available-images",
+              "GET /docker/active-containers",
+              "GET /docker/exited-containers",
+              "POST /docker/pull-image",
+              "GET /docker/pull-status",
+              "POST /docker/start-container/{container_name}",
+              "POST /docker/stop-container/{container_name}",
+              "POST /docker/remove-container/{container_name}",
+              "POST /docker/clean-exited-containers"
+            ]
+          },
+          {
+            "group": "Gateway",
+            "pages": [
+              "GET /gateway/status",
+              "POST /gateway/start",
+              "POST /gateway/stop",
+              "POST /gateway/restart",
+              "GET /gateway/logs",
+              "GET /gateway/connectors",
+              "GET /gateway/connectors/{connector_name}",
+              "POST /gateway/connectors/{connector_name}",
+              "GET /gateway/chains",
+              "GET /gateway/networks",
+              "GET /gateway/networks/{network_id}",
+              "POST /gateway/networks/{network_id}",
+              "GET /gateway/networks/{network_id}/tokens",
+              "POST /gateway/networks/{network_id}/tokens",
+              "DELETE /gateway/networks/{network_id}/tokens/{token_address}",
+              "GET /gateway/pools",
+              "POST /gateway/pools"
+            ]
+          },
+          {
+            "group": "Gateway Swaps",
+            "pages": [
+              "POST /gateway/swap/quote",
+              "POST /gateway/swap/execute",
+              "GET /gateway/swaps/{transaction_hash}/status",
+              "POST /gateway/swaps/search",
+              "GET /gateway/swaps/summary"
+            ]
+          },
+          {
+            "group": "Gateway CLMM",
+            "pages": [
+              "GET /gateway/clmm/pool-info",
+              "GET /gateway/clmm/pools",
+              "POST /gateway/clmm/open",
+              "POST /gateway/clmm/close",
+              "POST /gateway/clmm/collect-fees",
+              "POST /gateway/clmm/positions_owned",
+              "GET /gateway/clmm/positions/{position_address}/events",
+              "POST /gateway/clmm/positions/search"
+            ]
+          },
+          {
+            "group": "Backtesting",
+            "pages": [
+              "POST /backtesting/run-backtesting"
+            ]
+          },
+          {
+            "group": "Archived Bots",
+            "pages": [
+              "GET /archived-bots",
+              "GET /archived-bots/{db_path}/status",
+              "GET /archived-bots/{db_path}/summary",
+              "GET /archived-bots/{db_path}/controllers",
+              "GET /archived-bots/{db_path}/executors",
+              "GET /archived-bots/{db_path}/orders",
+              "GET /archived-bots/{db_path}/trades",
+              "GET /archived-bots/{db_path}/positions",
+              "GET /archived-bots/{db_path}/performance"
             ]
           }
         ]
@@ -71,14 +247,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
+          "anchor": "Hummingbot Docs",
+          "href": "https://hummingbot.org/docs",
           "icon": "book-open-cover"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Discord",
+          "href": "https://discord.gg/hummingbot",
+          "icon": "discord"
         }
       ]
     }
@@ -90,33 +266,21 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Discord",
+        "href": "https://discord.gg/hummingbot"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "GitHub",
+      "href": "https://github.com/hummingbot"
     }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/haborlabs",
+      "github": "https://github.com/hummingbot",
+      "discord": "https://discord.gg/hummingbot"
     }
   }
 }

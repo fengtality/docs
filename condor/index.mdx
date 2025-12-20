@@ -1,0 +1,108 @@
+---
+title: "Condor: Telegram Interface"
+description: "A powerful Telegram bot that provides a mobile-friendly interface to interact with your Hummingbot trading infrastructure"
+---
+
+Condor is a powerful Telegram bot that provides a mobile-friendly interface to interact with your Hummingbot trading infrastructure. It allows you to monitor portfolios, manage trading bots, execute trades on both centralized (CEX) and decentralized (DEX) exchanges, and configure your entire trading setup—all from Telegram.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Portfolio Dashboard" icon="chart-pie">
+    Real-time portfolio tracking with PnL indicators, holdings breakdown, and graphical analysis
+  </Card>
+  <Card title="Bot Monitoring" icon="robot">
+    Monitor and manage Hummingbot trading bots with live status and metrics
+  </Card>
+  <Card title="CEX/CLOB Trading" icon="arrow-right-arrow-left">
+    Place orders, manage positions, and configure leverage on centralized exchanges
+  </Card>
+  <Card title="DEX Trading" icon="repeat">
+    Execute token swaps and manage liquidity positions via Gateway
+  </Card>
+  <Card title="Configuration" icon="gear">
+    Complete system configuration through Telegram menus
+  </Card>
+  <Card title="Security" icon="shield-check">
+    User ID whitelist and credential protection
+  </Card>
+</CardGroup>
+
+## Architecture
+
+Condor acts as a secure bridge between your Hummingbot instances and the Telegram platform. It translates user commands from Telegram into API requests that your Hummingbot instances understand.
+
+```
+Telegram User
+     ↓
+Condor Bot
+     ↓
+     ├─→ Hummingbot API → Trading Bots
+     ├─→ Gateway → DEX Protocols (Uniswap, Jupiter, etc.)
+     └─→ GPT-4o + MCP (future AI features)
+```
+
+### Integration Points
+
+<AccordionGroup>
+  <Accordion title="Hummingbot API">
+    - Portfolio data aggregation
+    - Bot status and control
+    - Order and position management
+    - Exchange connectivity
+  </Accordion>
+  <Accordion title="Gateway">
+    - DEX token swaps
+    - Liquidity pool management
+    - Wallet management
+    - Multi-chain support
+  </Accordion>
+</AccordionGroup>
+
+### Project Structure
+
+```
+condor/
+├── main.py                     # Entry point
+├── servers.py                  # Server manager
+├── handlers/                   # Command handlers
+│   ├── portfolio.py            # Portfolio dashboard
+│   ├── bots/                   # Bot monitoring
+│   ├── cex/                    # CEX/CLOB trading
+│   ├── dex/                    # DEX trading
+│   └── config/                 # Configuration
+├── utils/                      # Utilities
+└── data/                       # Persistence
+```
+
+### Core Components
+
+1. **Telegram Interface**: The user-facing component running on Telegram clients, handling user input and displaying interactive menus.
+2. **Command Handlers**: The logic layer that processes specific commands (e.g., `/portfolio`, `/bots`) and determines the appropriate action.
+3. **API Integration Layer**: A secure communication module that interacts with the Hummingbot API using standard REST protocols.
+4. **Data Processing Utilities**: Helper functions that format raw data from Hummingbot into clear, readable messages and visualizations.
+
+## Why Use Condor?
+
+- **Accessibility**: Manage your bots on the go without needing SSH access or complex terminal commands.
+- **Simplicity**: Abstract away technical complexities with intuitive menus and buttons.
+- **Efficiency**: Quickly react to market changes by managing positions and bots instantly.
+
+<iframe
+  style={{width: "100%", minHeight: "400px"}}
+  src="https://www.youtube.com/embed/SVBdmJTZB2M?si=H15J1_Sk4ec3M7D8"
+  frameBorder="0"
+  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+/>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/condor/installation">
+    Deploy Condor with Docker or from source
+  </Card>
+  <Card title="Usage Guide" icon="book" href="/condor/usage">
+    Learn all available commands and features
+  </Card>
+</CardGroup>

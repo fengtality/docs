@@ -1,0 +1,443 @@
+---
+title: "Commands Reference"
+description: "Complete guide to all Condor Telegram bot commands and features"
+---
+
+## `/start` - Main Menu
+
+Welcome screen with quick access to all features.
+
+**Main Menu Options:**
+- 📊 Portfolio
+- 🤖 Bots
+- 💱 Swap
+- 📊 Trade
+- 💧 LP
+- 🔌 Servers
+- 🔑 Keys
+- 🌐 Gateway
+- ❓ Help
+
+## `/help` - Command Guide
+
+Interactive help system with detailed information about each feature.
+
+---
+
+## `/portfolio` - Portfolio Management
+
+Comprehensive portfolio dashboard with real-time data and analytics.
+
+### Features
+
+<AccordionGroup>
+  <Accordion title="PnL Tracking">
+    - 24h, 7d, 30d performance indicators
+    - Deposit/withdrawal detection
+    - Historical PnL charts
+  </Accordion>
+  <Accordion title="Holdings">
+    - Token balances across all accounts
+    - 24h price changes
+    - Account breakdown
+  </Accordion>
+  <Accordion title="Positions">
+    - Perpetual positions with unrealized PnL
+    - CLMM liquidity positions
+    - In-range status for LP positions
+  </Accordion>
+  <Accordion title="Dashboard Graphs">
+    - Portfolio value history
+    - Token distribution pie chart
+    - Account breakdown
+  </Accordion>
+</AccordionGroup>
+
+### Settings
+
+Click **⚙️ Settings** to customize:
+- **Time Period**: 1d, 3d, 7d, 14d, 30d
+- **Refresh**: Force update from exchanges
+
+### Usage Examples
+
+```
+/portfolio                    # Show portfolio dashboard
+Click "⚙️ Settings"          # Customize time period
+Click "🔄 Refresh"            # Update from exchanges
+```
+
+---
+
+## `/bots` - Bot Monitoring
+
+Monitor and manage all your Hummingbot trading bots.
+
+### Features
+
+<CardGroup cols={2}>
+  <Card title="Bot List">
+    All active bots with status, health, and uptime indicators
+  </Card>
+  <Card title="Bot Details">
+    System metrics (CPU, Memory, Uptime), active controllers, and recent logs
+  </Card>
+  <Card title="Controller Management">
+    View details, performance metrics, edit parameters, and start/stop controllers
+  </Card>
+  <Card title="OHLCV Charts">
+    View charts for Grid Strike controllers
+  </Card>
+</CardGroup>
+
+### Actions Available
+
+<Steps>
+  <Step title="View Bot">
+    Select bot from list to see all controllers and metrics
+  </Step>
+  <Step title="View Controller">
+    Click controller name for detailed performance and charts (Grid Strike only)
+  </Step>
+  <Step title="Edit Controller">
+    Click "📝 Edit" to modify parameters field-by-field or bulk edit with `key=value` format
+  </Step>
+  <Step title="Stop/Start Controller">
+    Quick stop from bot detail or start inactive controllers
+  </Step>
+  <Step title="View Logs">
+    Click "📝 Logs" to see recent bot activity
+  </Step>
+  <Step title="Stop Bot">
+    Click "🛑 Stop Bot" and confirm to archive
+  </Step>
+</Steps>
+
+### Usage Examples
+
+```
+/bots                        # List all bots
+Click bot name              # View bot details
+Click controller name       # View controller metrics
+Click "📝 Edit"             # Edit parameters
+Click "📈 Chart"            # View OHLCV chart (Grid Strike)
+Click "🛑 Stop"             # Stop controller
+```
+
+---
+
+## `/trade` - CEX/CLOB Trading
+
+Unified trading interface for centralized exchanges (spot and perpetual).
+
+### Supported Exchanges
+
+- Binance (spot + perpetual)
+- Bybit (spot + perpetual)
+- OKX, Kucoin, Kraken, Coinbase, and more
+
+### Trading Functions
+
+<Tabs>
+  <Tab title="Market Orders">
+    1. Click connector → select exchange
+    2. Click pair → enter trading pair (e.g., `BTC-USDT`)
+    3. Click side → select BUY/SELL
+    4. Click type → select MARKET
+    5. Click amount → enter quantity
+       - Use `$100` for USD value (auto-converts to units)
+       - Use `0.01` for exact token amount
+    6. Click "✅ Execute" → confirm order
+  </Tab>
+  <Tab title="Limit Orders">
+    1. Same as market order, but:
+    2. Click type → select LIMIT
+    3. Click price → enter limit price
+    4. Click "✅ Execute" → submit order
+  </Tab>
+  <Tab title="View Orders">
+    - Click "🔍 Orders" from trade menu
+    - See all open orders
+    - Filter by connector/pair
+    - Cancel individual orders
+    - Cancel all button
+  </Tab>
+  <Tab title="Positions">
+    - Click "📊 Positions" from trade menu
+    - See all open perpetual positions
+    - View unrealized PnL
+    - Check leverage and position side
+    - Close positions at market
+  </Tab>
+</Tabs>
+
+### Perpetual Configuration
+
+| Feature | How to Access |
+|---------|---------------|
+| Set Leverage | Click "⚡ Leverage" → Select connector → Select pair → Enter amount (1-125x) |
+| Position Mode | Click "🔄 Position Mode" → Select One-way or Hedge mode |
+| Account Switching | Click connector button → Select different account |
+
+### Usage Examples
+
+```bash
+# Market Buy
+/trade
+Click "🔌 Connector" → Select "binance"
+Click "💱 Pair" → Type "SOL-USDT"
+Click "📈 Side" → Ensure "BUY"
+Click "💰 Amount" → Type "$100"
+Click "✅ Execute" → Confirm
+
+# Limit Sell
+/trade
+Click "🔌 Connector" → Select "bybit_perpetual"
+Click "💱 Pair" → Type "BTC-USDT"
+Click "📉 Side" → Select "SELL"
+Click "📋 Type" → Select "LIMIT"
+Click "💰 Amount" → Type "0.01"
+Click "💵 Price" → Type "95000"
+Click "✅ Execute" → Confirm
+```
+
+---
+
+## `/swap` - DEX Token Swaps
+
+Quick token swaps on decentralized exchanges via Gateway.
+
+### Supported DEX Routers
+
+- **Solana**: Jupiter
+- **Ethereum**: Uniswap
+- **Base**: Uniswap
+- And more aggregators (0x, 1inch, OpenOcean)
+
+### Swap Operations
+
+<Steps>
+  <Step title="Get Quote">
+    1. Click "🌐 Network" → Select network (e.g., Solana)
+    2. Click "🔌 Router" → Select DEX (e.g., jupiter)
+    3. Click "💱 Pair" → Enter pair (e.g., `SOL-USDC`)
+    4. Click "📈 Side" → Select BUY or SELL
+    5. Click "💰 Amount" → Enter amount
+    6. Click "📊 Slippage" → Set slippage % (default: 1%)
+    7. Click "📋 Quote" → Get real-time price
+  </Step>
+  <Step title="Execute Swap">
+    1. After getting quote, click "✅ Execute"
+    2. Review swap details
+    3. Confirm to submit transaction
+    4. Wait for blockchain confirmation
+  </Step>
+  <Step title="View History">
+    - Click "🔍 History"
+    - View recent swaps and transaction status
+    - Click 🔗 to view on explorer
+  </Step>
+</Steps>
+
+### Features
+
+- Real-time quote preview
+- Buy/Sell spread display
+- Balance checking
+- Slippage protection
+- Transaction status tracking
+
+---
+
+## `/lp` - Liquidity Pool Management
+
+Manage CLMM (Concentrated Liquidity Market Maker) positions.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **LP Positions** | View all positions with in-range/out-of-range status, uncollected fees, and PnL |
+| **Pool Discovery** | Browse pools by connector, search by network, GeckoTerminal integration |
+| **Position Management** | Collect fees, add/remove liquidity, close positions |
+
+### Operations
+
+<Tabs>
+  <Tab title="View Positions">
+    - See all active LP positions
+    - In-range indicator (🟢/🔴)
+    - Uncollected fees
+    - Current value
+  </Tab>
+  <Tab title="Collect Fees">
+    - Click "💰 Collect" next to position
+    - Or "💰 Collect All" for all positions
+    - Fees sent to wallet
+  </Tab>
+  <Tab title="Add Liquidity">
+    - From pool explorer
+    - Select pool
+    - Enter amounts
+    - Set price range
+    - Confirm transaction
+  </Tab>
+  <Tab title="Remove Liquidity">
+    - Select position
+    - Click "❌ Close" or "Remove"
+    - Specify amount to remove
+    - Confirm transaction
+  </Tab>
+</Tabs>
+
+### Pool Explorer
+
+Click "🔍 Pool Info" to view:
+- Pool TVL
+- 24h volume
+- Fee tier
+- Token reserves
+- Current price
+
+---
+
+## `/config` - Configuration Management
+
+Complete system configuration through Telegram menus.
+
+### API Servers
+
+Manage connections to Hummingbot API instances.
+
+<AccordionGroup>
+  <Accordion title="Add Server">
+    1. Click "➕ Add Server"
+    2. Enter details:
+       - **Name**: Unique identifier (e.g., `main`, `prod`, `dev`)
+       - **Host**: Server address (e.g., `localhost`, `192.168.1.100`)
+       - **Port**: API port (default: `8000`)
+       - **Username**: API username (default: `admin`)
+       - **Password**: API password
+    3. Review and confirm
+  </Accordion>
+  <Accordion title="Modify Server">
+    1. Click server name from list
+    2. Click field to modify (Host, Port, User, Pass)
+    3. Enter new value
+    4. Changes saved immediately
+  </Accordion>
+  <Accordion title="Delete Server">
+    1. Click server name
+    2. Click "🗑 Delete"
+    3. Confirm deletion
+  </Accordion>
+  <Accordion title="Set Default Server">
+    1. Click server name
+    2. Click "⭐ Set as Default"
+    3. Default server used for all operations
+  </Accordion>
+</AccordionGroup>
+
+**Server Status Indicators:**
+- **🟢 Online**: Server reachable and authenticated
+- **🔴 Offline**: Cannot connect to server
+- **🔴 Auth Error**: Wrong credentials
+
+### API Keys
+
+Manage exchange API credentials for trading.
+
+<Steps>
+  <Step title="Add API Key">
+    1. Click "🔑 API Keys"
+    2. Select account
+    3. Select exchange connector
+    4. Enter required fields (varies by exchange: `api_key`, `api_secret`, `api_passphrase`)
+    5. Credentials tested automatically
+  </Step>
+  <Step title="Delete API Key">
+    1. Select account
+    2. Find credential to remove
+    3. Click "🗑 Delete [exchange]"
+    4. Confirm deletion
+  </Step>
+</Steps>
+
+<Note>
+**Security Features:**
+- Secrets displayed as `****`
+- Input messages deleted immediately
+- Encrypted storage via Hummingbot API
+</Note>
+
+### Gateway Configuration
+
+Deploy and manage Gateway for DEX trading.
+
+<Tabs>
+  <Tab title="Deployment">
+    **Deploy Gateway:**
+    1. Click "🌐 Gateway"
+    2. Click "🚀 Deploy"
+    3. Select Docker image (`latest`, `development`, or custom)
+
+    **Other actions:**
+    - "🛑 Stop Gateway" - Stop container (preserves config)
+    - "🔄 Restart" - Restart with same config
+    - "📝 Logs" - View recent activity
+  </Tab>
+  <Tab title="Wallets">
+    **Add Wallet:**
+    1. Click "💼 Wallets" → "➕ Add Wallet"
+    2. Select blockchain (Solana, Ethereum, Base, etc.)
+    3. Enter private key (message deleted immediately)
+    4. Wallet address confirmed
+
+    **Remove Wallet:**
+    1. Select blockchain
+    2. Select wallet address
+    3. Confirm removal
+  </Tab>
+  <Tab title="Networks">
+    **View Networks:**
+    - Lists all available networks
+    - Shows RPC endpoints, chain ID, gas settings
+
+    **Configure Network:**
+    1. Select network
+    2. Modify RPC URL, Chain ID, gas settings, timeouts
+    3. Changes applied to Gateway
+
+    **Supported Networks:**
+    Ethereum, Base, Solana, BSC, Polygon, Arbitrum, and more
+  </Tab>
+  <Tab title="Connectors">
+    **View Connectors:**
+    - Lists all DEX connectors
+    - Configuration status
+    - Trading type (AMM, CLMM, Router)
+
+    **Configure Connector:**
+    1. Select connector
+    2. View/edit configuration fields
+    3. Apply changes to Gateway
+  </Tab>
+  <Tab title="Pools & Tokens">
+    **Add Custom Pool:**
+    1. Click "📋 Pools" → Select connector/network
+    2. Enter pool type, base token, quote token, pool address
+    3. Pool added to Gateway
+
+    **Add Custom Token:**
+    1. Click "🪙 Tokens" → Select network
+    2. Enter token address, symbol, decimals, name
+    3. Token added for trading
+  </Tab>
+</Tabs>
+
+---
+
+## Support
+
+- **Discord**: [discord.gg/hummingbot](https://discord.gg/hummingbot)
+- **GitHub Issues**: [github.com/hummingbot/condor/issues](https://github.com/hummingbot/condor/issues)

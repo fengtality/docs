@@ -1,97 +1,92 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Condor Documentation"
+description: "Documentation for Condor Telegram interface and Hummingbot API"
 ---
 
-## Setting up
+Welcome to the documentation for **Condor**, the Telegram interface for Hummingbot, and the **Hummingbot API** backend that powers it.
 
-Get your documentation site up and running in minutes.
+## What is Condor?
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Condor is a powerful Telegram bot that provides a mobile-friendly interface to interact with your Hummingbot trading infrastructure. Monitor portfolios, manage bots, execute trades on CEX and DEX exchanges, and configure your entire trading setup—all from Telegram.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Condor Overview" icon="paper-plane" href="/condor/index">
+    Learn about Condor's features and architecture
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Install Condor" icon="download" href="/condor/installation">
+    Deploy Condor with Docker or from source
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What is Hummingbot API?
 
-Everything you need to create world-class documentation.
+The Hummingbot API is a comprehensive RESTful API framework for managing trading operations across multiple exchanges. It serves as the backend for Condor and provides direct API access for developers.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="API Overview" icon="server" href="/hummingbot-api/index">
+    Explore the Hummingbot API architecture
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Install API" icon="download" href="/hummingbot-api/installation">
+    Set up the Hummingbot API server
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Quick Start
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Steps>
+  <Step title="Install Hummingbot API">
+    ```bash
+    git clone https://github.com/hummingbot/hummingbot-api.git
+    cd hummingbot-api
+    make setup && make deploy
+    ```
+  </Step>
+  <Step title="Install Condor">
+    ```bash
+    git clone https://github.com/hummingbot/condor.git
+    cd condor
+    ./setup-environment.sh
+    docker compose up -d
+    ```
+  </Step>
+  <Step title="Connect via Telegram">
+    Open your bot in Telegram, send `/start`, then use `/config` to connect to your Hummingbot API instance.
+  </Step>
+</Steps>
+
+## Architecture
+
+```
+Telegram User
+     ↓
+Condor Bot ──→ Hummingbot API ──→ Exchanges (CEX)
+     │              │
+     │              └──→ Trading Bots
+     │
+     └──→ Gateway ──→ DEX Protocols
+```
+
+## Resources
+
+<CardGroup cols={3}>
+  <Card title="Condor Commands" icon="terminal" href="/condor/usage">
+    Complete command reference
+  </Card>
+  <Card title="Developer Guide" icon="code" href="/hummingbot-api/quickstart">
+    API usage with examples
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/introduction">
+    Full endpoint documentation
+  </Card>
+</CardGroup>
+
+## Community
+
+<CardGroup cols={2}>
+  <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
+    Join the Hummingbot community
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot">
+    View source code and contribute
+  </Card>
+</CardGroup>
