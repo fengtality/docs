@@ -260,8 +260,8 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/condor-docs-light-embedded.svg",
+    "dark": "/logo/condor-docs-dark-embedded.svg"
   },
   "navbar": {
     "links": [
