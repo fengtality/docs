@@ -5,6 +5,12 @@
     "description": "API for managing Hummingbot trading instances",
     "version": "1.0.1"
   },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Hummingbot API server"
+    }
+  ],
   "paths": {
     "/docker/running": {
       "get": {
