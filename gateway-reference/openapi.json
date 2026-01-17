@@ -3,7 +3,7 @@
   "info": {
     "title": "Hummingbot Gateway",
     "description": "API endpoints for interacting with DEXs and blockchains",
-    "version": "2.11.0"
+    "version": "dev-2.12.0"
   },
   "components": {
     "parameters": {
@@ -443,6 +443,73 @@
         }
       }
     },
+    "/wallet/create": {
+      "post": {
+        "tags": [
+          "/wallet"
+        ],
+        "description": "Create a new wallet and add it to Gateway",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chain": {
+                    "description": "Blockchain to create wallet for",
+                    "enum": [
+                      "ethereum",
+                      "solana"
+                    ],
+                    "type": "string",
+                    "example": "solana"
+                  },
+                  "setDefault": {
+                    "description": "Set this wallet as the default for the chain",
+                    "default": false,
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "chain"
+                ]
+              },
+              "example": {
+                "chain": "solana",
+                "setDefault": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "description": "The wallet address that was created",
+                      "type": "string"
+                    },
+                    "chain": {
+                      "description": "Blockchain name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "address",
+                    "chain"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wallet/add-hardware": {
       "post": {
         "tags": [
@@ -662,6 +729,194 @@
         }
       }
     },
+    "/wallet/show-private-key": {
+      "post": {
+        "tags": [
+          "/wallet"
+        ],
+        "description": "Show the private key for a wallet. Requires explicit passphrase verification for security.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chain": {
+                    "description": "Blockchain of the wallet",
+                    "enum": [
+                      "ethereum",
+                      "solana"
+                    ],
+                    "type": "string",
+                    "example": "solana"
+                  },
+                  "address": {
+                    "description": "Wallet address to get private key for",
+                    "type": "string"
+                  },
+                  "passphrase": {
+                    "description": "Gateway passphrase for decryption (required for security)",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "chain",
+                  "address",
+                  "passphrase"
+                ]
+              },
+              "example": {
+                "chain": "solana",
+                "address": "82SggYRE2Vo4jN4a2pk3aQ4SET4ctafZJGbowmCqyHx5",
+                "passphrase": "<gateway-passphrase>"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "description": "The wallet address",
+                      "type": "string"
+                    },
+                    "chain": {
+                      "description": "Blockchain name",
+                      "type": "string"
+                    },
+                    "privateKey": {
+                      "description": "The decrypted private key",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "address",
+                    "chain",
+                    "privateKey"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallet/send": {
+      "post": {
+        "tags": [
+          "/wallet"
+        ],
+        "description": "Send native tokens or SPL/ERC20 tokens to another address",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chain": {
+                    "description": "Blockchain to send transaction on",
+                    "enum": [
+                      "ethereum",
+                      "solana"
+                    ],
+                    "type": "string",
+                    "example": "solana"
+                  },
+                  "network": {
+                    "description": "Network to use",
+                    "type": "string",
+                    "example": "mainnet"
+                  },
+                  "address": {
+                    "description": "Sender wallet address",
+                    "type": "string"
+                  },
+                  "toAddress": {
+                    "description": "Recipient wallet address",
+                    "type": "string"
+                  },
+                  "amount": {
+                    "description": "Amount to send (in human-readable format)",
+                    "type": "string"
+                  },
+                  "token": {
+                    "description": "Token symbol or address (omit for native token)",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "chain",
+                  "network",
+                  "address",
+                  "toAddress",
+                  "amount"
+                ]
+              },
+              "example": {
+                "chain": "solana",
+                "network": "mainnet-beta",
+                "address": "82SggYRE2Vo4jN4a2pk3aQ4SET4ctafZJGbowmCqyHx5",
+                "toAddress": "<recipient-address>",
+                "amount": "0.1",
+                "token": "SOL"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "signature": {
+                      "description": "Transaction signature/hash",
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "Transaction status: 1 = confirmed, 0 = pending, -1 = failed",
+                      "type": "number"
+                    },
+                    "amount": {
+                      "description": "Amount sent",
+                      "type": "string"
+                    },
+                    "token": {
+                      "description": "Token sent (symbol or native)",
+                      "type": "string"
+                    },
+                    "toAddress": {
+                      "description": "Recipient address",
+                      "type": "string"
+                    },
+                    "fee": {
+                      "description": "Transaction fee",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "signature",
+                    "status",
+                    "amount",
+                    "token",
+                    "toAddress"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tokens/{symbolOrAddress}": {
       "get": {
         "tags": [
@@ -759,14 +1014,8 @@
                           "properties": {
                             "coingeckoCoinId": {
                               "description": "CoinGecko coin ID if available",
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
+                              "type": "string",
+                              "nullable": true
                             },
                             "imageUrl": {
                               "description": "Token image URL",
@@ -934,14 +1183,8 @@
                           "properties": {
                             "coingeckoCoinId": {
                               "description": "CoinGecko coin ID if available",
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
+                              "type": "string",
+                              "nullable": true
                             },
                             "imageUrl": {
                               "description": "Token image URL",
@@ -996,14 +1239,8 @@
                           "properties": {
                             "coingeckoCoinId": {
                               "description": "CoinGecko coin ID if available",
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
+                              "type": "string",
+                              "nullable": true
                             },
                             "imageUrl": {
                               "description": "Token image URL",
@@ -1176,14 +1413,8 @@
                             "properties": {
                               "coingeckoCoinId": {
                                 "description": "CoinGecko coin ID if available",
-                                "anyOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "null"
-                                  }
-                                ]
+                                "type": "string",
+                                "nullable": true
                               },
                               "imageUrl": {
                                 "description": "Token image URL",
@@ -1308,14 +1539,8 @@
                         "properties": {
                           "coingeckoCoinId": {
                             "description": "CoinGecko coin ID if available",
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
+                            "type": "string",
+                            "nullable": true
                           },
                           "imageUrl": {
                             "description": "Token image URL",
@@ -1395,16 +1620,10 @@
                     "message": {
                       "description": "Success message",
                       "type": "string"
-                    },
-                    "requiresRestart": {
-                      "description": "Whether gateway restart is required",
-                      "default": true,
-                      "type": "boolean"
                     }
                   },
                   "required": [
-                    "message",
-                    "requiresRestart"
+                    "message"
                   ]
                 }
               }
@@ -1507,14 +1726,8 @@
                           "properties": {
                             "coingeckoCoinId": {
                               "description": "CoinGecko coin ID if available",
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
+                              "type": "string",
+                              "nullable": true
                             },
                             "imageUrl": {
                               "description": "Token image URL",
@@ -1649,16 +1862,10 @@
                     "message": {
                       "description": "Success message",
                       "type": "string"
-                    },
-                    "requiresRestart": {
-                      "description": "Whether gateway restart is required",
-                      "default": true,
-                      "type": "boolean"
                     }
                   },
                   "required": [
-                    "message",
-                    "requiresRestart"
+                    "message"
                   ]
                 }
               }
@@ -3587,6 +3794,11 @@
                     "default": 1,
                     "type": "number",
                     "example": 1
+                  },
+                  "strategyType": {
+                    "description": "Strategy type for Meteora positions (0=Spot, 1=Curve). Only applies to Meteora connector.",
+                    "type": "number",
+                    "example": 0
                   }
                 },
                 "required": [
@@ -4349,27 +4561,15 @@
                       "type": "string"
                     },
                     "txBlock": {
-                      "anyOf": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "number",
+                      "nullable": true
                     },
                     "txStatus": {
                       "type": "number"
                     },
                     "fee": {
-                      "anyOf": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "number",
+                      "nullable": true
                     },
                     "tokenBalanceChanges": {
                       "description": "Dictionary of token balance changes keyed by token input value (symbol or address)",
@@ -4379,15 +4579,9 @@
                       }
                     },
                     "txData": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": {}
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "object",
+                      "additionalProperties": {},
+                      "nullable": true
                     },
                     "error": {
                       "type": "string"
@@ -4777,7 +4971,7 @@
                   },
                   "address": {
                     "description": "Ethereum wallet address",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "tokens": {
@@ -4879,27 +5073,15 @@
                       "type": "string"
                     },
                     "txBlock": {
-                      "anyOf": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "number",
+                      "nullable": true
                     },
                     "txStatus": {
                       "type": "number"
                     },
                     "fee": {
-                      "anyOf": [
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "number",
+                      "nullable": true
                     },
                     "tokenBalanceChanges": {
                       "description": "Dictionary of token balance changes keyed by token input value (symbol or address)",
@@ -4909,15 +5091,9 @@
                       }
                     },
                     "txData": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": {}
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": "object",
+                      "additionalProperties": {},
+                      "nullable": true
                     },
                     "error": {
                       "type": "string"
@@ -4968,7 +5144,7 @@
                   },
                   "address": {
                     "description": "Ethereum wallet address",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "spender": {
@@ -5056,7 +5232,7 @@
                   },
                   "address": {
                     "description": "Ethereum wallet address",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "spender": {
@@ -5168,7 +5344,7 @@
                   },
                   "address": {
                     "description": "Ethereum wallet address",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "amount": {
@@ -5273,7 +5449,7 @@
                   },
                   "address": {
                     "description": "Ethereum wallet address",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "amount": {
@@ -6095,8 +6271,7 @@
                     "activeBinId",
                     "dynamicFeePct",
                     "minBinId",
-                    "maxBinId",
-                    "bins"
+                    "maxBinId"
                   ]
                 }
               }
@@ -10716,7 +10891,7 @@
           },
           {
             "schema": {
-              "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+              "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
               "type": "string"
             },
             "in": "query",
@@ -10806,9 +10981,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -10923,9 +11098,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -11159,7 +11334,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+            "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
             "in": "query",
             "name": "walletAddress",
             "required": false
@@ -11497,7 +11672,7 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "network": {
@@ -11660,7 +11835,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will add liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "poolAddress": {
@@ -11777,7 +11952,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will remove liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "poolAddress": {
@@ -12070,7 +12245,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+            "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
             "in": "query",
             "name": "walletAddress",
             "required": true
@@ -12414,9 +12589,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -12564,7 +12739,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "lowerPrice": {
                     "type": "number",
@@ -12684,7 +12859,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will add liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "positionAddress": {
@@ -12790,7 +12965,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "positionAddress": {
                     "type": "string",
@@ -12877,7 +13052,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "positionAddress": {
                     "type": "string",
@@ -13235,7 +13410,7 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "network": {
@@ -13360,9 +13535,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -13580,7 +13755,7 @@
           },
           {
             "schema": {
-              "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+              "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
               "type": "string"
             },
             "in": "query",
@@ -13670,9 +13845,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -13783,9 +13958,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -14011,7 +14186,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+            "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
             "in": "query",
             "name": "walletAddress",
             "required": false
@@ -14349,7 +14524,7 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "network": {
@@ -14504,7 +14679,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will add liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "poolAddress": {
@@ -14617,7 +14792,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will remove liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "poolAddress": {
@@ -14908,7 +15083,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+            "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
             "in": "query",
             "name": "walletAddress",
             "required": true
@@ -15253,9 +15428,9 @@
                 "properties": {
                   "walletAddress": {
                     "description": "Wallet address that will execute the swap",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "network": {
                     "description": "The blockchain network to use",
@@ -15400,7 +15575,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "lowerPrice": {
                     "type": "number",
@@ -15518,7 +15693,7 @@
                   },
                   "walletAddress": {
                     "description": "Wallet address that will add liquidity",
-                    "default": "0xDA50C69342216b538Daf06FfECDa7363E0B96684",
+                    "default": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777",
                     "type": "string"
                   },
                   "positionAddress": {
@@ -15625,7 +15800,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "positionAddress": {
                     "type": "string",
@@ -15713,7 +15888,7 @@
                   },
                   "walletAddress": {
                     "type": "string",
-                    "example": "0xDA50C69342216b538Daf06FfECDa7363E0B96684"
+                    "example": "0x9FA3156B802eA7ECFe55173Eafc296f509a28777"
                   },
                   "positionAddress": {
                     "type": "string",

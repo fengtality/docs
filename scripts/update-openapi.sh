@@ -71,15 +71,15 @@ if [ -f "$SOURCE_DIR/gateway.json" ]; then
     # Ensure destination directory exists
     mkdir -p "$ROOT_DIR/gateway-reference"
 
-    # Copy to destination
-    cp "$SOURCE_DIR/gateway.json" "$ROOT_DIR/gateway-reference/openapi.json"
+    # Process for Mintlify compatibility (convert anyOf with null to nullable)
+    node "$SCRIPT_DIR/process-openapi.js" "$SOURCE_DIR/gateway.json" > "$ROOT_DIR/gateway-reference/openapi.json"
 
     # Show info
     VERSION=$(jq -r '.info.version // "unknown"' "$SOURCE_DIR/gateway.json")
     PATHS=$(jq '.paths | keys | length' "$SOURCE_DIR/gateway.json")
     echo "  Version: $VERSION"
     echo "  Endpoints: $PATHS"
-    echo "  Copied to: gateway-reference/openapi.json"
+    echo "  Processed and copied to: gateway-reference/openapi.json"
 else
     echo "Skipping Gateway (openapi-sources/gateway.json not found)"
 fi

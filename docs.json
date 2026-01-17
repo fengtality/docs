@@ -49,14 +49,7 @@
       },
       {
         "tab": "Gateway Reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "gateway-reference"
-            ]
-          }
-        ]
+        "openapi": "gateway-reference/openapi.json"
       }
     ]
   },
