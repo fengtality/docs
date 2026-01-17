@@ -26,7 +26,6 @@
     "tabs": [
       {
         "tab": "Documentation",
-        "href": "/docs",
         "groups": [
           {
             "group": "Getting Started",
@@ -46,34 +45,20 @@
       },
       {
         "tab": "API Reference",
-        "href": "/api-reference",
         "openapi": "api-reference/openapi.json"
       },
       {
         "tab": "Gateway Reference",
-        "href": "/gateway-reference",
-        "openapi": "gateway-reference/openapi.json"
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "gateway-reference"
+            ]
+          }
+        ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Hummingbot Docs",
-          "href": "https://hummingbot.org/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/hummingbot/hummingbot-api",
-          "icon": "github"
-        },
-        {
-          "anchor": "Discord",
-          "href": "https://discord.gg/hummingbot",
-          "icon": "discord"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/hummingbot-api-light.svg",
