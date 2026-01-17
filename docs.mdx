@@ -1,0 +1,103 @@
+---
+title: "Introduction"
+description: "The central hub for managing Hummingbot trading bots across multiple exchanges"
+---
+
+Hummingbot API is a RESTful API server that serves as the central hub for managing trading operations across centralized and decentralized exchanges.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Multi-Exchange Management" icon="building-columns">
+    Create and manage trading accounts across different exchanges with aggregated trading functionality
+  </Card>
+  <Card title="Portfolio Monitoring" icon="chart-pie">
+    Real-time balance tracking and portfolio distribution analysis across all connected accounts
+  </Card>
+  <Card title="Trade Execution" icon="arrow-right-arrow-left">
+    Place orders, manage positions, and track execution across all connected exchanges
+  </Card>
+  <Card title="Bot Orchestration" icon="robot">
+    Deploy and control Hummingbot instances running automated trading strategies
+  </Card>
+  <Card title="DEX Trading" icon="coins">
+    Execute swaps and manage liquidity positions on decentralized exchanges via Gateway
+  </Card>
+  <Card title="AI Integration" icon="microchip-ai">
+    Natural language control through Claude, ChatGPT, or Gemini via the Model Context Protocol (MCP)
+  </Card>
+</CardGroup>
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Access Methods                           │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐  │
+│  │  Condor  │    │ Swagger  │    │   MCP    │    │  Custom  │  │
+│  │(Telegram)│    │    UI    │    │(AI Chat) │    │  Client  │  │
+│  └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘  │
+└───────┼───────────────┼───────────────┼───────────────┼────────┘
+        │               │               │               │
+        └───────────────┴───────┬───────┴───────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Hummingbot API Server                      │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │  PostgreSQL │  │    EMQX    │  │   Exchange Connectors   │  │
+│  │  (Storage)  │  │  (Broker)  │  │  (Binance, Hyperliquid) │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+        ▼                   ▼                   ▼
+┌───────────────┐   ┌───────────────┐   ┌───────────────┐
+│   Bot Instances   │   │    Gateway    │   │   Exchanges   │
+│   (Strategies)    │   │    (DEXs)     │   │    (CEXs)     │
+└───────────────────┘   └───────────────┘   └───────────────┘
+```
+
+## Access Methods
+
+| Method | Description | Best For |
+|--------|-------------|----------|
+| [Condor](https://hummingbot.org/condor/) | Telegram bot interface | Mobile monitoring and quick commands |
+| Swagger UI | Interactive API documentation at `/docs` | Testing and development |
+| [MCP](https://hummingbot.org/mcp/) | AI assistant integration | Natural language trading commands |
+| Direct API | RESTful HTTP calls | Custom applications and automation |
+
+## Getting Started
+
+<Steps>
+  <Step title="Install Hummingbot API">
+    Deploy the server using Docker on a Linux machine.
+
+    [Installation Guide](/docs/installation)
+  </Step>
+  <Step title="Add Exchange Credentials">
+    Connect your exchange accounts by adding API credentials.
+
+    [Quickstart Guide](/docs/quickstart)
+  </Step>
+  <Step title="Start Trading">
+    Execute trades, monitor portfolios, and deploy trading bots.
+
+    [API Reference](/api-reference)
+  </Step>
+</Steps>
+
+## Resources
+
+<CardGroup cols={3}>
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
+    Source code and issues
+  </Card>
+  <Card title="Hummingbot Docs" icon="book" href="https://hummingbot.org/docs">
+    Full Hummingbot documentation
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
+    Community support
+  </Card>
+</CardGroup>

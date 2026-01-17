@@ -1,13 +1,22 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Condor",
+  "name": "Hummingbot API",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/docs"
+    }
+  ],
   "colors": {
     "primary": "#00B1BB",
     "light": "#5FFFD7",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/images/hummingbot-black.png",
+  "metadata": {
+    "og:site_name": "Hummingbot API"
+  },
   "api": {
     "playground": {
       "proxy": false
@@ -16,41 +25,34 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
+        "href": "/docs",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
-              "index",
-              "quickstart"
+              "docs",
+              "docs/installation",
+              "docs/quickstart"
             ]
           },
           {
-            "group": "Condor",
+            "group": "Gateway",
             "pages": [
-              "condor/index",
-              "condor/installation",
-              "condor/usage"
-            ]
-          },
-          {
-            "group": "Hummingbot API",
-            "pages": [
-              "hummingbot-api/index",
-              "hummingbot-api/installation",
-              "hummingbot-api/quickstart"
+              "docs/gateway-setup"
             ]
           }
         ]
       },
       {
         "tab": "API Reference",
+        "href": "/api-reference",
         "openapi": "/api-reference/openapi.json",
         "groups": [
           {
             "group": "Overview",
             "pages": [
-              "api-reference/introduction"
+              "api-reference"
             ]
           },
           {
@@ -61,10 +63,7 @@
               "POST /accounts/delete-account",
               "GET /accounts/{account_name}/credentials",
               "POST /accounts/add-credential/{account_name}/{connector_name}",
-              "POST /accounts/delete-credential/{account_name}/{connector_name}",
-              "GET /accounts/gateway/wallets",
-              "POST /accounts/gateway/add-wallet",
-              "DELETE /accounts/gateway/{chain}/{address}"
+              "POST /accounts/delete-credential/{account_name}/{connector_name}"
             ]
           },
           {
@@ -116,6 +115,18 @@
               "GET /market-data/active-feeds",
               "GET /market-data/available-candle-connectors",
               "GET /market-data/settings"
+            ]
+          },
+          {
+            "group": "Rate Oracle",
+            "pages": [
+              "GET /rate-oracle/sources",
+              "GET /rate-oracle/prices",
+              "GET /rate-oracle/rate/{trading_pair}",
+              "GET /rate-oracle/rate-async/{trading_pair}",
+              "POST /rate-oracle/rates",
+              "GET /rate-oracle/config",
+              "PUT /rate-oracle/config"
             ]
           },
           {
@@ -182,51 +193,6 @@
             ]
           },
           {
-            "group": "Gateway",
-            "pages": [
-              "GET /gateway/status",
-              "POST /gateway/start",
-              "POST /gateway/stop",
-              "POST /gateway/restart",
-              "GET /gateway/logs",
-              "GET /gateway/connectors",
-              "GET /gateway/connectors/{connector_name}",
-              "POST /gateway/connectors/{connector_name}",
-              "GET /gateway/chains",
-              "GET /gateway/networks",
-              "GET /gateway/networks/{network_id}",
-              "POST /gateway/networks/{network_id}",
-              "GET /gateway/networks/{network_id}/tokens",
-              "POST /gateway/networks/{network_id}/tokens",
-              "DELETE /gateway/networks/{network_id}/tokens/{token_address}",
-              "GET /gateway/pools",
-              "POST /gateway/pools"
-            ]
-          },
-          {
-            "group": "Gateway Swaps",
-            "pages": [
-              "POST /gateway/swap/quote",
-              "POST /gateway/swap/execute",
-              "GET /gateway/swaps/{transaction_hash}/status",
-              "POST /gateway/swaps/search",
-              "GET /gateway/swaps/summary"
-            ]
-          },
-          {
-            "group": "Gateway CLMM",
-            "pages": [
-              "GET /gateway/clmm/pool-info",
-              "GET /gateway/clmm/pools",
-              "POST /gateway/clmm/open",
-              "POST /gateway/clmm/close",
-              "POST /gateway/clmm/collect-fees",
-              "POST /gateway/clmm/positions_owned",
-              "GET /gateway/clmm/positions/{position_address}/events",
-              "POST /gateway/clmm/positions/search"
-            ]
-          },
-          {
             "group": "Backtesting",
             "pages": [
               "POST /backtesting/run-backtesting"
@@ -247,6 +213,102 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Gateway Reference",
+        "href": "/gateway-reference",
+        "openapi": "/api-reference/openapi.json",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "gateway-reference"
+            ]
+          },
+          {
+            "group": "Gateway Management",
+            "pages": [
+              "GET /gateway/status",
+              "POST /gateway/start",
+              "POST /gateway/stop",
+              "POST /gateway/restart",
+              "GET /gateway/logs"
+            ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "GET /gateway/connectors",
+              "GET /gateway/connectors/{connector_name}",
+              "POST /gateway/connectors/{connector_name}"
+            ]
+          },
+          {
+            "group": "Chains & Networks",
+            "pages": [
+              "GET /gateway/chains",
+              "GET /gateway/networks",
+              "GET /gateway/networks/{network_id}",
+              "POST /gateway/networks/{network_id}",
+              "GET /gateway/networks/{network_id}/tokens",
+              "POST /gateway/networks/{network_id}/tokens",
+              "DELETE /gateway/networks/{network_id}/tokens/{token_address}"
+            ]
+          },
+          {
+            "group": "Pools",
+            "pages": [
+              "GET /gateway/pools",
+              "POST /gateway/pools",
+              "DELETE /gateway/pools/{address}"
+            ]
+          },
+          {
+            "group": "Wallets",
+            "pages": [
+              "GET /accounts/gateway/wallets",
+              "POST /accounts/gateway/add-wallet",
+              "DELETE /accounts/gateway/{chain}/{address}",
+              "POST /gateway/wallets/create",
+              "POST /gateway/wallets/send",
+              "POST /gateway/wallets/show-private-key"
+            ]
+          },
+          {
+            "group": "Swaps",
+            "pages": [
+              "POST /gateway/swap/quote",
+              "POST /gateway/swap/execute",
+              "GET /gateway/swaps/{transaction_hash}/status",
+              "POST /gateway/swaps/search",
+              "GET /gateway/swaps/summary"
+            ]
+          },
+          {
+            "group": "CLMM (Concentrated Liquidity)",
+            "pages": [
+              "GET /gateway/clmm/pool-info",
+              "GET /gateway/clmm/pools",
+              "POST /gateway/clmm/open",
+              "POST /gateway/clmm/close",
+              "POST /gateway/clmm/collect-fees",
+              "POST /gateway/clmm/positions_owned",
+              "GET /gateway/clmm/positions/{position_address}/events",
+              "POST /gateway/clmm/positions/search"
+            ]
+          },
+          {
+            "group": "Proxy",
+            "pages": [
+              "GET /gateway-proxy",
+              "GET /gateway-proxy/{path}",
+              "POST /gateway-proxy/{path}",
+              "PUT /gateway-proxy/{path}",
+              "PATCH /gateway-proxy/{path}",
+              "DELETE /gateway-proxy/{path}"
+            ]
+          }
+        ]
       }
     ],
     "global": {
@@ -257,6 +319,11 @@
           "icon": "book-open-cover"
         },
         {
+          "anchor": "GitHub",
+          "href": "https://github.com/hummingbot/hummingbot-api",
+          "icon": "github"
+        },
+        {
           "anchor": "Discord",
           "href": "https://discord.gg/hummingbot",
           "icon": "discord"
@@ -265,8 +332,8 @@
     }
   },
   "logo": {
-    "light": "/logo/condor-docs-light-embedded.svg",
-    "dark": "/logo/condor-docs-dark-embedded.svg"
+    "light": "/logo/hummingbot-api-light.svg",
+    "dark": "/logo/hummingbot-api-dark.svg"
   },
   "navbar": {
     "links": [
@@ -278,12 +345,12 @@
     "primary": {
       "type": "button",
       "label": "GitHub",
-      "href": "https://github.com/hummingbot"
+      "href": "https://github.com/hummingbot/hummingbot-api"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/haborlabs",
+      "x": "https://x.com/hummingbot",
       "github": "https://github.com/hummingbot",
       "discord": "https://discord.gg/hummingbot"
     }

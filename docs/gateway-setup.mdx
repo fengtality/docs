@@ -1,0 +1,168 @@
+---
+title: "Gateway Setup"
+description: "Enable DEX trading through Hummingbot API"
+---
+
+Gateway is a middleware service that enables Hummingbot API to interact with decentralized exchanges (DEXs) across multiple blockchain networks.
+
+## Architecture
+
+```
+Hummingbot API (port 8000)
+     |
+     +---> Gateway Routes (/gateway/*)
+     |          |
+     |          +---> Gateway Server (port 15888)
+     |                     |
+     |                     +---> Ethereum, Solana, etc.
+     |                     +---> Uniswap, Jupiter, Raydium, etc.
+     |
+     +---> Gateway Proxy (/gateway-proxy/*)
+                |
+                +---> Direct passthrough to Gateway Server
+```
+
+## Supported Networks
+
+| Chain | Networks |
+|-------|----------|
+| EVM | Ethereum, Arbitrum, Avalanche, Base, BSC, Celo, Optimism, Polygon |
+| Solana | Mainnet-Beta, Devnet |
+
+## Supported DEX Protocols
+
+| Type | Protocols |
+|------|-----------|
+| Routers | Jupiter (Solana), Uniswap, PancakeSwap, 0x |
+| AMM Pools | Raydium, Uniswap, PancakeSwap |
+| CLMM | Meteora, PancakeSwap, Raydium, Uniswap |
+
+## Starting Gateway
+
+Gateway runs as a Docker container managed by Hummingbot API.
+
+### Check Gateway Status
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway/status
+```
+
+### Start Gateway Container
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/start
+```
+
+### View Gateway Logs
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway/logs
+```
+
+## Adding Wallets
+
+Add a wallet to use for DEX trading:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/accounts/gateway/add-wallet \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "private_key": "your-base58-private-key"
+  }'
+```
+
+<Warning>
+Store private keys securely. Never commit them to version control or share them.
+</Warning>
+
+## Executing Swaps
+
+### Get a Quote
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/swap/quote \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "network": "mainnet-beta",
+    "connector": "jupiter",
+    "base_token": "SOL",
+    "quote_token": "USDC",
+    "amount": "1.0",
+    "side": "sell"
+  }'
+```
+
+### Execute Swap
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/swap/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "network": "mainnet-beta",
+    "connector": "jupiter",
+    "address": "your-wallet-address",
+    "base_token": "SOL",
+    "quote_token": "USDC",
+    "amount": "1.0",
+    "side": "sell",
+    "slippage": 0.5
+  }'
+```
+
+## Accessing Gateway
+
+There are two ways to interact with Gateway through Hummingbot API:
+
+### Gateway Routes
+
+The `/gateway/*` endpoints provide structured access with request/response validation:
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway/status
+```
+
+Use Gateway routes when you need:
+- Type-safe request/response handling
+- Documented endpoint parameters
+- Integration with Hummingbot API's data layer
+
+### Gateway Proxy
+
+The `/gateway-proxy/*` endpoint forwards requests directly to Gateway:
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway-proxy/wallet
+```
+
+Use the proxy when you need:
+- Access to Gateway endpoints not yet wrapped by Hummingbot API
+- Direct passthrough without request transformation
+- Compatibility with existing Gateway client code
+
+## Standalone Gateway
+
+For advanced use cases or standalone deployment, see the full Gateway documentation:
+
+<Card title="Gateway Documentation" icon="book" href="https://hummingbot.org/gateway/">
+  Complete Gateway installation, configuration, and usage guide
+</Card>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Gateway Reference" icon="code" href="/gateway-reference">
+    Explore all Gateway API endpoints
+  </Card>
+  <Card title="Swap Endpoints" icon="arrow-right-arrow-left" href="/gateway-reference/gateway-swaps/get-swap-quote">
+    Execute token swaps
+  </Card>
+  <Card title="CLMM Positions" icon="droplet" href="/gateway-reference/gateway-clmm/get-clmm-pool-info">
+    Manage concentrated liquidity
+  </Card>
+  <Card title="Gateway GitHub" icon="github" href="https://github.com/hummingbot/gateway">
+    Source code and issues
+  </Card>
+</CardGroup>

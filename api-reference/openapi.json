@@ -5,12 +5,6 @@
     "description": "API for managing Hummingbot trading instances",
     "version": "1.0.1"
   },
-  "servers": [
-    {
-      "url": "http://localhost:8000",
-      "description": "Local Hummingbot API server"
-    }
-  ],
   "paths": {
     "/docker/running": {
       "get": {
@@ -44,7 +38,7 @@
         ],
         "summary": "Available Images",
         "description": "Get available Docker images matching the specified name.\n\nArgs:\n    image_name: Name pattern to search for in image tags\n    docker_service: Docker service dependency\n    \nReturns:\n    Dictionary with list of available image tags",
-        "operationId": "available_images_docker_available_images__get",
+        "operationId": "available_images_docker_available_images_get",
         "security": [
           {
             "HTTPBasic": []
@@ -364,7 +358,7 @@
         ],
         "summary": "Pull Image",
         "description": "Initiate Docker image pull as background task.\nReturns immediately with task status for monitoring.\n\nArgs:\n    image: DockerImage object containing the image name to pull\n    docker_service: Docker service dependency\n    \nReturns:\n    Status of the pull operation initiation",
-        "operationId": "pull_image_docker_pull_image__post",
+        "operationId": "pull_image_docker_pull_image_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -409,7 +403,7 @@
         ],
         "summary": "Get Pull Status",
         "description": "Get status of all pull operations.\n\nArgs:\n    docker_service: Docker service dependency\n    \nReturns:\n    Dictionary with all pull operations and their statuses",
-        "operationId": "get_pull_status_docker_pull_status__get",
+        "operationId": "get_pull_status_docker_pull_status_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -906,6 +900,89 @@
         }
       }
     },
+    "/gateway/pools/{address}": {
+      "delete": {
+        "tags": [
+          "Gateway"
+        ],
+        "summary": "Delete Pool",
+        "description": "Delete a liquidity pool from Gateway's pool list.\n\nArgs:\n    address: Pool contract address to remove\n    connector_name: DEX connector (e.g., 'meteora', 'raydium', 'uniswap')\n    network: Network name (e.g., 'mainnet-beta', 'mainnet')\n    pool_type: Pool type (e.g., 'clmm', 'amm')\n\nExample: DELETE /gateway/pools/2sf5NYcY...?connector_name=meteora&network=mainnet-beta&pool_type=clmm",
+        "operationId": "delete_pool_gateway_pools__address__delete",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Address"
+            }
+          },
+          {
+            "name": "connector_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "DEX connector (e.g., 'meteora', 'raydium', 'uniswap')",
+              "title": "Connector Name"
+            },
+            "description": "DEX connector (e.g., 'meteora', 'raydium', 'uniswap')"
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Network name (e.g., 'mainnet-beta', 'mainnet')",
+              "title": "Network"
+            },
+            "description": "Network name (e.g., 'mainnet-beta', 'mainnet')"
+          },
+          {
+            "name": "pool_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Pool type (e.g., 'clmm', 'amm')",
+              "title": "Pool Type"
+            },
+            "description": "Pool type (e.g., 'clmm', 'amm')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Pool Gateway Pools  Address  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/gateway/networks": {
       "get": {
         "tags": [
@@ -1228,6 +1305,153 @@
         }
       }
     },
+    "/gateway/wallets/create": {
+      "post": {
+        "tags": [
+          "Gateway"
+        ],
+        "summary": "Create Wallet",
+        "description": "Create a new wallet in Gateway.\n\nArgs:\n    request: Contains chain and set_default flag\n\nReturns:\n    Dict with address and chain of the created wallet.\n\nExample: POST /gateway/wallets/create\n{\n    \"chain\": \"solana\",\n    \"set_default\": true\n}",
+        "operationId": "create_wallet_gateway_wallets_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWalletRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Wallet Gateway Wallets Create Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
+    "/gateway/wallets/show-private-key": {
+      "post": {
+        "tags": [
+          "Gateway"
+        ],
+        "summary": "Show Private Key",
+        "description": "Show private key for a wallet.\n\nWARNING: This endpoint exposes sensitive information. Use with caution.\n\nArgs:\n    request: Contains chain, address, and passphrase\n\nReturns:\n    Dict with privateKey field.\n\nExample: POST /gateway/wallets/show-private-key\n{\n    \"chain\": \"solana\",\n    \"address\": \"<wallet-address>\",\n    \"passphrase\": \"<gateway-passphrase>\"\n}",
+        "operationId": "show_private_key_gateway_wallets_show_private_key_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShowPrivateKeyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Show Private Key Gateway Wallets Show Private Key Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
+    "/gateway/wallets/send": {
+      "post": {
+        "tags": [
+          "Gateway"
+        ],
+        "summary": "Send Transaction",
+        "description": "Send a native token transaction.\n\nArgs:\n    request: Contains chain, network, sender address, recipient address, and amount\n\nReturns:\n    Dict with transaction signature/hash.\n\nExample: POST /gateway/wallets/send\n{\n    \"chain\": \"solana\",\n    \"network\": \"mainnet-beta\",\n    \"address\": \"<sender-address>\",\n    \"to_address\": \"<recipient-address>\",\n    \"amount\": \"0.001\"\n}",
+        "operationId": "send_transaction_gateway_wallets_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendTransactionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Send Transaction Gateway Wallets Send Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
     "/accounts": {
       "get": {
         "tags": [
@@ -1235,7 +1459,7 @@
         ],
         "summary": "List Accounts",
         "description": "Get a list of all account names in the system.\n\nReturns:\n    List of account names",
-        "operationId": "list_accounts_accounts__get",
+        "operationId": "list_accounts_accounts_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1246,7 +1470,7 @@
                     "type": "string"
                   },
                   "type": "array",
-                  "title": "Response List Accounts Accounts  Get"
+                  "title": "Response List Accounts Accounts Get"
                 }
               }
             }
@@ -1657,7 +1881,7 @@
         ],
         "summary": "Available Connectors",
         "description": "Get a list of all available connectors.\n\nReturns:\n    List of connector names supported by the system",
-        "operationId": "available_connectors_connectors__get",
+        "operationId": "available_connectors_connectors_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1668,7 +1892,7 @@
                     "type": "string"
                   },
                   "type": "array",
-                  "title": "Response Available Connectors Connectors  Get"
+                  "title": "Response Available Connectors Connectors Get"
                 }
               }
             }
@@ -1687,7 +1911,7 @@
           "Connectors"
         ],
         "summary": "Get Connector Config Map",
-        "description": "Get configuration fields required for a specific connector.\n\nArgs:\n    connector_name: Name of the connector to get config map for\n    \nReturns:\n    List of configuration field names required for the connector",
+        "description": "Get configuration fields required for a specific connector with type information.\n\nArgs:\n    connector_name: Name of the connector to get config map for\n\nReturns:\n    Dictionary mapping field names to their type information.\n    Each field contains:\n    - type: The expected data type (e.g., \"str\", \"SecretStr\", \"int\")\n    - required: Whether the field is required",
         "operationId": "get_connector_config_map_connectors__connector_name__config_map_get",
         "security": [
           {
@@ -1711,9 +1935,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": true
                   },
                   "title": "Response Get Connector Config Map Connectors  Connector Name  Config Map Get"
                 }
@@ -1852,7 +2077,7 @@
           "Portfolio"
         ],
         "summary": "Get Portfolio State",
-        "description": "Get the current state of all or filtered accounts portfolio.\n\nArgs:\n    filter_request: JSON payload with filtering criteria\n    \nReturns:\n    Dict containing account states with connector balances and token information",
+        "description": "Get the current state of all or filtered accounts portfolio.\n\nArgs:\n    filter_request: JSON payload with filtering criteria including:\n        - account_names: Optional list of account names to filter by\n        - connector_names: Optional list of connector names to filter by\n        - skip_gateway: If True, skip Gateway wallet balance updates for faster CEX-only queries\n        - refresh: If True, refresh balances before returning. If False (default), return cached state\n\nReturns:\n    Dict containing account states with connector balances and token information",
         "operationId": "get_portfolio_state_portfolio_state_post",
         "requestBody": {
           "content": {
@@ -1910,7 +2135,7 @@
           "Portfolio"
         ],
         "summary": "Get Portfolio History",
-        "description": "Get the historical state of all or filtered accounts portfolio with pagination.\n\nArgs:\n    filter_request: JSON payload with filtering criteria\n    \nReturns:\n    Paginated response with historical portfolio data",
+        "description": "Get the historical state of all or filtered accounts portfolio with pagination and interval sampling.\n\nThe interval parameter allows you to control data granularity:\n- 5m: Raw data (default, collected every 5 minutes)\n- 15m: One data point every 15 minutes\n- 30m: One data point every 30 minutes\n- 1h: One data point every hour\n- 4h: One data point every 4 hours\n- 12h: One data point every 12 hours\n- 1d: One data point every day\n\nUsing larger intervals significantly reduces response size and improves performance.\n\nArgs:\n    filter_request: JSON payload with filtering criteria (account_names, connector_names,\n                   start_time, end_time, limit, cursor, interval)\n\nReturns:\n    Paginated response with historical portfolio data sampled at the requested interval",
         "operationId": "get_portfolio_history_portfolio_history_post",
         "requestBody": {
           "content": {
@@ -4244,7 +4469,7 @@
         ],
         "summary": "List Controllers",
         "description": "List all controllers organized by type.\n\nReturns:\n    Dictionary mapping controller types to lists of controller names",
-        "operationId": "list_controllers_controllers__get",
+        "operationId": "list_controllers_controllers_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4258,7 +4483,7 @@
                     "type": "array"
                   },
                   "type": "object",
-                  "title": "Response List Controllers Controllers  Get"
+                  "title": "Response List Controllers Controllers Get"
                 }
               }
             }
@@ -4278,7 +4503,7 @@
         ],
         "summary": "List Controller Configs",
         "description": "List all controller configurations with metadata.\n\nReturns:\n    List of controller configuration objects with name, controller_name, controller_type, and other metadata",
-        "operationId": "list_controller_configs_controllers_configs__get",
+        "operationId": "list_controller_configs_controllers_configs_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4290,7 +4515,7 @@
                     "type": "object"
                   },
                   "type": "array",
-                  "title": "Response List Controller Configs Controllers Configs  Get"
+                  "title": "Response List Controller Configs Controllers Configs Get"
                 }
               }
             }
@@ -4874,7 +5099,7 @@
         ],
         "summary": "List Scripts",
         "description": "List all available scripts.\n\nReturns:\n    List of script names (without .py extension)",
-        "operationId": "list_scripts_scripts__get",
+        "operationId": "list_scripts_scripts_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4885,7 +5110,7 @@
                     "type": "string"
                   },
                   "type": "array",
-                  "title": "Response List Scripts Scripts  Get"
+                  "title": "Response List Scripts Scripts Get"
                 }
               }
             }
@@ -4905,7 +5130,7 @@
         ],
         "summary": "List Script Configs",
         "description": "List all script configurations with metadata.\n\nReturns:\n    List of script configuration objects with name, script_file_name, and other metadata",
-        "operationId": "list_script_configs_scripts_configs__get",
+        "operationId": "list_script_configs_scripts_configs_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4917,7 +5142,7 @@
                     "type": "object"
                   },
                   "type": "array",
-                  "title": "Response List Script Configs Scripts Configs  Get"
+                  "title": "Response List Script Configs Scripts Configs Get"
                 }
               }
             }
@@ -5821,6 +6046,277 @@
         ]
       }
     },
+    "/rate-oracle/sources": {
+      "get": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Available Sources",
+        "description": "Get list of all available rate oracle sources.\n\nReturns:\n    List of available source names that can be configured",
+        "operationId": "get_available_sources_rate_oracle_sources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response Get Available Sources Rate Oracle Sources Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
+    "/rate-oracle/config": {
+      "get": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Rate Oracle Config",
+        "description": "Get current rate oracle configuration.\n\nReturns the current rate_oracle_source and global_token settings,\nalong with the list of available sources.\n\nReturns:\n    Current rate oracle configuration and available sources",
+        "operationId": "get_rate_oracle_config_rate_oracle_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateOracleConfigResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Update Rate Oracle Config",
+        "description": "Update rate oracle configuration.\n\nUpdates rate_oracle_source and/or global_token settings. Changes are:\n1. Applied to the running RateOracle instance immediately\n2. Persisted to conf_client.yml\n\nArgs:\n    update_request: Configuration updates to apply\n\nReturns:\n    Updated configuration with success status",
+        "operationId": "update_rate_oracle_config_rate_oracle_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateOracleConfigUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateOracleConfigUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
+    "/rate-oracle/rates": {
+      "post": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Rates",
+        "description": "Get rates for specified trading pairs.\n\nUses the configured rate oracle source to fetch current rates.\n\nArgs:\n    rate_request: List of trading pairs to get rates for\n\nReturns:\n    Rates for the requested trading pairs",
+        "operationId": "get_rates_rate_oracle_rates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
+    "/rate-oracle/rate/{trading_pair}": {
+      "get": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Single Rate",
+        "description": "Get rate for a single trading pair.\n\nArgs:\n    trading_pair: Trading pair in format BASE-QUOTE (e.g., BTC-USDT)\n\nReturns:\n    Rate for the specified trading pair",
+        "operationId": "get_single_rate_rate_oracle_rate__trading_pair__get",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trading_pair",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trading Pair"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleRateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-oracle/rate-async/{trading_pair}": {
+      "get": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Rate Async",
+        "description": "Get rate for a trading pair using async fetch (direct from exchange).\n\nThis bypasses the cached prices and fetches directly from the source.\nUseful when cached data may be stale or not yet initialized.\n\nArgs:\n    trading_pair: Trading pair in format BASE-QUOTE (e.g., BTC-USDT)\n\nReturns:\n    Rate for the specified trading pair",
+        "operationId": "get_rate_async_rate_oracle_rate_async__trading_pair__get",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trading_pair",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trading Pair"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleRateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-oracle/prices": {
+      "get": {
+        "tags": [
+          "Rate Oracle"
+        ],
+        "summary": "Get Cached Prices",
+        "description": "Get all cached prices from the rate oracle.\n\nReturns the complete price dictionary that the rate oracle has fetched\nfrom its configured source.\n\nReturns:\n    Dictionary of all cached prices",
+        "operationId": "get_cached_prices_rate_oracle_prices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
     "/backtesting/run-backtesting": {
       "post": {
         "tags": [
@@ -5873,7 +6369,7 @@
         ],
         "summary": "List Databases",
         "description": "List all available database files in the system.\n\nReturns:\n    List of database file paths",
-        "operationId": "list_databases_archived_bots__get",
+        "operationId": "list_databases_archived_bots_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5884,7 +6380,7 @@
                     "type": "string"
                   },
                   "type": "array",
-                  "title": "Response List Databases Archived Bots  Get"
+                  "title": "Response List Databases Archived Bots Get"
                 }
               }
             }
@@ -6355,6 +6851,253 @@
         }
       }
     },
+    "/gateway-proxy/{path}": {
+      "patch": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Forward To Gateway",
+        "description": "Forward request to Gateway server unchanged.\n\nThis catch-all route forwards any request to /api/gateway-proxy/* to the Gateway server.\nThe request body, headers, and query parameters are passed through unchanged.\nThe response from Gateway is returned unchanged.\n\nExamples:\n    GET /api/gateway-proxy/wallet -> GET localhost:15888/wallet\n    POST /api/gateway-proxy/wallet/add -> POST localhost:15888/wallet/add\n    GET /api/gateway-proxy/config -> GET localhost:15888/config",
+        "operationId": "forward_to_gateway_gateway_proxy__path__patch",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Forward To Gateway",
+        "description": "Forward request to Gateway server unchanged.\n\nThis catch-all route forwards any request to /api/gateway-proxy/* to the Gateway server.\nThe request body, headers, and query parameters are passed through unchanged.\nThe response from Gateway is returned unchanged.\n\nExamples:\n    GET /api/gateway-proxy/wallet -> GET localhost:15888/wallet\n    POST /api/gateway-proxy/wallet/add -> POST localhost:15888/wallet/add\n    GET /api/gateway-proxy/config -> GET localhost:15888/config",
+        "operationId": "forward_to_gateway_gateway_proxy__path__patch",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Forward To Gateway",
+        "description": "Forward request to Gateway server unchanged.\n\nThis catch-all route forwards any request to /api/gateway-proxy/* to the Gateway server.\nThe request body, headers, and query parameters are passed through unchanged.\nThe response from Gateway is returned unchanged.\n\nExamples:\n    GET /api/gateway-proxy/wallet -> GET localhost:15888/wallet\n    POST /api/gateway-proxy/wallet/add -> POST localhost:15888/wallet/add\n    GET /api/gateway-proxy/config -> GET localhost:15888/config",
+        "operationId": "forward_to_gateway_gateway_proxy__path__patch",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Forward To Gateway",
+        "description": "Forward request to Gateway server unchanged.\n\nThis catch-all route forwards any request to /api/gateway-proxy/* to the Gateway server.\nThe request body, headers, and query parameters are passed through unchanged.\nThe response from Gateway is returned unchanged.\n\nExamples:\n    GET /api/gateway-proxy/wallet -> GET localhost:15888/wallet\n    POST /api/gateway-proxy/wallet/add -> POST localhost:15888/wallet/add\n    GET /api/gateway-proxy/config -> GET localhost:15888/config",
+        "operationId": "forward_to_gateway_gateway_proxy__path__patch",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Forward To Gateway",
+        "description": "Forward request to Gateway server unchanged.\n\nThis catch-all route forwards any request to /api/gateway-proxy/* to the Gateway server.\nThe request body, headers, and query parameters are passed through unchanged.\nThe response from Gateway is returned unchanged.\n\nExamples:\n    GET /api/gateway-proxy/wallet -> GET localhost:15888/wallet\n    POST /api/gateway-proxy/wallet/add -> POST localhost:15888/wallet/add\n    GET /api/gateway-proxy/config -> GET localhost:15888/config",
+        "operationId": "forward_to_gateway_gateway_proxy__path__patch",
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gateway-proxy": {
+      "get": {
+        "tags": [
+          "Gateway Proxy"
+        ],
+        "summary": "Gateway Root",
+        "description": "Gateway health check.\nForwards to Gateway root endpoint to check if it's online.",
+        "operationId": "gateway_root_gateway_proxy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBasic": []
+          }
+        ]
+      }
+    },
     "/": {
       "get": {
         "summary": "Root",
@@ -6494,12 +7237,17 @@
           "type": {
             "type": "string",
             "title": "Type",
-            "description": "Pool type ('clmm' for concentrated liquidity)"
+            "description": "Pool type ('clmm' or 'amm')"
           },
           "network": {
             "type": "string",
             "title": "Network",
-            "description": "Network ID in 'chain-network' format (e.g., 'solana-mainnet-beta', 'ethereum-mainnet')"
+            "description": "Network name (e.g., 'mainnet-beta')"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "description": "Pool contract address"
           },
           "base": {
             "type": "string",
@@ -6511,10 +7259,27 @@
             "title": "Quote",
             "description": "Quote token symbol"
           },
-          "address": {
+          "base_address": {
             "type": "string",
-            "title": "Address",
-            "description": "Pool contract address"
+            "title": "Base Address",
+            "description": "Base token contract address"
+          },
+          "quote_address": {
+            "type": "string",
+            "title": "Quote Address",
+            "description": "Quote token contract address"
+          },
+          "fee_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fee Pct",
+            "description": "Pool fee percentage (e.g., 0.25)"
           }
         },
         "type": "object",
@@ -6522,9 +7287,11 @@
           "connector_name",
           "type",
           "network",
+          "address",
           "base",
           "quote",
-          "address"
+          "base_address",
+          "quote_address"
         ],
         "title": "AddPoolRequest",
         "description": "Request to add a liquidity pool"
@@ -6982,9 +7749,16 @@
             "description": "Quote token contract address"
           },
           "binStep": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Binstep",
-            "description": "Bin step (price difference between bins)"
+            "description": "Bin step (Meteora DLMM only)"
           },
           "feePct": {
             "type": "string",
@@ -7011,9 +7785,16 @@
             "description": "Total quote token liquidity"
           },
           "activeBinId": {
-            "type": "integer",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Activebinid",
-            "description": "Currently active bin ID"
+            "description": "Currently active bin ID (Meteora DLMM only)"
           },
           "dynamicFeePct": {
             "anyOf": [
@@ -7066,12 +7847,10 @@
           "address",
           "baseTokenAddress",
           "quoteTokenAddress",
-          "binStep",
           "feePct",
           "price",
           "baseTokenAmount",
-          "quoteTokenAmount",
-          "activeBinId"
+          "quoteTokenAmount"
         ],
         "title": "CLMMPoolInfoResponse",
         "description": "Response with detailed CLMM pool information",
@@ -7722,6 +8501,27 @@
         "title": "ControllerType",
         "description": "Types of controllers available"
       },
+      "CreateWalletRequest": {
+        "properties": {
+          "chain": {
+            "type": "string",
+            "title": "Chain",
+            "description": "Blockchain chain (e.g., 'solana', 'ethereum')"
+          },
+          "set_default": {
+            "type": "boolean",
+            "title": "Set Default",
+            "description": "Set as default wallet for this chain",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "chain"
+        ],
+        "title": "CreateWalletRequest",
+        "description": "Request to create a new wallet in Gateway"
+      },
       "DockerImage": {
         "properties": {
           "image_name": {
@@ -8045,6 +8845,25 @@
         ],
         "title": "GatewayWalletCredential",
         "description": "Credentials for connecting a Gateway wallet"
+      },
+      "GlobalTokenConfig": {
+        "properties": {
+          "global_token_name": {
+            "type": "string",
+            "title": "Global Token Name",
+            "description": "The token to use as global quote (e.g., USDT, USD, BTC)",
+            "default": "USDT"
+          },
+          "global_token_symbol": {
+            "type": "string",
+            "title": "Global Token Symbol",
+            "description": "Symbol to display for the global token",
+            "default": "$"
+          }
+        },
+        "type": "object",
+        "title": "GlobalTokenConfig",
+        "description": "Global token configuration for displaying values."
       },
       "HTTPValidationError": {
         "properties": {
@@ -8556,6 +9375,19 @@
             ],
             "title": "Connector Names",
             "description": "List of connector names to filter by"
+          },
+          "interval": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval",
+            "description": "Data sampling interval: 5m, 15m, 30m, 1h, 4h, 12h, 1d. Default is 5m (raw data)",
+            "default": "5m"
           }
         },
         "type": "object",
@@ -8593,6 +9425,18 @@
             ],
             "title": "Connector Names",
             "description": "List of connector names to filter by"
+          },
+          "skip_gateway": {
+            "type": "boolean",
+            "title": "Skip Gateway",
+            "description": "Skip Gateway wallet balance updates for faster CEX-only queries",
+            "default": false
+          },
+          "refresh": {
+            "type": "boolean",
+            "title": "Refresh",
+            "description": "If True, refresh balances before returning. If False, return cached state",
+            "default": false
           }
         },
         "type": "object",
@@ -8824,6 +9668,191 @@
         "title": "QuoteVolumeForPriceRequest",
         "description": "Request model for getting quote volume at a specific price"
       },
+      "RateOracleConfig": {
+        "properties": {
+          "rate_oracle_source": {
+            "$ref": "#/components/schemas/RateOracleSourceConfig",
+            "description": "Rate oracle source configuration"
+          },
+          "global_token": {
+            "$ref": "#/components/schemas/GlobalTokenConfig",
+            "description": "Global token configuration"
+          }
+        },
+        "type": "object",
+        "title": "RateOracleConfig",
+        "description": "Complete rate oracle configuration."
+      },
+      "RateOracleConfigResponse": {
+        "properties": {
+          "rate_oracle_source": {
+            "$ref": "#/components/schemas/RateOracleSourceConfig",
+            "description": "Current rate oracle source configuration"
+          },
+          "global_token": {
+            "$ref": "#/components/schemas/GlobalTokenConfig",
+            "description": "Current global token configuration"
+          },
+          "available_sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Sources",
+            "description": "List of available rate oracle sources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rate_oracle_source",
+          "global_token",
+          "available_sources"
+        ],
+        "title": "RateOracleConfigResponse",
+        "description": "Response for rate oracle configuration GET endpoint."
+      },
+      "RateOracleConfigUpdateRequest": {
+        "properties": {
+          "rate_oracle_source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RateOracleSourceConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "New rate oracle source configuration (optional)"
+          },
+          "global_token": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GlobalTokenConfig"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "New global token configuration (optional)"
+          }
+        },
+        "type": "object",
+        "title": "RateOracleConfigUpdateRequest",
+        "description": "Request model for updating rate oracle configuration."
+      },
+      "RateOracleConfigUpdateResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Whether the update was successful"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message"
+          },
+          "config": {
+            "$ref": "#/components/schemas/RateOracleConfig",
+            "description": "Updated configuration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "config"
+        ],
+        "title": "RateOracleConfigUpdateResponse",
+        "description": "Response for rate oracle configuration update."
+      },
+      "RateOracleSourceConfig": {
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/RateOracleSourceEnum",
+            "description": "The rate oracle source to use for price data",
+            "default": "binance"
+          }
+        },
+        "type": "object",
+        "title": "RateOracleSourceConfig",
+        "description": "Rate oracle source configuration."
+      },
+      "RateOracleSourceEnum": {
+        "type": "string",
+        "enum": [
+          "binance",
+          "binance_us",
+          "coin_gecko",
+          "coin_cap",
+          "kucoin",
+          "ascend_ex",
+          "gate_io",
+          "coinbase_advanced_trade",
+          "cube",
+          "dexalot",
+          "hyperliquid",
+          "derive",
+          "tegro"
+        ],
+        "title": "RateOracleSourceEnum",
+        "description": "Available rate oracle sources."
+      },
+      "RateRequest": {
+        "properties": {
+          "trading_pairs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Trading Pairs",
+            "description": "List of trading pairs to get rates for (e.g., ['BTC-USDT', 'ETH-USDT'])"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trading_pairs"
+        ],
+        "title": "RateRequest",
+        "description": "Request for getting rates."
+      },
+      "RateResponse": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Rate oracle source used"
+          },
+          "quote_token": {
+            "type": "string",
+            "title": "Quote Token",
+            "description": "Quote token used"
+          },
+          "rates": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Rates",
+            "description": "Mapping of trading pairs to their rates (None if rate not found)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "quote_token",
+          "rates"
+        ],
+        "title": "RateResponse",
+        "description": "Response containing rates for trading pairs."
+      },
       "Script": {
         "properties": {
           "content": {
@@ -8838,6 +9867,112 @@
         ],
         "title": "Script",
         "description": "Script file content"
+      },
+      "SendTransactionRequest": {
+        "properties": {
+          "chain": {
+            "type": "string",
+            "title": "Chain",
+            "description": "Blockchain chain (e.g., 'solana', 'ethereum')"
+          },
+          "network": {
+            "type": "string",
+            "title": "Network",
+            "description": "Network (e.g., 'mainnet-beta', 'mainnet')"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "description": "Sender wallet address"
+          },
+          "to_address": {
+            "type": "string",
+            "title": "To Address",
+            "description": "Recipient address"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount",
+            "description": "Amount to send (in native token units)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chain",
+          "network",
+          "address",
+          "to_address",
+          "amount"
+        ],
+        "title": "SendTransactionRequest",
+        "description": "Request to send a native token transaction"
+      },
+      "ShowPrivateKeyRequest": {
+        "properties": {
+          "chain": {
+            "type": "string",
+            "title": "Chain",
+            "description": "Blockchain chain (e.g., 'solana', 'ethereum')"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "description": "Wallet address"
+          },
+          "passphrase": {
+            "type": "string",
+            "title": "Passphrase",
+            "description": "Gateway passphrase for decryption"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chain",
+          "address",
+          "passphrase"
+        ],
+        "title": "ShowPrivateKeyRequest",
+        "description": "Request to show private key for a wallet"
+      },
+      "SingleRateResponse": {
+        "properties": {
+          "trading_pair": {
+            "type": "string",
+            "title": "Trading Pair",
+            "description": "The trading pair"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate",
+            "description": "The rate (None if not found)"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Rate oracle source used"
+          },
+          "quote_token": {
+            "type": "string",
+            "title": "Quote Token",
+            "description": "Quote token used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trading_pair",
+          "rate",
+          "source",
+          "quote_token"
+        ],
+        "title": "SingleRateResponse",
+        "description": "Response for a single trading pair rate."
       },
       "StartBotAction": {
         "properties": {

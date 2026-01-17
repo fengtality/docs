@@ -1,0 +1,87 @@
+---
+title: "Hummingbot API Reference"
+description: "Complete REST API reference for Hummingbot API - manage trading bots, execute trades, and access market data"
+---
+
+The Hummingbot API is a comprehensive RESTful API for managing trading operations across centralized and decentralized exchanges. This reference documents all available endpoints.
+
+## Base URL
+
+```
+http://localhost:8000
+```
+
+For remote deployments, replace `localhost` with your server's address.
+
+## Authentication
+
+All endpoints require HTTP Basic Authentication:
+
+```bash
+curl -u admin:admin http://localhost:8000/accounts
+```
+
+Or with the Authorization header:
+
+```bash
+curl -H "Authorization: Basic $(echo -n 'admin:admin' | base64)" http://localhost:8000/accounts
+```
+
+## API Categories
+
+| Category | Description |
+|----------|-------------|
+| [Accounts](/api-reference/accounts/list-accounts) | Manage trading accounts and exchange credentials |
+| [Portfolio](/api-reference/portfolio/get-portfolio-state) | Real-time balances and portfolio analytics |
+| [Trading](/api-reference/trading/get-orders) | Execute orders, manage positions, view history |
+| [Connectors](/api-reference/connectors/available-connectors) | Exchange connector information and trading rules |
+| [Market Data](/api-reference/market-data/get-prices) | Prices, candles, order books, funding rates |
+| [Rate Oracle](/api-reference/rate-oracle/get-sources) | Cross-exchange price feeds and conversion rates |
+| [Bot Orchestration](/api-reference/bot-orchestration/get-orchestration-status) | Deploy and manage Hummingbot trading bots |
+| [Controllers](/api-reference/controllers/list-controllers) | V2 strategy controller management |
+| [Scripts](/api-reference/scripts/list-scripts) | V1 script management |
+| [Docker](/api-reference/docker/is-docker-running) | Container lifecycle management |
+| [Gateway](/api-reference/gateway/get-gateway-status) | DEX infrastructure and configuration |
+| [Gateway Swaps](/api-reference/gateway-swaps/get-swap-quote) | DEX token swaps |
+| [Gateway CLMM](/api-reference/gateway-clmm/get-clmm-pool-info) | Concentrated liquidity positions |
+| [Gateway Proxy](/api-reference/gateway-proxy/get-gateway-proxy-status) | Raw Gateway access |
+| [Backtesting](/api-reference/backtesting/run-backtesting) | Strategy backtesting |
+| [Archived Bots](/api-reference/archived-bots/get-archived-bots) | Historical bot performance data |
+
+## Interactive Playground
+
+Each endpoint page includes an interactive playground where you can test API calls directly. Enter your credentials and server URL to make live requests.
+
+<Note>
+The playground makes requests directly to your API server. Ensure your Hummingbot API is running and accessible.
+</Note>
+
+## Response Format
+
+**Success responses** return the requested data:
+
+```json
+["master_account"]
+```
+
+**Error responses** include a `detail` field:
+
+```json
+{
+  "detail": "Account not found"
+}
+```
+
+## Resources
+
+<CardGroup cols={3}>
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
+    Source code and issues
+  </Card>
+  <Card title="Hummingbot Docs" icon="book" href="https://hummingbot.org/docs">
+    Full Hummingbot documentation
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
+    Community support
+  </Card>
+</CardGroup>

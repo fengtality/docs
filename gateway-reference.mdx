@@ -1,0 +1,92 @@
+---
+title: "Gateway API Reference"
+description: "Complete REST API reference for Gateway - DEX trading, swaps, and liquidity management"
+---
+
+Gateway provides a unified API for interacting with decentralized exchanges across multiple blockchain networks. This reference documents all available Gateway endpoints accessible through Hummingbot API.
+
+## Base URL
+
+```
+http://localhost:8000/gateway
+```
+
+For direct Gateway access (proxy):
+
+```
+http://localhost:8000/gateway-proxy
+```
+
+## Authentication
+
+All endpoints require HTTP Basic Authentication (same as Hummingbot API):
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway/status
+```
+
+## API Categories
+
+| Category | Description |
+|----------|-------------|
+| [Gateway Management](/gateway-reference/gateway/get-gateway-status) | Start, stop, and monitor the Gateway service |
+| [Connectors](/gateway-reference/gateway/list-connectors) | DEX connector configuration |
+| [Chains & Networks](/gateway-reference/gateway/list-chains) | Blockchain network configuration and tokens |
+| [Pools](/gateway-reference/gateway/list-pools) | AMM pool management |
+| [Wallets](/gateway-reference/accounts/list-gateway-wallets) | Wallet management for DEX trading |
+| [Swaps](/gateway-reference/gateway-swaps/get-swap-quote) | Token swap quotes and execution |
+| [CLMM](/gateway-reference/gateway-clmm/get-clmm-pool-info) | Concentrated liquidity position management |
+| [Proxy](/gateway-reference/gateway-proxy/gateway-root) | Direct passthrough to Gateway server |
+
+## Supported Chains
+
+| Chain | Networks | DEX Protocols |
+|-------|----------|---------------|
+| Ethereum | Mainnet, Goerli | Uniswap, 0x |
+| Arbitrum | One, Goerli | Uniswap |
+| Avalanche | C-Chain | Pangolin |
+| Base | Mainnet | Uniswap |
+| BSC | Mainnet | PancakeSwap |
+| Polygon | Mainnet | Uniswap, QuickSwap |
+| Solana | Mainnet-Beta, Devnet | Jupiter, Raydium, Meteora |
+
+## Interactive Playground
+
+Each endpoint page includes an interactive playground where you can test API calls directly. Enter your credentials and server URL to make live requests.
+
+<Note>
+The playground makes requests directly to your API server. Ensure Gateway is running and accessible.
+</Note>
+
+## Response Format
+
+**Success responses** return the requested data:
+
+```json
+{
+  "status": "running",
+  "chains": ["ethereum", "solana"]
+}
+```
+
+**Error responses** include a `detail` field:
+
+```json
+{
+  "detail": "Gateway not running"
+}
+```
+
+## Resources
+
+<CardGroup cols={3}>
+  <Card title="Gateway Setup" icon="server" href="/gateway-setup">
+    Installation and configuration
+  </Card>
+  <Card title="Gateway GitHub" icon="github" href="https://github.com/hummingbot/gateway">
+    Source code and issues
+  </Card>
+  <Card title="Gateway Docs" icon="book" href="https://hummingbot.org/gateway/">
+    Full Gateway documentation
+  </Card>
+</CardGroup>

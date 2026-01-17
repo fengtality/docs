@@ -1,0 +1,149 @@
+---
+title: "Installation"
+description: "Deploy Hummingbot API using Docker on a Linux server"
+---
+
+## Prerequisites
+
+<AccordionGroup>
+  <Accordion title="System Requirements">
+    | Component | Minimum | Recommended |
+    |-----------|---------|-------------|
+    | OS | Linux x64 or ARM (Ubuntu 20.04+, Debian 10+) | Ubuntu 22.04 LTS |
+    | Memory | 4 GB RAM | 8 GB RAM |
+    | Storage | 10 GB SSD | 20 GB SSD |
+    | CPU | 2 vCPUs | 4 vCPUs |
+  </Accordion>
+  <Accordion title="Cloud Server Options">
+    Any cloud provider works. Popular choices:
+    - **AWS EC2**: t3.medium or larger
+    - **Google Cloud**: e2-medium or larger
+    - **Digital Ocean**: Basic Droplet with 4GB RAM
+    - **Hetzner**: CX21 or larger
+  </Accordion>
+</AccordionGroup>
+
+## Install Docker
+
+Connect to your server via SSH and install Docker:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+```
+
+Verify the installation:
+
+```bash
+docker --version
+```
+
+## Deploy Hummingbot API
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/hummingbot/hummingbot-api.git
+cd hummingbot-api
+```
+
+### 2. Run Setup Script
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+The setup script will prompt you for:
+
+| Prompt | Description | Default |
+|--------|-------------|---------|
+| Username | API authentication username | `admin` |
+| Password | API authentication password | `admin` |
+
+<Warning>
+Change the default credentials for production deployments.
+</Warning>
+
+### 3. Start Services
+
+```bash
+make deploy
+```
+
+This starts all required services:
+- **Hummingbot API** on port 8000
+- **PostgreSQL** database
+- **EMQX** message broker
+
+### 4. Verify Installation
+
+Check that services are running:
+
+```bash
+docker ps
+```
+
+You should see containers for `hummingbot-api`, `postgres`, and `emqx`.
+
+Test the API:
+
+```bash
+curl -u admin:admin http://localhost:8000/accounts
+```
+
+Expected response:
+
+```json
+["master_account"]
+```
+
+## Access Points
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| API | `http://localhost:8000` | REST API endpoints |
+| Swagger UI | `http://localhost:8000/docs` | Interactive API documentation |
+
+<Note>
+For remote access, replace `localhost` with your server's IP address or domain name. Ensure port 8000 is open in your firewall.
+</Note>
+
+## Configuration
+
+Environment variables can be set in the `.env` file:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `API_USERNAME` | Authentication username | `admin` |
+| `API_PASSWORD` | Authentication password | `admin` |
+| `DATABASE_URL` | PostgreSQL connection string | Auto-configured |
+| `EMQX_HOST` | Message broker host | `emqx` |
+
+## Managing Services
+
+```bash
+# View logs
+docker logs hummingbot-api
+
+# Stop all services
+make stop
+
+# Restart services
+make restart
+
+# Remove all data and start fresh
+make clean
+make deploy
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Connect exchanges and execute your first trade
+  </Card>
+  <Card title="Gateway Setup" icon="server" href="/gateway-setup">
+    Enable DEX trading with Gateway
+  </Card>
+</CardGroup>
