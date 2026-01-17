@@ -1,5 +1,5 @@
 ---
-title: "Hummingbot API Reference"
+title: "API Reference"
 description: "Complete REST API reference for Hummingbot API - manage trading bots, execute trades, and access market data"
 ---
 
@@ -33,20 +33,20 @@ curl -H "Authorization: Basic $(echo -n 'admin:admin' | base64)" http://localhos
 |----------|-------------|
 | [Accounts](/api-reference/accounts/list-accounts) | Manage trading accounts and exchange credentials |
 | [Portfolio](/api-reference/portfolio/get-portfolio-state) | Real-time balances and portfolio analytics |
-| [Trading](/api-reference/trading/get-orders) | Execute orders, manage positions, view history |
+| [Trading](/api-reference/trading/place-trade) | Execute orders, manage positions, view history |
 | [Connectors](/api-reference/connectors/available-connectors) | Exchange connector information and trading rules |
-| [Market Data](/api-reference/market-data/get-prices) | Prices, candles, order books, funding rates |
-| [Rate Oracle](/api-reference/rate-oracle/get-sources) | Cross-exchange price feeds and conversion rates |
-| [Bot Orchestration](/api-reference/bot-orchestration/get-orchestration-status) | Deploy and manage Hummingbot trading bots |
+| [Market Data](/api-reference/market-data/get-candles) | Prices, candles, order books, funding rates |
+| [Rate Oracle](/api-reference/rate-oracle/get-available-sources) | Cross-exchange price feeds and conversion rates |
+| [Bot Orchestration](/api-reference/bot-orchestration/get-active-bots-status) | Deploy and manage Hummingbot trading bots |
 | [Controllers](/api-reference/controllers/list-controllers) | V2 strategy controller management |
 | [Scripts](/api-reference/scripts/list-scripts) | V1 script management |
 | [Docker](/api-reference/docker/is-docker-running) | Container lifecycle management |
 | [Gateway](/api-reference/gateway/get-gateway-status) | DEX infrastructure and configuration |
 | [Gateway Swaps](/api-reference/gateway-swaps/get-swap-quote) | DEX token swaps |
 | [Gateway CLMM](/api-reference/gateway-clmm/get-clmm-pool-info) | Concentrated liquidity positions |
-| [Gateway Proxy](/api-reference/gateway-proxy/get-gateway-proxy-status) | Raw Gateway access |
+| [Gateway Proxy](/api-reference/gateway-proxy/forward-to-gateway) | Raw Gateway access |
 | [Backtesting](/api-reference/backtesting/run-backtesting) | Strategy backtesting |
-| [Archived Bots](/api-reference/archived-bots/get-archived-bots) | Historical bot performance data |
+| [Archived Bots](/api-reference/archived-bots/list-databases) | Historical bot performance data |
 
 ## Interactive Playground
 

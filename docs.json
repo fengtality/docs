@@ -45,10 +45,26 @@
       },
       {
         "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference"
+            ]
+          }
+        ],
         "openapi": "api-reference/openapi.json"
       },
       {
         "tab": "Gateway Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "gateway-reference"
+            ]
+          }
+        ],
         "openapi": "gateway-reference/openapi.json"
       }
     ]
