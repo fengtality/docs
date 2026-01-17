@@ -47,12 +47,12 @@
       {
         "tab": "API Reference",
         "href": "/api-reference",
-        "openapi": "/api-reference/openapi.json"
+        "openapi": "api-reference/openapi.json"
       },
       {
         "tab": "Gateway Reference",
         "href": "/gateway-reference",
-        "openapi": "/gateway-reference/openapi.json"
+        "openapi": "gateway-reference/openapi.json"
       }
     ],
     "global": {
