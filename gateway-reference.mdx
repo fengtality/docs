@@ -3,59 +3,61 @@ title: "Gateway API Reference"
 description: "Complete REST API reference for Gateway - DEX trading, swaps, and liquidity management"
 ---
 
-Gateway provides a unified API for interacting with decentralized exchanges across multiple blockchain networks. This reference documents all available Gateway endpoints accessible through Hummingbot API.
+Gateway provides a unified API for interacting with decentralized exchanges across multiple blockchain networks. This reference documents Gateway's native API endpoints.
 
 ## Base URL
 
 ```
-http://localhost:8000/gateway
+http://localhost:15888
 ```
 
-For direct Gateway access (proxy):
+When accessed through Hummingbot API proxy:
 
 ```
 http://localhost:8000/gateway-proxy
-```
-
-## Authentication
-
-All endpoints require HTTP Basic Authentication (same as Hummingbot API):
-
-```bash
-curl -u admin:admin http://localhost:8000/gateway/status
 ```
 
 ## API Categories
 
 | Category | Description |
 |----------|-------------|
-| [Gateway Management](/gateway-reference/gateway/get-gateway-status) | Start, stop, and monitor the Gateway service |
-| [Connectors](/gateway-reference/gateway/list-connectors) | DEX connector configuration |
-| [Chains & Networks](/gateway-reference/gateway/list-chains) | Blockchain network configuration and tokens |
-| [Pools](/gateway-reference/gateway/list-pools) | AMM pool management |
-| [Wallets](/gateway-reference/accounts/list-gateway-wallets) | Wallet management for DEX trading |
-| [Swaps](/gateway-reference/gateway-swaps/get-swap-quote) | Token swap quotes and execution |
-| [CLMM](/gateway-reference/gateway-clmm/get-clmm-pool-info) | Concentrated liquidity position management |
-| [Proxy](/gateway-reference/gateway-proxy/gateway-root) | Direct passthrough to Gateway server |
+| [Config](/gateway-reference/config/get-config) | Gateway configuration and settings |
+| [Wallet](/gateway-reference/wallet/get-wallet) | Wallet management for DEX trading |
+| [Tokens](/gateway-reference/tokens/get-tokens) | Token registry and management |
+| [Pools](/gateway-reference/pools/get-pools-trading-pair) | AMM pool discovery and management |
+| [Trading - Swap](/gateway-reference/trading-swap/get-trading-swap-quote) | Token swap quotes and execution |
+| [Trading - CLMM](/gateway-reference/trading-clmm/get-trading-clmm-pool-info) | Concentrated liquidity position management |
+| [Chains](/gateway-reference/chains-ethereum/get-chains-ethereum-status) | Blockchain-specific operations |
+
+## DEX Connectors
+
+| Connector | Chains | Features |
+|-----------|--------|----------|
+| [Jupiter](/gateway-reference/jupiter/get-connectors-jupiter-router-quote-swap) | Solana | Router swaps |
+| [Meteora](/gateway-reference/meteora/get-connectors-meteora-clmm-fetch-pools) | Solana | CLMM positions |
+| [Orca](/gateway-reference/orca/get-connectors-orca-clmm-fetch-pools) | Solana | CLMM positions |
+| [Raydium](/gateway-reference/raydium/get-connectors-raydium-amm-pool-info) | Solana | AMM & CLMM |
+| [Uniswap](/gateway-reference/uniswap/get-connectors-uniswap-router-quote-swap) | EVM | Router, AMM & CLMM |
+| [PancakeSwap](/gateway-reference/pancakeswap/get-connectors-pancakeswap-router-quote-swap) | EVM, Solana | Router, AMM & CLMM |
+| [0x](/gateway-reference/0x/get-connectors-0x-router-quote-swap) | EVM | Router swaps |
 
 ## Supported Chains
 
 | Chain | Networks | DEX Protocols |
 |-------|----------|---------------|
-| Ethereum | Mainnet, Goerli | Uniswap, 0x |
-| Arbitrum | One, Goerli | Uniswap |
-| Avalanche | C-Chain | Pangolin |
+| Ethereum | Mainnet | Uniswap, PancakeSwap, 0x |
+| Arbitrum | One | Uniswap |
 | Base | Mainnet | Uniswap |
 | BSC | Mainnet | PancakeSwap |
-| Polygon | Mainnet | Uniswap, QuickSwap |
-| Solana | Mainnet-Beta, Devnet | Jupiter, Raydium, Meteora |
+| Polygon | Mainnet | Uniswap |
+| Solana | Mainnet-Beta, Devnet | Jupiter, Raydium, Meteora, Orca, PancakeSwap |
 
 ## Interactive Playground
 
-Each endpoint page includes an interactive playground where you can test API calls directly. Enter your credentials and server URL to make live requests.
+Each endpoint page includes an interactive playground where you can test API calls directly.
 
 <Note>
-The playground makes requests directly to your API server. Ensure Gateway is running and accessible.
+The playground makes requests directly to your Gateway server. Ensure Gateway is running and accessible at the configured URL.
 </Note>
 
 ## Response Format
@@ -64,23 +66,25 @@ The playground makes requests directly to your API server. Ensure Gateway is run
 
 ```json
 {
-  "status": "running",
-  "chains": ["ethereum", "solana"]
+  "network": "mainnet",
+  "timestamp": 1234567890,
+  "latency": 0.5
 }
 ```
 
-**Error responses** include a `detail` field:
+**Error responses** include error details:
 
 ```json
 {
-  "detail": "Gateway not running"
+  "error": "Token not found",
+  "code": "TOKEN_NOT_FOUND"
 }
 ```
 
 ## Resources
 
 <CardGroup cols={3}>
-  <Card title="Gateway Setup" icon="server" href="/gateway-setup">
+  <Card title="Gateway Setup" icon="server" href="/docs/gateway-setup">
     Installation and configuration
   </Card>
   <Card title="Gateway GitHub" icon="github" href="https://github.com/hummingbot/gateway">
