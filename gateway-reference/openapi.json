@@ -62,7 +62,7 @@
             }
           }
         },
-        "summary": "List Config",
+        "summary": "List",
         "operationId": "list"
       }
     },
@@ -382,7 +382,7 @@
             }
           }
         },
-        "summary": "List Wallet",
+        "summary": "List",
         "operationId": "list_get"
       }
     },
@@ -1116,7 +1116,7 @@
             }
           }
         },
-        "summary": "List Tokens",
+        "summary": "List",
         "operationId": "symboloraddress"
       }
     },
@@ -1512,7 +1512,7 @@
             }
           }
         },
-        "summary": "List Tokens",
+        "summary": "List",
         "operationId": "list_1"
       },
       "post": {
@@ -1662,7 +1662,7 @@
             }
           }
         },
-        "summary": "Create Tokens",
+        "summary": "Create",
         "operationId": "tokens"
       }
     },
@@ -1908,7 +1908,7 @@
             }
           }
         },
-        "summary": "Delete Tokens",
+        "summary": "Delete",
         "operationId": "address"
       }
     },
@@ -2068,7 +2068,7 @@
             }
           }
         },
-        "summary": "List Pools",
+        "summary": "List",
         "operationId": "tradingpair"
       }
     },
@@ -2603,7 +2603,7 @@
             }
           }
         },
-        "summary": "List Pools",
+        "summary": "List",
         "operationId": "list_2"
       },
       "post": {
@@ -2719,7 +2719,7 @@
             }
           }
         },
-        "summary": "Create Pools",
+        "summary": "Create",
         "operationId": "pools"
       }
     },
@@ -2996,7 +2996,7 @@
             }
           }
         },
-        "summary": "Delete Pools",
+        "summary": "Delete",
         "operationId": "address_delete"
       }
     },
@@ -3150,7 +3150,7 @@
             }
           }
         },
-        "summary": "Swap Quote",
+        "summary": "Quote",
         "operationId": "swap_quote"
       }
     },
@@ -3292,7 +3292,7 @@
             }
           }
         },
-        "summary": "Swap Execute",
+        "summary": "Execute",
         "operationId": "swap_execute"
       }
     },
@@ -3395,7 +3395,7 @@
             }
           }
         },
-        "summary": "Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "clmm_pool_info"
       }
     },
@@ -3521,7 +3521,7 @@
             }
           }
         },
-        "summary": "Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "clmm_position_info"
       }
     },
@@ -3651,7 +3651,7 @@
             }
           }
         },
-        "summary": "Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "clmm_positions_owned"
       }
     },
@@ -3793,7 +3793,7 @@
             }
           }
         },
-        "summary": "Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "clmm_quote_position"
       }
     },
@@ -3930,7 +3930,7 @@
             }
           }
         },
-        "summary": "Clmm Open",
+        "summary": "Open",
         "operationId": "clmm_open"
       }
     },
@@ -4044,7 +4044,7 @@
             }
           }
         },
-        "summary": "Clmm Add",
+        "summary": "Add",
         "operationId": "clmm_add"
       }
     },
@@ -4147,7 +4147,7 @@
             }
           }
         },
-        "summary": "Clmm Remove",
+        "summary": "Remove",
         "operationId": "clmm_remove"
       }
     },
@@ -4241,7 +4241,7 @@
             }
           }
         },
-        "summary": "Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "clmm_collect_fees"
       }
     },
@@ -4347,7 +4347,7 @@
             }
           }
         },
-        "summary": "Clmm Close",
+        "summary": "Close",
         "operationId": "clmm_close"
       }
     },
@@ -4417,7 +4417,7 @@
             }
           }
         },
-        "summary": "Chains Solana Status",
+        "summary": "Status",
         "operationId": "chains_solana_status"
       }
     },
@@ -4492,7 +4492,7 @@
             }
           }
         },
-        "summary": "Chains Solana Estimate Gas",
+        "summary": "Estimate Gas",
         "operationId": "chains_solana_estimate_gas"
       }
     },
@@ -4570,7 +4570,7 @@
             }
           }
         },
-        "summary": "Chains Solana Balances",
+        "summary": "Balances",
         "operationId": "chains_solana_balances"
       }
     },
@@ -4680,7 +4680,7 @@
             }
           }
         },
-        "summary": "Chains Solana Poll",
+        "summary": "Poll",
         "operationId": "chains_solana_poll"
       }
     },
@@ -4776,7 +4776,7 @@
             }
           }
         },
-        "summary": "Chains Solana Wrap",
+        "summary": "Wrap",
         "operationId": "chains_solana_wrap"
       }
     },
@@ -4868,7 +4868,7 @@
             }
           }
         },
-        "summary": "Chains Solana Unwrap",
+        "summary": "Unwrap",
         "operationId": "chains_solana_unwrap"
       }
     },
@@ -4945,7 +4945,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Status",
+        "summary": "Status",
         "operationId": "chains_ethereum_status"
       }
     },
@@ -5027,7 +5027,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Estimate Gas",
+        "summary": "Estimate Gas",
         "operationId": "chains_ethereum_estimate_gas"
       }
     },
@@ -5104,7 +5104,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Balances",
+        "summary": "Balances",
         "operationId": "chains_ethereum_balances"
       }
     },
@@ -5204,7 +5204,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Poll",
+        "summary": "Poll",
         "operationId": "chains_ethereum_poll"
       }
     },
@@ -5294,7 +5294,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Allowances",
+        "summary": "Allowances",
         "operationId": "chains_ethereum_allowances"
       }
     },
@@ -5408,7 +5408,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Approve",
+        "summary": "Approve",
         "operationId": "chains_ethereum_approve"
       }
     },
@@ -5515,7 +5515,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Wrap",
+        "summary": "Wrap",
         "operationId": "chains_ethereum_wrap"
       }
     },
@@ -5622,7 +5622,7 @@
             }
           }
         },
-        "summary": "Chains Ethereum Unwrap",
+        "summary": "Unwrap",
         "operationId": "chains_ethereum_unwrap"
       }
     },
@@ -5854,7 +5854,7 @@
             }
           }
         },
-        "summary": "Connectors Jupiter Router Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_jupiter_router_quote_swap"
       }
     },
@@ -5983,7 +5983,7 @@
             }
           }
         },
-        "summary": "Connectors Jupiter Router Execute Quote",
+        "summary": "Execute Quote",
         "operationId": "connectors_jupiter_router_execute_quote"
       }
     },
@@ -6149,7 +6149,7 @@
             }
           }
         },
-        "summary": "Connectors Jupiter Router Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_jupiter_router_execute_swap"
       }
     },
@@ -6262,7 +6262,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Fetch Pools",
+        "summary": "Fetch Pools",
         "operationId": "connectors_meteora_clmm_fetch_pools"
       }
     },
@@ -6388,7 +6388,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_meteora_clmm_pool_info"
       }
     },
@@ -6501,7 +6501,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_meteora_clmm_positions_owned"
       }
     },
@@ -6611,7 +6611,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_meteora_clmm_position_info"
       }
     },
@@ -6752,7 +6752,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_meteora_clmm_quote_position"
       }
     },
@@ -6901,7 +6901,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_meteora_clmm_quote_swap"
       }
     },
@@ -7041,7 +7041,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_meteora_clmm_execute_swap"
       }
     },
@@ -7178,7 +7178,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_meteora_clmm_open_position"
       }
     },
@@ -7295,7 +7295,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_meteora_clmm_add_liquidity"
       }
     },
@@ -7392,7 +7392,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_meteora_clmm_remove_liquidity"
       }
     },
@@ -7481,7 +7481,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_meteora_clmm_collect_fees"
       }
     },
@@ -7582,7 +7582,7 @@
             }
           }
         },
-        "summary": "Connectors Meteora Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_meteora_clmm_close_position"
       }
     },
@@ -7694,7 +7694,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Fetch Pools",
+        "summary": "Fetch Pools",
         "operationId": "connectors_orca_clmm_fetch_pools"
       }
     },
@@ -7801,7 +7801,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_orca_clmm_pool_info"
       }
     },
@@ -7925,7 +7925,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_orca_clmm_positions_owned"
       }
     },
@@ -8046,7 +8046,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_orca_clmm_position_info"
       }
     },
@@ -8172,7 +8172,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_orca_clmm_quote_position"
       }
     },
@@ -8321,7 +8321,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_orca_clmm_quote_swap"
       }
     },
@@ -8461,7 +8461,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_orca_clmm_execute_swap"
       }
     },
@@ -8588,7 +8588,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_orca_clmm_open_position"
       }
     },
@@ -8695,7 +8695,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_orca_clmm_add_liquidity"
       }
     },
@@ -8796,7 +8796,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_orca_clmm_remove_liquidity"
       }
     },
@@ -8885,7 +8885,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_orca_clmm_collect_fees"
       }
     },
@@ -8986,7 +8986,7 @@
             }
           }
         },
-        "summary": "Connectors Orca Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_orca_clmm_close_position"
       }
     },
@@ -9066,7 +9066,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_raydium_amm_pool_info"
       }
     },
@@ -9160,7 +9160,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_raydium_amm_position_info"
       }
     },
@@ -9280,7 +9280,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Quote Liquidity",
+        "summary": "Quote Liquidity",
         "operationId": "connectors_raydium_amm_quote_liquidity"
       }
     },
@@ -9428,7 +9428,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_raydium_amm_quote_swap"
       }
     },
@@ -9547,7 +9547,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_raydium_amm_execute_swap"
       }
     },
@@ -9655,7 +9655,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_raydium_amm_add_liquidity"
       }
     },
@@ -9751,7 +9751,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Amm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_raydium_amm_remove_liquidity"
       }
     },
@@ -9838,7 +9838,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_raydium_clmm_pool_info"
       }
     },
@@ -9951,7 +9951,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_raydium_clmm_positions_owned"
       }
     },
@@ -10071,7 +10071,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_raydium_clmm_position_info"
       }
     },
@@ -10197,7 +10197,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_raydium_clmm_quote_position"
       }
     },
@@ -10345,7 +10345,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_raydium_clmm_quote_swap"
       }
     },
@@ -10485,7 +10485,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_raydium_clmm_execute_swap"
       }
     },
@@ -10611,7 +10611,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_raydium_clmm_open_position"
       }
     },
@@ -10719,7 +10719,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_raydium_clmm_add_liquidity"
       }
     },
@@ -10815,7 +10815,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_raydium_clmm_remove_liquidity"
       }
     },
@@ -10895,7 +10895,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_raydium_clmm_collect_fees"
       }
     },
@@ -10995,7 +10995,7 @@
             }
           }
         },
-        "summary": "Connectors Raydium Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_raydium_clmm_close_position"
       }
     },
@@ -11157,7 +11157,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Router Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_uniswap_router_quote_swap"
       }
     },
@@ -11276,7 +11276,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Router Execute Quote",
+        "summary": "Execute Quote",
         "operationId": "connectors_uniswap_router_execute_quote"
       }
     },
@@ -11424,7 +11424,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Router Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_uniswap_router_execute_swap"
       }
     },
@@ -11510,7 +11510,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_uniswap_amm_pool_info"
       }
     },
@@ -11615,7 +11615,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_uniswap_amm_position_info"
       }
     },
@@ -11749,7 +11749,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_uniswap_amm_quote_swap"
       }
     },
@@ -11860,7 +11860,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Quote Liquidity",
+        "summary": "Quote Liquidity",
         "operationId": "connectors_uniswap_amm_quote_liquidity"
       }
     },
@@ -12010,7 +12010,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_uniswap_amm_execute_swap"
       }
     },
@@ -12129,7 +12129,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_uniswap_amm_add_liquidity"
       }
     },
@@ -12238,7 +12238,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Amm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_uniswap_amm_remove_liquidity"
       }
     },
@@ -12331,7 +12331,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_uniswap_clmm_pool_info"
       }
     },
@@ -12436,7 +12436,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_uniswap_clmm_position_info"
       }
     },
@@ -12544,7 +12544,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_uniswap_clmm_positions_owned"
       }
     },
@@ -12659,7 +12659,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_uniswap_clmm_quote_position"
       }
     },
@@ -12793,7 +12793,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_uniswap_clmm_quote_swap"
       }
     },
@@ -12941,7 +12941,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_uniswap_clmm_execute_swap"
       }
     },
@@ -13052,7 +13052,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_uniswap_clmm_open_position"
       }
     },
@@ -13171,7 +13171,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_uniswap_clmm_add_liquidity"
       }
     },
@@ -13260,7 +13260,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_uniswap_clmm_remove_liquidity"
       }
     },
@@ -13342,7 +13342,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_uniswap_clmm_collect_fees"
       }
     },
@@ -13432,7 +13432,7 @@
             }
           }
         },
-        "summary": "Connectors Uniswap Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_uniswap_clmm_close_position"
       }
     },
@@ -13628,7 +13628,7 @@
             }
           }
         },
-        "summary": "Connectors 0x Router Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_0x_router_quote_swap"
       }
     },
@@ -13755,7 +13755,7 @@
             }
           }
         },
-        "summary": "Connectors 0x Router Execute Quote",
+        "summary": "Execute Quote",
         "operationId": "connectors_0x_router_execute_quote"
       }
     },
@@ -13911,7 +13911,7 @@
             }
           }
         },
-        "summary": "Connectors 0x Router Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_0x_router_execute_swap"
       }
     },
@@ -14069,7 +14069,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Router Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_pancakeswap_router_quote_swap"
       }
     },
@@ -14184,7 +14184,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Router Execute Quote",
+        "summary": "Execute Quote",
         "operationId": "connectors_pancakeswap_router_execute_quote"
       }
     },
@@ -14328,7 +14328,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Router Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_pancakeswap_router_execute_swap"
       }
     },
@@ -14410,7 +14410,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_pancakeswap_amm_pool_info"
       }
     },
@@ -14515,7 +14515,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_pancakeswap_amm_position_info"
       }
     },
@@ -14649,7 +14649,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_pancakeswap_amm_quote_swap"
       }
     },
@@ -14760,7 +14760,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Quote Liquidity",
+        "summary": "Quote Liquidity",
         "operationId": "connectors_pancakeswap_amm_quote_liquidity"
       }
     },
@@ -14906,7 +14906,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_pancakeswap_amm_execute_swap"
       }
     },
@@ -15021,7 +15021,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_pancakeswap_amm_add_liquidity"
       }
     },
@@ -15126,7 +15126,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Amm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_pancakeswap_amm_remove_liquidity"
       }
     },
@@ -15216,7 +15216,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_pancakeswap_clmm_pool_info"
       }
     },
@@ -15322,7 +15322,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_pancakeswap_clmm_position_info"
       }
     },
@@ -15430,7 +15430,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_pancakeswap_clmm_positions_owned"
       }
     },
@@ -15545,7 +15545,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_pancakeswap_clmm_quote_position"
       }
     },
@@ -15680,7 +15680,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_pancakeswap_clmm_quote_swap"
       }
     },
@@ -15824,7 +15824,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_pancakeswap_clmm_execute_swap"
       }
     },
@@ -15937,7 +15937,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_pancakeswap_clmm_open_position"
       }
     },
@@ -16053,7 +16053,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_pancakeswap_clmm_add_liquidity"
       }
     },
@@ -16143,7 +16143,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_pancakeswap_clmm_remove_liquidity"
       }
     },
@@ -16226,7 +16226,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_pancakeswap_clmm_collect_fees"
       }
     },
@@ -16316,7 +16316,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_pancakeswap_clmm_close_position"
       }
     },
@@ -16403,7 +16403,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Pool Info",
+        "summary": "Pool Info",
         "operationId": "connectors_pancakeswap_sol_clmm_pool_info"
       }
     },
@@ -16513,7 +16513,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Position Info",
+        "summary": "Position Info",
         "operationId": "connectors_pancakeswap_sol_clmm_position_info"
       }
     },
@@ -16636,7 +16636,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Positions Owned",
+        "summary": "Positions Owned",
         "operationId": "connectors_pancakeswap_sol_clmm_positions_owned"
       }
     },
@@ -16762,7 +16762,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Quote Position",
+        "summary": "Quote Position",
         "operationId": "connectors_pancakeswap_sol_clmm_quote_position"
       }
     },
@@ -16910,7 +16910,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Quote Swap",
+        "summary": "Quote Swap",
         "operationId": "connectors_pancakeswap_sol_clmm_quote_swap"
       }
     },
@@ -17050,7 +17050,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Execute Swap",
+        "summary": "Execute Swap",
         "operationId": "connectors_pancakeswap_sol_clmm_execute_swap"
       }
     },
@@ -17176,7 +17176,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Open Position",
+        "summary": "Open Position",
         "operationId": "connectors_pancakeswap_sol_clmm_open_position"
       }
     },
@@ -17284,7 +17284,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Add Liquidity",
+        "summary": "Add Liquidity",
         "operationId": "connectors_pancakeswap_sol_clmm_add_liquidity"
       }
     },
@@ -17380,7 +17380,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Remove Liquidity",
+        "summary": "Remove Liquidity",
         "operationId": "connectors_pancakeswap_sol_clmm_remove_liquidity"
       }
     },
@@ -17468,7 +17468,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Collect Fees",
+        "summary": "Collect Fees",
         "operationId": "connectors_pancakeswap_sol_clmm_collect_fees"
       }
     },
@@ -17568,7 +17568,7 @@
             }
           }
         },
-        "summary": "Connectors Pancakeswap Sol Clmm Close Position",
+        "summary": "Close Position",
         "operationId": "connectors_pancakeswap_sol_clmm_close_position"
       }
     }

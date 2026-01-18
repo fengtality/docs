@@ -60,30 +60,64 @@ function generateOperationId(path, method, tag) {
   return operationId;
 }
 
+// Normalize a segment for comparison (handle plural/singular)
+function normalizeSegment(seg) {
+  seg = seg.toLowerCase();
+  // Remove trailing 's' for comparison (chains->chain, connectors->connector)
+  if (seg.endsWith('s') && seg.length > 1) {
+    return seg.slice(0, -1);
+  }
+  return seg;
+}
+
+// Check if two segments match (accounting for plural/singular)
+function segmentsMatch(pathSeg, tagSeg) {
+  return normalizeSegment(pathSeg) === normalizeSegment(tagSeg);
+}
+
 // Function to generate a summary from path
 function generateSummary(path, method, tag) {
   const cleanPath = path.replace(/^\/|\/$/g, '');
-  const parts = cleanPath ? cleanPath.split('/') : [];
-  const tagName = tag ? tag.replace(/^\//, '').split('/')[0] : '';
+  const pathParts = cleanPath ? cleanPath.split('/') : [];
 
-  let relevantParts = parts;
-  if (tagName && parts[0] === tagName) {
-    relevantParts = parts.slice(1);
+  // Parse full tag path (e.g., "/connector/meteora" -> ["connector", "meteora"])
+  const tagParts = tag ? tag.replace(/^\/|\/$/g, '').split('/').filter(p => p.length > 0) : [];
+
+  // Remove path segments that match tag segments (in order)
+  let relevantParts = [...pathParts];
+  let tagIndex = 0;
+
+  while (tagIndex < tagParts.length && relevantParts.length > 0) {
+    if (segmentsMatch(relevantParts[0], tagParts[tagIndex])) {
+      relevantParts.shift();
+      tagIndex++;
+    } else {
+      break;
+    }
   }
 
-  relevantParts = relevantParts.filter(p => p.length > 0 && !p.startsWith('{'));
+  // Filter out path parameters, empty segments, and protocol types
+  const protocolTypes = ['clmm', 'amm', 'router'];
+  relevantParts = relevantParts.filter(p =>
+    p.length > 0 &&
+    !p.startsWith('{') &&
+    !protocolTypes.includes(p.toLowerCase())
+  );
+
+  // Get last tag segment for default naming
+  const lastTagSegment = tagParts.length > 0 ? tagParts[tagParts.length - 1] : '';
 
   if (relevantParts.length === 0) {
     if (method === 'get') {
-      return `List ${toTitleCase(tagName)}`;
+      return `List`;
     } else if (method === 'post') {
-      return `Create ${toTitleCase(tagName)}`;
+      return `Create`;
     } else if (method === 'delete') {
-      return `Delete ${toTitleCase(tagName)}`;
+      return `Delete`;
     } else if (method === 'put' || method === 'patch') {
-      return `Update ${toTitleCase(tagName)}`;
+      return `Update`;
     }
-    return toTitleCase(tagName);
+    return toTitleCase(lastTagSegment);
   }
 
   return relevantParts.map(toTitleCase).join(' ');
