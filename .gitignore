@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Playwright MCP
+.playwright-mcp/
+
+# Node
+node_modules/
