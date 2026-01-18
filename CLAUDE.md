@@ -49,12 +49,15 @@ Telegram User
 ## Repository structure
 
 ```
-docs/
 ├── docs.json                    # Mintlify config (navigation, theme, OpenAPI)
-├── docs.mdx                     # Homepage
+├── introduction.mdx             # Homepage
+├── quickstart.mdx               # Quickstart guide
+├── installation.mdx             # Installation guide
+├── developer-guide.mdx          # Developer guide (API usage)
 ├── api-reference.mdx            # API Reference overview
-├── docs/                        # Documentation pages (MDX)
 ├── api-reference/openapi.json   # Hummingbot API spec
+├── condor/                      # Condor Telegram docs
+├── dashboard/                   # Condor Dashboard docs
 ├── openapi-sources/             # Raw specs from source servers
 └── scripts/                     # Build scripts
 ```

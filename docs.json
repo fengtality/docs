@@ -2,12 +2,6 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Hummingbot API",
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/docs"
-    }
-  ],
   "colors": {
     "primary": "#00B1BB",
     "light": "#5FFFD7",
@@ -30,24 +24,24 @@
           {
             "group": "Getting Started",
             "pages": [
-              "docs",
-              "docs/quickstart",
-              "docs/installation",
-              "docs/developer-guide"
+              "introduction",
+              "quickstart",
+              "installation",
+              "developer-guide"
             ]
           },
           {
             "group": "Condor",
             "pages": [
-              "docs/condor/overview",
-              "docs/condor/installation",
-              "docs/condor/commands"
+              "condor/overview",
+              "condor/installation",
+              "condor/commands"
             ]
           },
           {
             "group": "Condor Dashboard",
             "pages": [
-              "docs/dashboard/overview"
+              "dashboard/overview"
             ]
           }
         ]
