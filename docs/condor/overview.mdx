@@ -1,0 +1,86 @@
+---
+title: "Overview"
+description: "A Telegram bot for mobile access to your Hummingbot trading infrastructure"
+---
+
+Condor is a Telegram bot that provides mobile access to your Hummingbot trading infrastructure. Monitor portfolios, manage bots, and execute trades from anywhere.
+
+<Card title="Condor Dashboard" icon="browser" href="/docs/dashboard/overview">
+  Looking for a browser-based interface? Check out Condor Dashboard (coming soon).
+</Card>
+
+## Why Use Condor?
+
+<CardGroup cols={3}>
+  <Card title="Accessibility" icon="mobile">
+    Manage your trading infrastructure on-the-go without SSH or terminal access
+  </Card>
+  <Card title="Simplicity" icon="hand-pointer">
+    Intuitive menu-driven interface designed for quick actions
+  </Card>
+  <Card title="Efficiency" icon="bolt">
+    Respond to market conditions quickly with streamlined workflows
+  </Card>
+</CardGroup>
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| Portfolio Dashboard | Real-time tracking with PnL indicators, holdings breakdown, and graphical analysis |
+| Bot Management | Monitor status, view logs, edit parameters, and control trading bots |
+| CEX Trading | Place orders on centralized exchanges with leverage configuration |
+| DEX Swaps | Execute token swaps via Gateway on Solana, Ethereum, Base, and more |
+| Liquidity Management | Manage CLMM positions, collect fees, and monitor pools |
+| Configuration | Manage API servers, exchange credentials, and Gateway settings |
+
+## Architecture
+
+Condor connects to your Hummingbot API server to access trading functionality:
+
+```
+┌─────────────────┐
+│     Condor      │
+│   (Telegram)    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│           Hummingbot API Server             │
+│  ┌─────────────┐  ┌─────────────────────┐   │
+│  │  Portfolio  │  │  Bot Orchestration  │   │
+│  │  Tracking   │  │     via EMQX        │   │
+│  └─────────────┘  └─────────────────────┘   │
+└─────────────────────┬───────────────────────┘
+                      │
+      ┌───────────────┼───────────────┐
+      ▼               ▼               ▼
+┌───────────┐   ┌───────────┐   ┌───────────┐
+│  Gateway  │   │    CEX    │   │   Bots    │
+│   (DEX)   │   │ Exchanges │   │ Instances │
+└───────────┘   └───────────┘   └───────────┘
+```
+
+## Getting Started
+
+<Steps>
+  <Step title="Deploy Hummingbot API">
+    Condor requires a running Hummingbot API server. See the [Installation Guide](/docs/installation).
+  </Step>
+  <Step title="Install Condor">
+    Set up the Telegram bot to start managing your trading infrastructure.
+
+    [Installation Guide](/docs/condor/installation)
+  </Step>
+  <Step title="Configure and Trade">
+    Add your API servers and exchange credentials, then start trading.
+
+    [Available Commands](/docs/condor/commands)
+  </Step>
+</Steps>
+
+## Source Code
+
+<Card title="GitHub Repository" icon="github" href="https://github.com/hummingbot/condor">
+  Open source Telegram bot
+</Card>

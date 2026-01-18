@@ -1,15 +1,13 @@
 #!/bin/bash
-# Update OpenAPI specs for Mintlify documentation
+# Update OpenAPI spec for Mintlify documentation
 #
 # Usage: ./scripts/update-openapi.sh
 #
-# This script processes OpenAPI files from the openapi-sources directory
-# and copies them to the appropriate locations for Mintlify.
+# This script processes the OpenAPI file from the openapi-sources directory
+# and copies it to the appropriate location for Mintlify.
 #
 # To update the API docs:
-# 1. Place updated OpenAPI files in openapi-sources/:
-#    - openapi-sources/hummingbot-api.json (from Hummingbot API server)
-#    - openapi-sources/gateway.json (from Gateway server)
+# 1. Place updated OpenAPI file in openapi-sources/hummingbot-api.json
 # 2. Run this script
 # 3. Commit and push changes
 
@@ -19,16 +17,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 SOURCE_DIR="$ROOT_DIR/openapi-sources"
 
-echo "Updating OpenAPI specs..."
+echo "Updating OpenAPI spec..."
 
 # Check if source directory exists
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Creating openapi-sources directory..."
     mkdir -p "$SOURCE_DIR"
     echo ""
-    echo "Please add your OpenAPI files to openapi-sources/:"
+    echo "Please add your OpenAPI file to openapi-sources/:"
     echo "  - hummingbot-api.json (from http://localhost:8000/openapi.json)"
-    echo "  - gateway.json (from http://localhost:15888/docs/json)"
     echo ""
     exit 1
 fi
@@ -53,35 +50,8 @@ if [ -f "$SOURCE_DIR/hummingbot-api.json" ]; then
     echo "  Endpoints: $PATHS"
     echo "  Copied to: api-reference/openapi.json"
 else
-    echo "Skipping Hummingbot API (openapi-sources/hummingbot-api.json not found)"
-fi
-
-echo ""
-
-# Process Gateway OpenAPI
-if [ -f "$SOURCE_DIR/gateway.json" ]; then
-    echo "Processing Gateway OpenAPI..."
-
-    # Validate JSON
-    if ! jq empty "$SOURCE_DIR/gateway.json" 2>/dev/null; then
-        echo "Error: gateway.json is not valid JSON"
-        exit 1
-    fi
-
-    # Ensure destination directory exists
-    mkdir -p "$ROOT_DIR/gateway-reference"
-
-    # Process for Mintlify compatibility (convert anyOf with null to nullable)
-    node "$SCRIPT_DIR/process-openapi.js" "$SOURCE_DIR/gateway.json" > "$ROOT_DIR/gateway-reference/openapi.json"
-
-    # Show info
-    VERSION=$(jq -r '.info.version // "unknown"' "$SOURCE_DIR/gateway.json")
-    PATHS=$(jq '.paths | keys | length' "$SOURCE_DIR/gateway.json")
-    echo "  Version: $VERSION"
-    echo "  Endpoints: $PATHS"
-    echo "  Processed and copied to: gateway-reference/openapi.json"
-else
-    echo "Skipping Gateway (openapi-sources/gateway.json not found)"
+    echo "Error: openapi-sources/hummingbot-api.json not found"
+    exit 1
 fi
 
 echo ""

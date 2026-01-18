@@ -1,0 +1,206 @@
+---
+title: "Commands"
+description: "Complete reference for all Condor Telegram bot commands"
+---
+
+## Command Overview
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Main menu with access to all features |
+| `/help` | Interactive help system |
+| `/portfolio` | Portfolio dashboard with PnL tracking |
+| `/bots` | Monitor and manage trading bots |
+| `/trade` | CEX/CLOB trading interface |
+| `/swap` | DEX token swaps via Gateway |
+| `/lp` | Liquidity pool management |
+| `/config` | System configuration |
+
+## `/start` - Main Menu
+
+The welcome screen providing quick access to all features. Use this command to return to the main menu at any time.
+
+**Options:**
+- Portfolio - View holdings and PnL
+- Bots - Manage trading bots
+- Swap - DEX token swaps
+- Trade - CEX trading
+- LP - Liquidity positions
+- Servers - API server management
+- Keys - Exchange credentials
+- Gateway - DEX configuration
+- Help - Command guide
+
+## `/portfolio` - Portfolio Dashboard
+
+Comprehensive portfolio tracking across all connected accounts and exchanges.
+
+**Features:**
+- **PnL Tracking**: 24-hour, 7-day, and 30-day performance metrics
+- **Token Holdings**: Current balances with price changes
+- **Position Monitoring**: Perpetual futures and CLMM positions
+- **Visual Analytics**: Portfolio value charts and distribution graphs
+- **Time Periods**: Customizable timeframes for analysis
+
+**Actions:**
+- Refresh balances
+- View detailed breakdown by account/connector
+- Export portfolio data
+
+## `/bots` - Bot Management
+
+Monitor and control all your Hummingbot trading bot instances.
+
+**Features:**
+- **Status Overview**: Health indicators for all bots
+- **System Metrics**: CPU usage, memory, uptime
+- **Controller Performance**: Track strategy metrics
+- **Parameter Editing**: Modify bot configuration
+- **Log Viewing**: Access bot logs for debugging
+
+**Actions:**
+- Start/Stop bots
+- View real-time status
+- Edit controller parameters
+- Access execution logs
+
+## `/trade` - CEX Trading
+
+Unified trading interface for centralized exchanges supporting both spot and perpetual markets.
+
+**Supported Exchanges:**
+- Binance (Spot & Perpetual)
+- Bybit
+- OKX
+- Kucoin
+- Kraken
+- Coinbase
+
+**Features:**
+- **Order Types**: Market and limit orders
+- **Position Management**: Open, close, and modify positions
+- **Leverage Configuration**: Set leverage for perpetual trading
+- **Order Tracking**: Monitor open orders and execution
+
+**Workflow:**
+1. Select exchange and trading pair
+2. Choose order type (market/limit)
+3. Enter amount and price (for limit orders)
+4. Confirm and execute
+
+## `/swap` - DEX Token Swaps
+
+Execute token swaps on decentralized exchanges via Gateway.
+
+**Supported DEXs:**
+- **Solana**: Jupiter aggregator
+- **Ethereum**: Uniswap
+- **Base**: Uniswap
+- Additional chains via Gateway
+
+**Features:**
+- **Quote Generation**: Get best prices across DEXs
+- **Slippage Protection**: Configure maximum slippage
+- **Swap History**: Track past transactions
+- **Multi-chain Support**: Swap on various networks
+
+**Workflow:**
+1. Select chain and wallet
+2. Choose input and output tokens
+3. Enter amount
+4. Review quote and slippage
+5. Execute swap
+
+## `/lp` - Liquidity Pool Management
+
+Manage Concentrated Liquidity Market Maker (CLMM) positions.
+
+**Features:**
+- **Position Monitoring**: View all LP positions
+- **Fee Collection**: Collect accumulated trading fees
+- **Pool Discovery**: Find and analyze liquidity pools
+- **Liquidity Operations**: Add or remove liquidity
+
+**Supported Protocols:**
+- Orca (Solana)
+- Raydium (Solana)
+- Uniswap V3 (Ethereum, Base)
+- Meteora (Solana)
+
+## `/config` - Configuration
+
+Manage all system settings and credentials.
+
+**Sections:**
+
+<AccordionGroup>
+  <Accordion title="API Servers">
+    Add, edit, or remove Hummingbot API server connections.
+
+    ```yaml
+    servers:
+      main:
+        host: localhost
+        port: 8000
+        username: admin
+        password: admin
+    ```
+  </Accordion>
+  <Accordion title="API Keys">
+    Manage exchange API credentials for trading.
+
+    - Add new exchange credentials
+    - View configured exchanges
+    - Remove credentials
+  </Accordion>
+  <Accordion title="Gateway">
+    Configure Gateway for DEX trading.
+
+    - Deploy Gateway instance
+    - Manage wallet connections
+    - Configure network settings
+  </Accordion>
+  <Accordion title="Wallets">
+    Manage blockchain wallets for DEX operations.
+
+    - Create new wallets
+    - Import existing wallets
+    - View wallet addresses
+  </Accordion>
+  <Accordion title="Networks">
+    Configure blockchain network connections.
+
+    - RPC endpoints
+    - Network selection
+  </Accordion>
+  <Accordion title="DEX Connectors">
+    Enable and configure DEX protocols.
+
+    - Available connectors
+    - Protocol settings
+  </Accordion>
+  <Accordion title="Pools & Tokens">
+    Manage tracked pools and tokens.
+
+    - Add custom tokens
+    - Track specific pools
+  </Accordion>
+</AccordionGroup>
+
+## `/help` - Help System
+
+Interactive help providing detailed information about each feature. Use this when you need guidance on specific functionality.
+
+## Tips
+
+<Tip>
+Use the inline buttons and menus for navigation. You can always return to the main menu with `/start`.
+</Tip>
+
+<Tip>
+Most screens have a refresh button to update data in real-time.
+</Tip>
+
+<Tip>
+For DEX operations, ensure Gateway is properly configured and your wallet has sufficient funds for gas fees.
+</Tip>

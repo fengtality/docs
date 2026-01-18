@@ -36,9 +36,17 @@
             ]
           },
           {
-            "group": "Gateway",
+            "group": "Condor",
             "pages": [
-              "docs/gateway-setup"
+              "docs/condor/overview",
+              "docs/condor/installation",
+              "docs/condor/commands"
+            ]
+          },
+          {
+            "group": "Condor Dashboard",
+            "pages": [
+              "docs/dashboard/overview"
             ]
           }
         ]
@@ -54,21 +62,6 @@
           }
         ],
         "openapi": "api-reference/openapi.json"
-      },
-      {
-        "tab": "Gateway Reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "gateway-reference"
-            ]
-          }
-        ],
-        "openapi": {
-          "source": "gateway-reference/openapi.json",
-          "directory": "gateway-reference"
-        }
       }
     ]
   },

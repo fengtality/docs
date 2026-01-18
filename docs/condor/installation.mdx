@@ -1,0 +1,148 @@
+---
+title: "Installation"
+description: "Deploy Condor Telegram bot to manage your Hummingbot infrastructure from Telegram"
+---
+
+## Prerequisites
+
+Before installing Condor, ensure you have:
+
+- **Docker & Docker Compose** (for Docker installation)
+- **Python 3.11+ & Conda** (for source installation)
+- A running [Hummingbot API](/docs/installation) instance
+- A **Telegram Bot Token** from [@BotFather](https://t.me/botfather)
+
+## Create a Telegram Bot
+
+1. Open Telegram and search for [@BotFather](https://t.me/botfather)
+2. Send `/newbot` and follow the prompts to create your bot
+3. Save the **bot token** provided (format: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+## Installation
+
+<Tabs>
+  <Tab title="Docker (Recommended)">
+    ### Step 1: Clone Repository
+
+    ```bash
+    git clone https://github.com/hummingbot/condor.git
+    cd condor
+    ```
+
+    ### Step 2: Configure Environment
+
+    Run the setup script:
+
+    ```bash
+    ./setup-environment.sh
+    ```
+
+    You'll be prompted to enter:
+    - `TELEGRAM_TOKEN`: Your bot token from BotFather
+    - `AUTHORIZED_USERS`: Comma-separated Telegram User IDs (e.g., `123456789,987654321`)
+
+    ### Step 3: Launch
+
+    ```bash
+    docker compose up -d
+    ```
+
+    View logs to confirm it's running:
+
+    ```bash
+    docker compose logs -f
+    ```
+  </Tab>
+  <Tab title="Source">
+    ### Step 1: Clone and Setup Environment
+
+    ```bash
+    git clone https://github.com/hummingbot/condor.git
+    cd condor
+    conda env create -f environment.yml
+    conda activate condor
+    ```
+
+    ### Step 2: Configure
+
+    ```bash
+    ./setup-environment.sh
+    ```
+
+    ### Step 3: Run
+
+    ```bash
+    python main.py
+    ```
+  </Tab>
+</Tabs>
+
+## Post-Installation Setup
+
+### Get Your Telegram User ID
+
+If you don't know your Telegram User ID:
+
+1. Send `/start` to your bot
+2. If you're not authorized, the bot will display your User ID
+3. Add this ID to `TELEGRAM_ALLOWED_IDS` in your `.env` file
+4. Restart Condor
+
+### Configure API Servers
+
+Create or edit `conf/servers.yml` to connect to your Hummingbot API instances:
+
+```yaml
+default_server: main
+servers:
+  main:
+    host: localhost
+    port: 8000
+    username: admin
+    password: admin
+    enabled: true
+```
+
+For remote servers, replace `localhost` with the server's IP address or hostname.
+
+### First-Time Configuration
+
+1. Send `/start` to activate the bot
+2. Verify your User ID is authorized
+3. Use `/config` → **API Servers** to add or modify server connections
+4. Add exchange credentials via `/config` → **API Keys**
+5. Optionally configure Gateway for DEX trading
+
+## Security
+
+<Warning>
+Condor provides access to your trading infrastructure. Always:
+- Keep your `TELEGRAM_ALLOWED_IDS` list restricted to trusted users
+- Use strong passwords for your Hummingbot API instances
+- Never share your bot token publicly
+</Warning>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Bot doesn't respond to /start">
+    - Verify the bot token is correct in your `.env` file
+    - Check that Condor is running: `docker compose ps`
+    - View logs for errors: `docker compose logs -f`
+  </Accordion>
+  <Accordion title="'Unauthorized' message">
+    - Your Telegram User ID is not in `TELEGRAM_ALLOWED_IDS`
+    - Add your ID to the `.env` file and restart Condor
+  </Accordion>
+  <Accordion title="Cannot connect to Hummingbot API">
+    - Verify the API server is running
+    - Check the host/port in `conf/servers.yml`
+    - Ensure network connectivity between Condor and the API server
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<Card title="Available Commands" icon="terminal" href="/docs/condor/commands">
+  Learn about all the commands available in Condor Telegram
+</Card>

@@ -53,35 +53,30 @@ docs/
 ├── docs.json                    # Mintlify config (navigation, theme, OpenAPI)
 ├── docs.mdx                     # Homepage
 ├── api-reference.mdx            # API Reference overview
-├── gateway-reference.mdx        # Gateway Reference overview
 ├── docs/                        # Documentation pages (MDX)
-├── api-reference/openapi.json   # Processed Hummingbot API spec
-├── gateway-reference/openapi.json  # Processed Gateway spec
+├── api-reference/openapi.json   # Hummingbot API spec
 ├── openapi-sources/             # Raw specs from source servers
 └── scripts/                     # Build scripts
 ```
 
 ## OpenAPI spec maintenance
 
-The API Reference and Gateway Reference are auto-generated from OpenAPI specs. When endpoints change in the source repos, regenerate the specs:
+The API Reference is auto-generated from the OpenAPI spec. When endpoints change in the source repo, regenerate the spec:
 
-### Quick update (servers already running)
+### Quick update (server already running)
 
 ```bash
-./scripts/generate-openapi.sh           # Both specs
-./scripts/generate-openapi.sh --api-only      # Hummingbot API only
-./scripts/generate-openapi.sh --gateway-only  # Gateway only
+./scripts/generate-openapi.sh
 ```
 
 ### Full update workflow
 
-1. Start the source servers:
+1. Start the Hummingbot API server:
    ```bash
    cd ~/hummingbot-api && make run        # localhost:8000
-   cd ~/gateway && pnpm start --dev       # localhost:15888
    ```
 
-2. Generate specs:
+2. Generate spec:
    ```bash
    ./scripts/generate-openapi.sh
    ```
@@ -91,21 +86,9 @@ The API Reference and Gateway Reference are auto-generated from OpenAPI specs. W
    mintlify dev
    ```
 
-4. Commit both `openapi-sources/` (raw) and processed files
-
-### Processing details
-
-- **Hummingbot API**: Copied directly (has clean operationIds)
-- **Gateway**: Processed by `scripts/process-openapi.js`:
-  - Adds `operationId` for URL paths (e.g., `show_private_key`)
-  - Adds `summary` for sidebar titles (e.g., "Show Private Key")
-  - Converts `anyOf` with null to `nullable: true`
+4. Commit both `openapi-sources/hummingbot-api.json` and `api-reference/openapi.json`
 
 ### Fixing issues
-
-If Gateway sidebar shows ugly URLs like `post-walletshow-private-key`:
-1. Re-run `./scripts/generate-openapi.sh --gateway-only`
-2. Restart `mintlify dev`
 
 If changes to router docstrings aren't appearing:
 1. Ensure docstrings are description-only (no Args/Returns/Raises sections)

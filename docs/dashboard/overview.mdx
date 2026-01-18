@@ -1,0 +1,54 @@
+---
+title: "Overview"
+description: "A modern browser-based dashboard for managing Hummingbot trading infrastructure"
+---
+
+<Info>
+Condor Dashboard is currently under development and will be available soon.
+</Info>
+
+Condor Dashboard is a modern, browser-based interface for managing trading bots powered by Hummingbot. It syncs with [Condor Telegram](/docs/condor/overview) for mobile monitoring and control.
+
+Condor Dashboard is intended as a replacement for the legacy [Hummingbot Dashboard](https://github.com/hummingbot/dashboard), rebuilt from the ground up to work with Hummingbot API.
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Trade" icon="chart-line">
+    View market data (order book, price charts), place orders, and run trading bots on spot and perpetual markets
+  </Card>
+  <Card title="AMM Markets" icon="coins">
+    Swap tokens and manage liquidity positions on DEXs via Hummingbot Gateway
+  </Card>
+  <Card title="Manage Keys" icon="key">
+    Add and remove exchange API keys for spot and perpetual connectors
+  </Card>
+  <Card title="Strategies" icon="chess">
+    Browse, create, and configure V2 controller strategies
+  </Card>
+  <Card title="Bots" icon="robot">
+    Deploy, monitor, start/stop, and archive trading bots
+  </Card>
+  <Card title="Settings" icon="gear">
+    Configure account preferences, Gateway server, and application settings
+  </Card>
+</CardGroup>
+
+## Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| [Vite](https://vite.dev/) + [React 19](https://react.dev/) | Framework |
+| [TypeScript](https://www.typescriptlang.org/) | Type safety |
+| [Tailwind CSS v4](https://tailwindcss.com/) | Styling with CSS variables for theming |
+| [shadcn/ui](https://ui.shadcn.com/) + [Radix UI](https://www.radix-ui.com/) | Component library |
+| [React Router v7](https://reactrouter.com/) | Routing |
+
+## Prerequisites
+
+- Node.js 20.19+ or 22.12+
+- A running [Hummingbot API](/docs/installation) server
+
+## Stay Updated
+
+Follow the [Hummingbot Discord](https://discord.gg/hummingbot) for development updates and release announcements.
