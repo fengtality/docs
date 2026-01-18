@@ -31,8 +31,9 @@
             "group": "Getting Started",
             "pages": [
               "docs",
+              "docs/quickstart",
               "docs/installation",
-              "docs/quickstart"
+              "docs/developer-guide"
             ]
           },
           {
@@ -72,8 +73,8 @@
   "navbar": {
     "links": [
       {
-        "label": "Discord",
-        "href": "https://discord.gg/hummingbot"
+        "label": "Hummingbot",
+        "href": "https://hummingbot.org"
       }
     ],
     "primary": {

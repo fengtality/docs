@@ -1,0 +1,233 @@
+---
+title: "Developer Guide"
+description: "Connect to exchanges and execute your first trade using the API"
+---
+
+This guide walks you through connecting an exchange account and executing trades using the Hummingbot API.
+
+## Prerequisites
+
+- Hummingbot API [installed and running](/installation)
+- Exchange API credentials (API key and secret)
+
+## Using the API
+
+All examples use `curl` with HTTP Basic Authentication. Replace `admin:admin` with your credentials.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -u admin:admin http://localhost:8000/accounts
+    ```
+  </Tab>
+  <Tab title="Python">
+    ```python
+    from hummingbot_api_client import HummingbotAPIClient
+
+    client = HummingbotAPIClient(
+        base_url="http://localhost:8000",
+        username="admin",
+        password="admin"
+    )
+
+    accounts = client.get_accounts()
+    ```
+
+    Install the client: `pip install hummingbot-api-client`
+  </Tab>
+</Tabs>
+
+## Step 1: List Available Exchanges
+
+Get the list of supported exchange connectors:
+
+```bash
+curl -u admin:admin http://localhost:8000/connectors
+```
+
+<Note>
+Spot and perpetual markets are separate connectors. For example, `hyperliquid` (spot) and `hyperliquid_perpetual` (perps) are different connectors.
+</Note>
+
+## Step 2: Check Connector Configuration
+
+Before adding credentials, check what fields are required:
+
+```bash
+curl -u admin:admin http://localhost:8000/connectors/hyperliquid/config-map
+```
+
+Response shows required credential fields:
+
+```json
+{
+  "hyperliquid_api_key": {
+    "type": "string",
+    "required": true
+  },
+  "hyperliquid_api_secret": {
+    "type": "string",
+    "required": true
+  },
+  "use_vault": {
+    "type": "boolean",
+    "required": false,
+    "default": false
+  }
+}
+```
+
+## Step 3: Add Exchange Credentials
+
+Add your API credentials to the default `master_account`:
+
+```bash
+curl -X POST http://localhost:8000/accounts/add-credential/master_account/hyperliquid \
+  -u admin:admin \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hyperliquid_api_key": "0x1234...",
+    "hyperliquid_api_secret": "your-secret-key",
+    "use_vault": false
+  }'
+```
+
+<Warning>
+Wait 2-3 seconds after adding credentials before making subsequent API calls. The system needs time to initialize the exchange connection.
+</Warning>
+
+## Step 4: View Portfolio
+
+Fetch balances across all connected exchanges:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+Response includes token holdings with current values:
+
+```json
+{
+  "master_account": {
+    "hyperliquid": {
+      "USDC": {
+        "units": 1000.0,
+        "price": 1.0,
+        "value": 1000.0
+      },
+      "HYPE": {
+        "units": 10.0,
+        "price": 25.5,
+        "value": 255.0
+      }
+    }
+  }
+}
+```
+
+## Step 5: Get Trading Rules
+
+Before placing orders, check trading rules for your pair:
+
+```bash
+curl -u admin:admin "http://localhost:8000/connectors/hyperliquid/trading-rules?trading_pairs=HYPE-USDC"
+```
+
+Response includes order constraints:
+
+```json
+{
+  "HYPE-USDC": {
+    "min_order_size": 0.1,
+    "min_price_increment": 0.01,
+    "min_base_amount_increment": 0.001,
+    "supports_market_orders": true
+  }
+}
+```
+
+## Step 6: Place an Order
+
+Execute a limit order:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "account_name": "master_account",
+    "connector_name": "hyperliquid",
+    "trading_pair": "HYPE-USDC",
+    "trade_type": "BUY",
+    "amount": 1.0,
+    "order_type": "LIMIT",
+    "price": 24.50
+  }'
+```
+
+Response includes the order ID:
+
+```json
+{
+  "client_order_id": "buy-HYPE-USDC-1234567890",
+  "exchange_order_id": "0xabc123...",
+  "status": "PENDING"
+}
+```
+
+## Step 7: Check Order Status
+
+View active orders:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/orders/active \
+  -H "Content-Type: application/json" \
+  -d '{
+    "account_name": "master_account",
+    "connector_name": "hyperliquid"
+  }'
+```
+
+## Step 8: Cancel an Order
+
+Cancel by client order ID:
+
+```bash
+curl -u admin:admin -X POST \
+  "http://localhost:8000/trading/master_account/hyperliquid/orders/buy-HYPE-USDC-1234567890/cancel"
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Connection errors">
+    Check the API logs for detailed error messages:
+    ```bash
+    docker logs hummingbot-api
+    ```
+  </Accordion>
+  <Accordion title="Geo-restrictions">
+    Some exchanges restrict access from certain regions. Use a VPN or deploy your server in a supported region.
+  </Accordion>
+  <Accordion title="Invalid credentials">
+    Verify your API key permissions match the operations you're attempting. Some exchanges require specific permissions for trading.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference">
+    Explore all available endpoints
+  </Card>
+  <Card title="Bot Orchestration" icon="robot" href="/api-reference/bot-orchestration/get-orchestration-status">
+    Deploy automated trading strategies
+  </Card>
+  <Card title="Market Data" icon="chart-line" href="/api-reference/market-data/get-prices">
+    Access prices, candles, and order books
+  </Card>
+  <Card title="Condor" icon="telegram" href="/docs/condor/overview">
+    Control the API from Telegram
+  </Card>
+</CardGroup>

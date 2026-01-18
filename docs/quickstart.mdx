@@ -1,233 +1,125 @@
 ---
 title: "Quickstart"
-description: "Connect to exchanges and execute your first trade"
+description: "Deploy Hummingbot API and control it with Condor Telegram"
 ---
 
-This guide walks you through connecting an exchange account and executing trades using the Hummingbot API.
+This guide walks you through deploying Hummingbot API on a cloud server and controlling it with Condor, a Telegram bot interface.
 
 ## Prerequisites
 
-- Hummingbot API [installed and running](/installation)
-- Exchange API credentials (API key and secret)
+| Component | Requirement |
+|-----------|-------------|
+| **OS** | Linux x64/ARM (Ubuntu 20.04+) |
+| **RAM** | 4 GB minimum |
+| **Storage** | 10 GB SSD |
+| **CPU** | 2+ vCPUs |
 
-## Using the API
+<Tip>
+Recommended cloud providers: AWS, Google Cloud, or DigitalOcean
+</Tip>
 
-All examples use `curl` with HTTP Basic Authentication. Replace `admin:admin` with your credentials.
+## 1. Set Up a Cloud Server
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl -u admin:admin http://localhost:8000/accounts
-    ```
-  </Tab>
-  <Tab title="Python">
-    ```python
-    from hummingbot_api_client import HummingbotAPIClient
+Create a Linux server with your preferred cloud provider. For AWS:
 
-    client = HummingbotAPIClient(
-        base_url="http://localhost:8000",
-        username="admin",
-        password="admin"
-    )
+1. Launch an EC2 instance with Ubuntu 22.04 LTS
+2. Select `t3.medium` or larger instance type
+3. Configure security group to allow ports 22 (SSH) and 8000 (API)
 
-    accounts = client.get_accounts()
-    ```
+## 2. Install Docker
 
-    Install the client: `pip install hummingbot-api-client`
-  </Tab>
-</Tabs>
-
-## Step 1: List Available Exchanges
-
-Get the list of supported exchange connectors:
+Connect to your server via SSH and install Docker:
 
 ```bash
-curl -u admin:admin http://localhost:8000/connectors
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
 ```
 
-<Note>
-Spot and perpetual markets are separate connectors. For example, `hyperliquid` (spot) and `hyperliquid_perpetual` (perps) are different connectors.
-</Note>
+## 3. Deploy Hummingbot API
 
-## Step 2: Check Connector Configuration
-
-Before adding credentials, check what fields are required:
+Clone the repository and run the setup:
 
 ```bash
-curl -u admin:admin http://localhost:8000/connectors/hyperliquid/config-map
+git clone https://github.com/hummingbot/hummingbot-api.git
+cd hummingbot-api
+chmod +x setup.sh
+./setup.sh
+make deploy
 ```
 
-Response shows required credential fields:
+The API server will start on port 8000. Access the Swagger UI at `http://your-server-ip:8000/docs`.
 
-```json
-{
-  "hyperliquid_api_key": {
-    "type": "string",
-    "required": true
-  },
-  "hyperliquid_api_secret": {
-    "type": "string",
-    "required": true
-  },
-  "use_vault": {
-    "type": "boolean",
-    "required": false,
-    "default": false
-  }
-}
-```
+## 4. Set Up Condor Telegram
 
-## Step 3: Add Exchange Credentials
+### Create a Telegram Bot
 
-Add your API credentials to the default `master_account`:
+1. Open Telegram and search for [@BotFather](https://t.me/botfather)
+2. Send `/newbot` and follow the prompts
+3. Copy the bot token (format: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+### Get Your Telegram User ID
+
+1. Search for [@userinfobot](https://t.me/userinfobot) on Telegram
+2. Send `/start` to receive your user ID
+
+### Install Condor
 
 ```bash
-curl -X POST http://localhost:8000/accounts/add-credential/master_account/hyperliquid \
-  -u admin:admin \
-  -H "Content-Type: application/json" \
-  -d '{
-    "hyperliquid_api_key": "0x1234...",
-    "hyperliquid_api_secret": "your-secret-key",
-    "use_vault": false
-  }'
+git clone https://github.com/hummingbot/condor.git
+cd condor
+./setup-environment.sh
 ```
 
-<Warning>
-Wait 2-3 seconds after adding credentials before making subsequent API calls. The system needs time to initialize the exchange connection.
-</Warning>
+When prompted, enter:
+- Your Telegram bot token
+- Your authorized user IDs (comma-separated)
 
-## Step 4: View Portfolio
-
-Fetch balances across all connected exchanges:
+### Launch Condor
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
-  -H "Content-Type: application/json" \
-  -d '{}'
+docker compose up -d
 ```
 
-Response includes token holdings with current values:
+## 5. Connect to Your API
 
-```json
-{
-  "master_account": {
-    "hyperliquid": {
-      "USDC": {
-        "units": 1000.0,
-        "price": 1.0,
-        "value": 1000.0
-      },
-      "HYPE": {
-        "units": 10.0,
-        "price": 25.5,
-        "value": 255.0
-      }
-    }
-  }
-}
-```
+1. Open your Telegram bot
+2. Send `/start` to begin
+3. Go to `/config` → **API Servers**
+4. Add your Hummingbot API server:
+   - Host: your server IP address
+   - Port: 8000
+   - Username: admin
+   - Password: admin
 
-## Step 5: Get Trading Rules
+## 6. Add Exchange Credentials
 
-Before placing orders, check trading rules for your pair:
+1. In Condor, go to `/config` → **API Keys**
+2. Select an exchange (e.g., Binance, Hyperliquid)
+3. Enter your API key and secret
 
-```bash
-curl -u admin:admin "http://localhost:8000/connectors/hyperliquid/trading-rules?trading_pairs=HYPE-USDC"
-```
+## 7. Start Trading
 
-Response includes order constraints:
+You can now use Condor to:
+- `/portfolio` - View balances across all exchanges
+- `/trade` - Place orders on CEX markets
+- `/bots` - Deploy and manage trading bots
+- `/swap` - Execute DEX swaps (requires Gateway)
 
-```json
-{
-  "HYPE-USDC": {
-    "min_order_size": 0.1,
-    "min_price_increment": 0.01,
-    "min_base_amount_increment": 0.001,
-    "supports_market_orders": true
-  }
-}
-```
-
-## Step 6: Place an Order
-
-Execute a limit order:
-
-```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "account_name": "master_account",
-    "connector_name": "hyperliquid",
-    "trading_pair": "HYPE-USDC",
-    "trade_type": "BUY",
-    "amount": 1.0,
-    "order_type": "LIMIT",
-    "price": 24.50
-  }'
-```
-
-Response includes the order ID:
-
-```json
-{
-  "client_order_id": "buy-HYPE-USDC-1234567890",
-  "exchange_order_id": "0xabc123...",
-  "status": "PENDING"
-}
-```
-
-## Step 7: Check Order Status
-
-View active orders:
-
-```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/orders/active \
-  -H "Content-Type: application/json" \
-  -d '{
-    "account_name": "master_account",
-    "connector_name": "hyperliquid"
-  }'
-```
-
-## Step 8: Cancel an Order
-
-Cancel by client order ID:
-
-```bash
-curl -u admin:admin -X POST \
-  "http://localhost:8000/trading/master_account/hyperliquid/orders/buy-HYPE-USDC-1234567890/cancel"
-```
-
-## Troubleshooting
-
-<AccordionGroup>
-  <Accordion title="Connection errors">
-    Check the API logs for detailed error messages:
-    ```bash
-    docker logs hummingbot-api
-    ```
-  </Accordion>
-  <Accordion title="Geo-restrictions">
-    Some exchanges restrict access from certain regions. Use a VPN or deploy your server in a supported region.
-  </Accordion>
-  <Accordion title="Invalid credentials">
-    Verify your API key permissions match the operations you're attempting. Some exchanges require specific permissions for trading.
-  </Accordion>
-</AccordionGroup>
+See [Condor Commands](/docs/condor/commands) for the full command reference.
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="API Reference" icon="code" href="/api-reference">
-    Explore all available endpoints
+  <Card title="Condor Commands" icon="terminal" href="/docs/condor/commands">
+    Learn all available Telegram commands
   </Card>
-  <Card title="Gateway Setup" icon="server" href="/gateway-setup">
-    Enable DEX trading
+  <Card title="Developer Guide" icon="code" href="/docs/developer-guide">
+    Use the API directly with curl or Python
   </Card>
-  <Card title="Bot Orchestration" icon="robot" href="/api-reference/bot-orchestration/get-orchestration-status">
-    Deploy automated trading strategies
+  <Card title="API Reference" icon="book" href="/api-reference">
+    Explore all API endpoints
   </Card>
-  <Card title="Market Data" icon="chart-line" href="/api-reference/market-data/get-prices">
-    Access prices, candles, and order books
+  <Card title="Condor Installation" icon="telegram" href="/docs/condor/installation">
+    Advanced Condor configuration
   </Card>
 </CardGroup>

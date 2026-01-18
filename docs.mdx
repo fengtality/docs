@@ -1,103 +1,81 @@
 ---
 title: "Introduction"
-description: "The central hub for managing Hummingbot trading bots across multiple exchanges"
+description: "RESTful API for building algorithmic trading applications with Hummingbot"
 ---
 
-Hummingbot API is a RESTful API server that serves as the central hub for managing trading operations across centralized and decentralized exchanges.
+Hummingbot API is a RESTful API server that provides full access to all [Hummingbot](https://hummingbot.org) exchange connectors and trading strategies. Build any trading application on top of it—from simple portfolio trackers to sophisticated algorithmic trading systems.
 
-## Key Features
+[Condor](/docs/condor/overview) (Telegram) and [Condor Dashboard](/docs/dashboard/overview) (web) are reference clients that demonstrate how to build applications using the API.
+
+## What You Can Build
 
 <CardGroup cols={2}>
-  <Card title="Multi-Exchange Management" icon="building-columns">
-    Create and manage trading accounts across different exchanges with aggregated trading functionality
+  <Card title="Portfolio Trackers" icon="chart-pie">
+    Aggregate balances and track PnL across multiple exchanges in real-time
   </Card>
-  <Card title="Portfolio Monitoring" icon="chart-pie">
-    Real-time balance tracking and portfolio distribution analysis across all connected accounts
+  <Card title="Market Making Systems" icon="robot">
+    Deploy and orchestrate Hummingbot instances running automated strategies
   </Card>
-  <Card title="Trade Execution" icon="arrow-right-arrow-left">
-    Place orders, manage positions, and track execution across all connected exchanges
+  <Card title="Smart Order Routers" icon="arrow-right-arrow-left">
+    Execute orders, manage positions, and track fills across CEX and DEX markets
   </Card>
-  <Card title="Bot Orchestration" icon="robot">
-    Deploy and control Hummingbot instances running automated trading strategies
-  </Card>
-  <Card title="DEX Trading" icon="coins">
-    Execute swaps and manage liquidity positions on decentralized exchanges via Gateway
-  </Card>
-  <Card title="AI Integration" icon="microchip-ai">
-    Natural language control through Claude, ChatGPT, or Gemini via the Model Context Protocol (MCP)
+  <Card title="AI Trading Agents" icon="microchip-ai">
+    Integrate with Claude, ChatGPT, or Gemini via the Model Context Protocol (MCP)
   </Card>
 </CardGroup>
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Access Methods                           │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐  │
-│  │  Condor  │    │ Swagger  │    │   MCP    │    │  Custom  │  │
-│  │(Telegram)│    │    UI    │    │(AI Chat) │    │  Client  │  │
-│  └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬─────┘  │
-└───────┼───────────────┼───────────────┼───────────────┼────────┘
-        │               │               │               │
-        └───────────────┴───────┬───────┴───────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      Hummingbot API Server                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │  PostgreSQL │  │    EMQX    │  │   Exchange Connectors   │  │
-│  │  (Storage)  │  │  (Broker)  │  │  (Binance, Hyperliquid) │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-        ▼                   ▼                   ▼
-┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│   Bot Instances   │   │    Gateway    │   │   Exchanges   │
-│   (Strategies)    │   │    (DEXs)     │   │    (CEXs)     │
-└───────────────────┘   └───────────────┘   └───────────────┘
+```mermaid
+flowchart TB
+    subgraph Clients["Your Applications"]
+        Condor["Condor<br/>(Telegram)"]
+        Dashboard["Condor Dashboard<br/>(Web)"]
+        MCP["MCP Server<br/>(AI Agents)"]
+        Custom["Your App"]
+    end
+
+    subgraph API["Hummingbot API Server"]
+        PostgreSQL["PostgreSQL<br/>(Storage)"]
+        EMQX["EMQX<br/>(Broker)"]
+        Connectors["Exchange Connectors"]
+    end
+
+    Condor --> API
+    Dashboard --> API
+    MCP --> API
+    Custom --> API
+
+    API --> Bots["Bot Instances<br/>(Strategies)"]
+    API --> Gateway["Gateway<br/>(DEXs)"]
+    API --> Exchanges["Exchanges<br/>(CEXs)"]
 ```
 
-## Access Methods
+## API Capabilities
 
-| Method | Description | Best For |
-|--------|-------------|----------|
-| [Condor](https://hummingbot.org/condor/) | Telegram bot interface | Mobile monitoring and quick commands |
-| Swagger UI | Interactive API documentation at `/docs` | Testing and development |
-| [MCP](https://hummingbot.org/mcp/) | AI assistant integration | Natural language trading commands |
-| Direct API | RESTful HTTP calls | Custom applications and automation |
+| Category | Endpoints | Description |
+|----------|-----------|-------------|
+| **Accounts** | `/accounts` | Manage exchange credentials and trading accounts |
+| **Portfolio** | `/portfolio` | Track balances, PnL, and portfolio distribution |
+| **Trading** | `/trading` | Place orders, manage positions, view trade history |
+| **Market Data** | `/market-data` | Prices, order books, candles, funding rates |
+| **Bot Orchestration** | `/bot-orchestration` | Deploy and control Hummingbot trading bots |
+| **Connectors** | `/connectors` | Access 50+ CEX connectors and trading rules |
+| **Gateway** | `/gateway` | DEX swaps and liquidity management |
 
 ## Getting Started
 
-<Steps>
-  <Step title="Install Hummingbot API">
-    Deploy the server using Docker on a Linux machine.
-
-    [Installation Guide](/docs/installation)
-  </Step>
-  <Step title="Add Exchange Credentials">
-    Connect your exchange accounts by adding API credentials.
-
-    [Quickstart Guide](/docs/quickstart)
-  </Step>
-  <Step title="Start Trading">
-    Execute trades, monitor portfolios, and deploy trading bots.
-
-    [API Reference](/api-reference)
-  </Step>
-</Steps>
-
-## Resources
-
-<CardGroup cols={3}>
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/docs/quickstart">
+    Deploy Hummingbot API and control it with Condor
+  </Card>
+  <Card title="Developer Guide" icon="code" href="/docs/developer-guide">
+    Use the API directly with curl or Python
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference">
+    Explore all endpoints and schemas
+  </Card>
   <Card title="GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
     Source code and issues
-  </Card>
-  <Card title="Hummingbot Docs" icon="book" href="https://hummingbot.org/docs">
-    Full Hummingbot documentation
-  </Card>
-  <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
-    Community support
   </Card>
 </CardGroup>
