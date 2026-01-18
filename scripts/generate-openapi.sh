@@ -5,7 +5,8 @@
 #
 # This script:
 # 1. Fetches fresh OpenAPI spec from the Hummingbot API server
-# 2. Copies it to the appropriate location
+# 2. Adds servers field for Mintlify API playground base URL
+# 3. Saves to api-reference/openapi.json
 
 set -e
 
@@ -51,8 +52,9 @@ generate_api_spec() {
         return 1
     fi
 
-    # Copy to destination
-    cp "$SOURCE_DIR/hummingbot-api.json" "$ROOT_DIR/api-reference/openapi.json"
+    # Add servers field for Mintlify (required for API playground base URL)
+    jq '. + {servers: [{url: "http://localhost:8000", description: "Local development server"}]}' \
+        "$SOURCE_DIR/hummingbot-api.json" > "$ROOT_DIR/api-reference/openapi.json"
 
     # Show info
     VERSION=$(jq -r '.info.version // "unknown"' "$SOURCE_DIR/hummingbot-api.json")

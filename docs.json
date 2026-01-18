@@ -12,7 +12,6 @@
     "og:site_name": "Hummingbot API"
   },
   "api": {
-    "baseUrl": "http://localhost:8000",
     "playground": {
       "proxy": false
     }
