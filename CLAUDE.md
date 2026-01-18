@@ -46,6 +46,72 @@ Telegram User
 - **Gateway**: Separate service for DEX trading (swaps, liquidity pools)
 - **Controllers**: Trading strategy components running inside bot instances
 
+## Repository structure
+
+```
+docs/
+├── docs.json                    # Mintlify config (navigation, theme, OpenAPI)
+├── docs.mdx                     # Homepage
+├── api-reference.mdx            # API Reference overview
+├── gateway-reference.mdx        # Gateway Reference overview
+├── docs/                        # Documentation pages (MDX)
+├── api-reference/openapi.json   # Processed Hummingbot API spec
+├── gateway-reference/openapi.json  # Processed Gateway spec
+├── openapi-sources/             # Raw specs from source servers
+└── scripts/                     # Build scripts
+```
+
+## OpenAPI spec maintenance
+
+The API Reference and Gateway Reference are auto-generated from OpenAPI specs. When endpoints change in the source repos, regenerate the specs:
+
+### Quick update (servers already running)
+
+```bash
+./scripts/generate-openapi.sh           # Both specs
+./scripts/generate-openapi.sh --api-only      # Hummingbot API only
+./scripts/generate-openapi.sh --gateway-only  # Gateway only
+```
+
+### Full update workflow
+
+1. Start the source servers:
+   ```bash
+   cd ~/hummingbot-api && make run        # localhost:8000
+   cd ~/gateway && pnpm start --dev       # localhost:15888
+   ```
+
+2. Generate specs:
+   ```bash
+   ./scripts/generate-openapi.sh
+   ```
+
+3. Preview and verify:
+   ```bash
+   mintlify dev
+   ```
+
+4. Commit both `openapi-sources/` (raw) and processed files
+
+### Processing details
+
+- **Hummingbot API**: Copied directly (has clean operationIds)
+- **Gateway**: Processed by `scripts/process-openapi.js`:
+  - Adds `operationId` for URL paths (e.g., `show_private_key`)
+  - Adds `summary` for sidebar titles (e.g., "Show Private Key")
+  - Converts `anyOf` with null to `nullable: true`
+
+### Fixing issues
+
+If Gateway sidebar shows ugly URLs like `post-walletshow-private-key`:
+1. Re-run `./scripts/generate-openapi.sh --gateway-only`
+2. Restart `mintlify dev`
+
+If changes to router docstrings aren't appearing:
+1. Ensure docstrings are description-only (no Args/Returns/Raises sections)
+2. Restart the source server
+3. Re-fetch the spec
+
 ## Content strategy
 - Document just enough for user success - not too much, not too little
 - Prioritize accuracy and usability of information

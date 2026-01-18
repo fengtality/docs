@@ -1,43 +1,132 @@
-# Mintlify Starter Kit
+# Hummingbot API Documentation
 
-Use the starter kit to get your docs deployed and ready to customize.
+Documentation site for [Hummingbot API](https://github.com/hummingbot/hummingbot-api) and [Gateway](https://github.com/hummingbot/gateway), built with [Mintlify](https://mintlify.com).
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
-
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
-
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+## Repository Structure
 
 ```
-npm i -g mint
+docs/
+├── docs.json                    # Mintlify config (navigation, theme, OpenAPI settings)
+├── docs.mdx                     # Homepage
+├── api-reference.mdx            # API Reference overview page
+├── gateway-reference.mdx        # Gateway Reference overview page
+│
+├── docs/                        # Documentation pages
+│   ├── installation.mdx
+│   ├── quickstart.mdx
+│   └── gateway-setup.mdx
+│
+├── api-reference/               # Hummingbot API OpenAPI spec
+│   └── openapi.json             # → copied from openapi-sources/hummingbot-api.json
+│
+├── gateway-reference/           # Gateway OpenAPI spec
+│   └── openapi.json             # → processed from openapi-sources/gateway.json
+│
+├── openapi-sources/             # Raw OpenAPI specs from source servers
+│   ├── hummingbot-api.json      # Raw spec from Hummingbot API
+│   └── gateway.json             # Raw spec from Gateway
+│
+├── scripts/                     # Build and maintenance scripts
+│   ├── generate-openapi.sh      # Fetch specs from running servers
+│   ├── update-openapi.sh        # Process and copy specs from openapi-sources/
+│   └── process-openapi.js       # Post-process Gateway spec for Mintlify
+│
+├── images/                      # Documentation images
+└── logo/                        # Site logos
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+## Local Development
 
+### Prerequisites
+
+- Node.js 18+
+- [Mintlify CLI](https://www.npmjs.com/package/mintlify)
+
+### Install Mintlify CLI
+
+```bash
+npm i -g mintlify
 ```
-mint dev
+
+### Start Local Preview
+
+```bash
+mintlify dev
 ```
 
-View your local preview at `http://localhost:3000`.
+View at http://localhost:3000
 
-## Publishing changes
+## Updating OpenAPI Specs
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+The API Reference and Gateway Reference are generated from OpenAPI specifications. There are two methods to update them:
 
-## Need help?
+### Method 1: Automatic (Recommended)
 
-### Troubleshooting
+Fetches specs directly from running servers:
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+```bash
+# Start the source servers first
+cd ~/hummingbot-api && make run        # Starts at localhost:8000
+cd ~/gateway && pnpm start --dev       # Starts at localhost:15888
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+# Generate and process specs
+./scripts/generate-openapi.sh
+
+# Or update only one:
+./scripts/generate-openapi.sh --api-only
+./scripts/generate-openapi.sh --gateway-only
+```
+
+### Method 2: Manual
+
+If you already have the OpenAPI JSON files:
+
+1. Place files in `openapi-sources/`:
+   - `hummingbot-api.json` - from `http://localhost:8000/openapi.json`
+   - `gateway.json` - from `http://localhost:15888/docs/json`
+
+2. Run the update script:
+   ```bash
+   ./scripts/update-openapi.sh
+   ```
+
+### What the Scripts Do
+
+1. **Hummingbot API** (`api-reference/openapi.json`):
+   - Copied directly from source (no processing needed)
+   - The API server already generates clean operationIds and summaries
+
+2. **Gateway** (`gateway-reference/openapi.json`):
+   - Processed by `process-openapi.js` which:
+     - Adds `operationId` fields for clean URL paths
+     - Adds `summary` fields for sidebar titles
+     - Converts `anyOf` with null to `nullable: true` (Mintlify compatibility)
+
+### After Updating
+
+1. Run `mintlify dev` to preview changes
+2. Verify sidebar titles and URL paths look correct
+3. Commit all changes including both `openapi-sources/` and processed files
+
+## Troubleshooting
+
+### Dev server not starting
+```bash
+mintlify update  # Update CLI to latest version
+```
+
+### 404 on pages
+Ensure you're running `mintlify dev` in the directory containing `docs.json`.
+
+### Gateway sidebar shows ugly URLs
+Re-run `./scripts/generate-openapi.sh --gateway-only` to regenerate with proper operationIds.
+
+## Publishing
+
+Changes pushed to the main branch are automatically deployed via Mintlify's GitHub integration.
+
+## Resources
+
+- [Mintlify Documentation](https://mintlify.com/docs)
+- [Hummingbot API Repository](https://github.com/hummingbot/hummingbot-api)
+- [Gateway Repository](https://github.com/hummingbot/gateway)

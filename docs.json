@@ -65,7 +65,10 @@
             ]
           }
         ],
-        "openapi": "gateway-reference/openapi.json"
+        "openapi": {
+          "source": "gateway-reference/openapi.json",
+          "directory": "gateway-reference"
+        }
       }
     ]
   },
