@@ -1,40 +1,59 @@
 ---
-title: "Web Dashboard"
+title: "Web Interface"
 description: "Browser-based interface for managing Condor"
 ---
 
-<Info>
-The web dashboard is under active development. Follow [#condor-feedback](https://discord.gg/hummingbot) for updates.
-</Info>
+The Web Interface provides a browser-based dashboard for managing trading bots, agents, and portfolio.
 
-Condor Dashboard is a modern, browser-based interface for managing trading bots and agents. It syncs with Condor Telegram for seamless mobile-to-desktop workflows.
+## Accessing the Dashboard
+
+Run `/web` in Telegram to get a login link:
+
+```
+🌐 Web Dashboard
+
+Open this link in your browser:
+http://localhost:8088/login?token=XSNKl6bjWKGce-mcCYSWWgcyC5EvgzFrFqgCGIIop0s
+
+Link valid for 5 minutes.
+```
+
+Click the link to open the dashboard. The token authenticates you automatically—no separate login required.
 
 <Info>
-The web dashboard is under active development. Follow [#condor-feedback](https://discord.gg/hummingbot) for updates.
+The link is tied to your Telegram session. You can access the dashboard from any device by opening the link.
 </Info>
 
 ## Features
 
 <CardGroup cols={2}>
+  <Card title="Portfolio" icon="chart-pie">
+    View balances and positions across all connected exchanges
+  </Card>
   <Card title="Trade" icon="chart-line">
-    View market data (order book, price charts), place orders, and monitor positions
+    Place orders, view order books, and monitor positions
   </Card>
-  <Card title="AMM Markets" icon="coins">
-    Swap tokens and manage LP positions on DEXs via Gateway
-  </Card>
-  <Card title="Manage Keys" icon="key">
-    Add and remove exchange API credentials
-  </Card>
-  <Card title="Strategies" icon="chess">
-    Browse, create, and configure V2 controllers
-  </Card>
-  <Card title="Bots" icon="robot">
-    Deploy, monitor, start/stop, and archive trading bots
+  <Card title="Executors" icon="bolt">
+    Create, monitor, and stop trading executors
   </Card>
   <Card title="Agents" icon="brain">
-    Create and manage Trading Agents with LLM integration
+    View Trading Agent sessions, snapshots, and learnings
+  </Card>
+  <Card title="LP Positions" icon="coins">
+    Manage CLMM liquidity positions on DEXs
+  </Card>
+  <Card title="Bots" icon="robot">
+    Deploy, monitor, and control trading bots
   </Card>
 </CardGroup>
+
+## Session Continuity
+
+The web dashboard shares state with Telegram:
+
+- Start a Trading Agent on Telegram → monitor in the dashboard
+- Deploy an executor in the dashboard → get notifications on mobile
+- Same session, same data, seamless switching
 
 ## Tech Stack
 
@@ -43,38 +62,7 @@ The web dashboard is under active development. Follow [#condor-feedback](https:/
 | Vite + React 19 | Framework |
 | TypeScript | Type safety |
 | Tailwind CSS v4 | Styling |
-| shadcn/ui + Radix UI | Component library |
-
-## Prerequisites
-
-- Node.js 20.19+ or 22.12+
-- A running Hummingbot API server
-
-## Session Continuity
-
-The web dashboard shares session state with Telegram:
-
-- Start a Trading Agent on Telegram
-- Monitor and adjust in the web dashboard
-- Receive notifications on mobile
-
-Same session, same agent state, same conversation history.
-
-## Development
-
-```bash
-# Clone the dashboard repo
-git clone https://github.com/hummingbot/dashboard.git
-cd dashboard
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-The dashboard connects to your Hummingbot API server at `http://localhost:8000` by default.
+| shadcn/ui + Radix UI | Components |
 
 ## Resources
 
