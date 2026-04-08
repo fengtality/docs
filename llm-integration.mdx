@@ -1,0 +1,39 @@
+---
+title: "LLM Integration"
+description: "Connect Trading Agents to LLMs via the Agent Client Protocol (ACP)"
+---
+
+Condor uses **ACP (Agent Client Protocol)** to connect Trading Agents to LLMs. ACP is a standardized protocol for agent-editor communication that enables interoperability between clients and AI agents.
+
+## Supported LLMs
+
+| Provider | Models |
+|----------|--------|
+| **Anthropic** | Claude Opus, Sonnet, Haiku |
+| **Google** | Gemini Pro, Gemini Flash |
+| **OpenAI** | Codex, GPT-4, GPT-4o |
+
+## How ACP Works
+
+ACP provides a standardized protocol for agent-editor communication, similar to how the Language Server Protocol (LSP) standardized language server integration.
+
+- **Local deployment**: Agents operate as sub-processes, exchanging data via JSON-RPC over standard input/output
+- **Remote deployment**: Agents can be cloud-hosted, communicating through HTTP or WebSocket connections
+- **Interoperability**: Any LLM implementing ACP can power the reasoning layer for Trading Agents
+
+## Agent Portability
+
+Agents are defined as structured Markdown files, enabling:
+
+- **Version control**: Track changes with git
+- **Sharing**: Share agent configurations with your team
+- **Auditing**: Every session logs each turn as a structured snapshot
+- **Cross-platform**: Start a conversation on Telegram, continue in Claude Code
+
+## Using /agent Command
+
+The `/agent` command in Telegram lets you connect to LLMs and build autonomous Trading Agents.
+
+<Info>
+See [ACP documentation](https://agentclientprotocol.com/get-started/introduction) for the full protocol specification.
+</Info>

@@ -1,125 +1,146 @@
 ---
 title: "Quickstart"
-description: "Deploy Hummingbot API and control it with Condor Telegram"
+description: "Get Condor running and start trading in minutes"
 ---
 
-This guide walks you through deploying Hummingbot API on a cloud server and controlling it with Condor, a Telegram bot interface.
+This guide walks you through setting up Condor, connecting to Telegram, adding exchange credentials, and using the web dashboard and agent modes.
 
-## Prerequisites
+## 1. Install Condor
 
-| Component | Requirement |
-|-----------|-------------|
-| **OS** | Linux x64/ARM (Ubuntu 20.04+) |
-| **RAM** | 4 GB minimum |
-| **Storage** | 10 GB SSD |
-| **CPU** | 2+ vCPUs |
-
-<Tip>
-Recommended cloud providers: AWS, Google Cloud, or DigitalOcean
-</Tip>
-
-## 1. Set Up a Cloud Server
-
-Create a Linux server with your preferred cloud provider. For AWS:
-
-1. Launch an EC2 instance with Ubuntu 22.04 LTS
-2. Select `t3.medium` or larger instance type
-3. Configure security group to allow ports 22 (SSH) and 8000 (API)
-
-## 2. Install Docker
-
-Connect to your server via SSH and install Docker:
-
-```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-```
-
-## 3. Deploy Hummingbot API
-
-Clone the repository and run the setup:
-
-```bash
-git clone https://github.com/hummingbot/hummingbot-api.git
-cd hummingbot-api
-chmod +x setup.sh
-./setup.sh
-make deploy
-```
-
-The API server will start on port 8000. Access the Swagger UI at `http://your-server-ip:8000/docs`.
-
-## 4. Set Up Condor Telegram
-
-### Create a Telegram Bot
-
-1. Open Telegram and search for [@BotFather](https://t.me/botfather)
-2. Send `/newbot` and follow the prompts
-3. Copy the bot token (format: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
-
-### Get Your Telegram User ID
-
-1. Search for [@userinfobot](https://t.me/userinfobot) on Telegram
-2. Send `/start` to receive your user ID
-
-### Install Condor
+Clone the repository and run the install script:
 
 ```bash
 git clone https://github.com/hummingbot/condor.git
 cd condor
-./setup-environment.sh
+
+make install     # Interactive setup + dependencies + AI CLI tools
+make run         # Start the bot
 ```
 
-When prompted, enter:
-- Your Telegram bot token
-- Your authorized user IDs (comma-separated)
+See [Installation](/installation) for system requirements and cloud server options.
 
-### Launch Condor
+## 2. Connect Telegram
 
-```bash
-docker compose up -d
+Condor uses Telegram as its primary interface. You'll need to create a bot and get your user ID.
+
+### Create a Telegram Bot
+
+1. Open [@BotFather](https://t.me/botfather) in Telegram
+2. Send `/newbot` and follow the prompts to name your bot
+3. Copy the bot token (format: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+### Get Your User ID
+
+1. Open [@userinfobot](https://t.me/userinfobot) in Telegram
+2. Send `/start` to receive your user ID
+
+### Configure Condor
+
+During installation, you'll be prompted to enter:
+- **Bot Token**: The token from BotFather
+- **User IDs**: Your Telegram user ID (comma-separated for multiple users)
+
+Once configured, open your bot in Telegram and send `/start` to see the main menu.
+
+## 3. Add Exchange Keys
+
+Connect your exchange accounts to start trading.
+
+1. In Telegram, send `/keys`
+2. Select **Perpetual** or **Spot**
+3. Choose an exchange (e.g., Binance, Hyperliquid)
+4. Enter your API key and secret
+
+<Warning>
+For security, only enable **read + trade** permissions on your API keys. Never enable withdraw or transfer permissions.
+</Warning>
+
+### Verify Connection
+
+After adding keys, check your balances:
+
+```
+You: What's my balance on Binance?
+Condor: Here's your Binance balance:
+- USDT: 1,234.56
+- BTC: 0.025
 ```
 
-## 5. Connect to Your API
+Or use `/portfolio` to see all connected accounts.
 
-1. Open your Telegram bot
-2. Send `/start` to begin
-3. Go to `/config` → **API Servers**
-4. Add your Hummingbot API server:
-   - Host: your server IP address
-   - Port: 8000
-   - Username: admin
-   - Password: admin
+## 4. Web Dashboard
 
-## 6. Add Exchange Credentials
+Condor includes a web dashboard for visual monitoring and control.
 
-1. In Condor, go to `/config` → **API Keys**
-2. Select an exchange (e.g., Binance, Hyperliquid)
-3. Enter your API key and secret
+### Launch the Dashboard
 
-## 7. Start Trading
+In Telegram, send `/web` to get a link to your dashboard. The link includes an encrypted token tied to your Telegram session—no separate login required.
 
-You can now use Condor to:
-- `/portfolio` - View balances across all exchanges
-- `/trade` - Place orders on CEX markets
-- `/bots` - Deploy and manage trading bots
-- `/swap` - Execute DEX swaps (requires Gateway)
+### Dashboard Features
 
-See [Condor Commands](/condor/commands) for the full command reference.
+- **Portfolio**: View balances and positions across all exchanges
+- **Executors**: Monitor and manage active executors
+- **Agents**: View Trading Agent sessions and snapshots
+- **Deploy**: Create grids and other executors visually
+
+<Frame>
+  <img src="/images/dashboard-preview.png" alt="Condor Dashboard" />
+</Frame>
+
+## 5. Agent Mode
+
+Condor has two interaction modes: **Condor** (direct commands) and **Agent Builder** (create Trading Agents).
+
+### Condor Mode (Default)
+
+Talk to Condor directly using natural language or commands:
+
+```
+You: Analyze BTC-USDT and tell me what you think
+Condor: Running technical analysis...
+- Trend: Bullish (EMAs aligned)
+- Support: $62,500
+- Resistance: $65,200
+- Suggestion: Consider grid with long bias
+```
+
+```
+You: Deploy a grid on SOL-USDT with $100
+Condor: Grid deployed on Binance SOL-USDT
+- Amount: $100
+- Range: $140 - $160
+- Orders: 10
+```
+
+### Agent Builder Mode
+
+Create autonomous Trading Agents that run on their own:
+
+1. Send `/agent` in Telegram
+2. Select **Agent Builder**
+3. Follow the guided flow:
+   - **Phase 1**: Strategy design (what you want to trade)
+   - **Phase 2**: Market data (indicators, routines)
+   - **Phase 3**: Strategy logic (agent.md)
+   - **Phase 4**: Dry run (test reasoning)
+   - **Phase 5**: Run once (test with real money)
+   - **Phase 6**: Deploy live (loop mode)
+
+Once deployed, the agent runs autonomously—observing markets, reasoning about strategy, and executing trades at each tick.
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Condor Commands" icon="terminal" href="/condor/commands">
-    Learn all available Telegram commands
+  <Card title="Trading Agents" icon="robot" href="/trading-agents/overview">
+    Understand how agents work
   </Card>
-  <Card title="Developer Guide" icon="code" href="/developer-guide">
-    Use the API directly with curl or Python
+  <Card title="Executors" icon="chart-line" href="/executors/overview">
+    Learn about executor types
   </Card>
-  <Card title="API Reference" icon="book" href="/api-reference">
-    Explore all API endpoints
+  <Card title="Telegram Commands" icon="terminal" href="/interfaces/telegram">
+    Full command reference
   </Card>
-  <Card title="Condor Installation" icon="telegram" href="/condor/installation">
-    Advanced Condor configuration
+  <Card title="LLM Integration" icon="microchip" href="/llm-integration">
+    Connect to Claude, Gemini, or GPT
   </Card>
 </CardGroup>

@@ -1,0 +1,120 @@
+---
+title: "Overview"
+description: "Manage trading accounts and exchange credentials"
+---
+
+Accounts in Condor represent collections of exchange credentials that can be used for trading. Each account can hold credentials for multiple exchanges, enabling portfolio-wide operations.
+
+## Account Structure
+
+```
+accounts/
+├── master_account/          # Default account
+│   ├── binance              # Spot credentials
+│   ├── binance_perpetual    # Perpetual credentials
+│   ├── hyperliquid_perpetual
+│   └── jupiter              # DEX via Gateway
+└── trading_account/         # Additional account
+    ├── okx
+    └── okx_perpetual
+```
+
+## Default Account
+
+The `master_account` is created automatically during setup. It serves as the default for all operations unless another account is specified.
+
+## API Operations
+
+### List Accounts
+
+```bash
+curl -u admin:admin http://localhost:8000/accounts
+```
+
+Response:
+```json
+["master_account"]
+```
+
+### Create Account
+
+```bash
+curl -X POST "http://localhost:8000/accounts/add-account?account_name=trading_account" \
+  -u admin:admin
+```
+
+### Delete Account
+
+```bash
+curl -X POST "http://localhost:8000/accounts/delete-account?account_name=trading_account" \
+  -u admin:admin
+```
+
+<Warning>
+The `master_account` cannot be deleted.
+</Warning>
+
+### List Credentials
+
+Get connectors configured for an account:
+
+```bash
+curl -u admin:admin http://localhost:8000/accounts/master_account/credentials
+```
+
+Response:
+```json
+["binance", "binance_perpetual", "hyperliquid_perpetual"]
+```
+
+### Add Credentials
+
+```bash
+curl -X POST http://localhost:8000/accounts/add-credential/master_account/binance \
+  -u admin:admin \
+  -H "Content-Type: application/json" \
+  -d '{
+    "binance_api_key": "your-api-key",
+    "binance_api_secret": "your-api-secret"
+  }'
+```
+
+<Warning>
+Wait 2-3 seconds after adding credentials before making subsequent API calls. The system needs time to initialize the exchange connection.
+</Warning>
+
+### Delete Credentials
+
+```bash
+curl -X POST http://localhost:8000/accounts/delete-credential/master_account/binance \
+  -u admin:admin
+```
+
+## Via Telegram
+
+Use `/keys` to manage exchange credentials:
+
+1. Run `/keys` to open the credentials menu
+2. Select **Perpetual** or **Spot**
+3. Choose the exchange to configure
+4. Enter your API key and secret
+
+<Warning>
+For security, only enable **read + trade** permissions on your API keys. Do not enable withdraw or transfer permissions.
+</Warning>
+
+## Multiple Accounts
+
+Use multiple accounts to:
+
+- Separate paper trading from live trading
+- Isolate different strategies
+- Manage team access with different credentials
+
+When using multiple accounts, specify the account name in API calls:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{"account_names": ["master_account", "trading_account"]}'
+```

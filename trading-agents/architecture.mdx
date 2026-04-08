@@ -1,0 +1,175 @@
+---
+title: "Architecture"
+description: "Trading Agent file structure, tick engine, and provider system"
+---
+
+Each Trading Agent is a folder-based entity with structured files that define its behavior, track state, and accumulate learnings.
+
+## System Architecture
+
+```
+                ┌──────────────────────────── Trading Agent ───────────────────────────┐
+                │                                                                       │
+                │   Strategy (agent.md)        Journal (per session)     Learnings.md   │
+                │   ───────────────────        ────────────────────       ────────────  │
+                │   - system prompt            - summary                  cross-session │
+                │   - default config           - decisions                lessons       │
+                │   - skills/routines          - tick-by-tick log                       │
+                │                              - snapshot_N.md                          │
+                │                                                                       │
+                │                            ┌──── TickEngine ────┐                     │
+                │                            │  every N seconds:  │                     │
+                │   Routines  ───────────►   │  1. run providers  │  ────► MCP Tools    │
+                │  (deterministic            │  2. read journal   │       - candles     │
+                │   data prep)               │  3. build prompt   │       - orderbook   │
+                │                            │  4. ACP session    │       - executors   │
+                │                            │  5. capture tools  │       - notify      │
+                │                            │  6. write snapshot │                     │
+                │                            └────────────────────┘                     │
+                │                                                                       │
+                └───────────────────────────────────────────────────────────────────────┘
+                                                      │
+                                                      ▼
+                                         Hummingbot Executors
+                                 (filtered by controller_id == agent_id)
+```
+
+## Directory Structure
+
+```
+trading_agents/
+  my_strategy/
+    agent.md                  # Strategy definition (frontmatter + LLM instructions)
+    learnings.md              # Cross-session lessons the agent writes itself
+    routines/                 # Deterministic Python helpers
+    sessions/
+      session_1/
+        config.yml            # Frozen runtime config for this session
+        journal.md            # Summary, decisions, ticks, snapshots index
+        snapshots/
+          snapshot_1.md       # Full prompt + response + tool calls for tick 1
+          snapshot_2.md
+          ...
+    dry_runs/
+      experiment_1.md         # One-shot dry-run / run-once snapshots
+```
+
+### Why Two Memory Files?
+
+| File | Scope | Purpose |
+|------|-------|---------|
+| `journal.md` | Per-session | Short-term memory for the current trading session |
+| `learnings.md` | Cross-session | Long-term memory that persists across all sessions |
+
+**Journal**: What the agent did in *this* session—tick log, decisions, executor states.
+
+**Learnings**: Lessons that apply to *all* sessions—common errors, configuration tips, market insights. When a session ends or the agent detects something important, it writes to learnings.
+
+The same agent can be deployed in multiple sessions (e.g., scalper on BTC-USDT and scalper on ETH-USDT). Each session has its own journal, but they share the learnings file.
+
+## Core Components
+
+| File | Role |
+|------|------|
+| `engine.py` | `TickEngine` — one instance per running agent. Runs tick loop, builds prompts, drives ACP sessions, captures tool calls, persists snapshots. |
+| `strategy.py` | `Strategy` + `StrategyStore`. Strategies live as `agent.md` files under `trading_agents/{slug}/`. |
+| `journal.py` | `JournalManager` — compact, human-readable per-session memory: summary, decisions, ticks, snapshots, executors. |
+| `prompts.py` | Builds per-tick prompt: system prompt + strategy + provider summaries + journal context + risk state. |
+| `risk.py` | `RiskEngine` + `RiskLimits`. Hard guardrails and permission callback that auto-approves tool calls only if they pass risk check. |
+| `providers/` | Deterministic pre-tick data fetchers: `executors.py` and `positions.py`, both filtered by `controller_id`. |
+
+## agent.md
+
+The strategy definition uses YAML frontmatter and Markdown body:
+
+```yaml
+---
+id: a1b2c3d4e5f6
+name: River Scalper
+description: VWAP-pullback scalper on majors with grid hold-on-loss
+agent_key: claude-code
+skills: []
+default_config:
+  frequency_sec: 60
+  total_amount_quote: 500
+  risk_limits:
+    max_total_exposure_quote: 1500
+    max_drawdown_pct: 5
+    max_open_executors: 4
+default_trading_context: |
+  Trade BTC-USDT and ETH-USDT on Binance perp. Bias long.
+created_by: 12345
+created_at: 2026-04-01T00:00:00Z
+---
+
+You are a disciplined scalper. Each tick:
+
+1. Inspect the active executors and any held positions.
+2. Pull 5m candles via the candles tool; compute your bias.
+3. If flat and conditions are favorable, spawn a GridExecutor sized to
+   `total_amount_quote`, with `stop_loss_keep_position = true`.
+4. If you are holding a leftover position from a closed grid, wait for a
+   recovery within 1% of breakeven, then exit with an OrderExecutor.
+5. Never exceed the risk limits — the framework will block you anyway.
+6. After acting, write one line to the journal explaining *why*.
+```
+
+## Tick Loop
+
+Each tick (`TickEngine._tick`) executes:
+
+1. **Resolve API client** for the configured server
+2. **Run core providers** — `executors` and `positions`, filtered by `controller_id == agent_id`
+3. **Read journal context** — `learnings.md`, summary, last 3 decisions
+4. **Get risk state** — exposure, drawdown, open count. If blocked, return without invoking LLM
+5. **Build prompt** via `build_tick_prompt(...)`, appending any user directives
+6. **Spawn ACP session** with MCP servers (Hummingbot tools, market data, notifications)
+7. **Persist** — write `snapshot_N.md`, append tick to journal, update summary
+
+## Providers
+
+Providers fetch deterministic data before each tick:
+
+| Provider | Output |
+|----------|--------|
+| `executors` | Active executors filtered by `controller_id`, with status and P&L |
+| `positions` | Held positions from closed executors, with breakeven and unrealized P&L |
+
+Provider output has two parts:
+- `data`: Structured data for internal tracking
+- `summary`: Human-readable string included in the LLM prompt
+
+## Routines
+
+Custom Python helpers in the `routines/` directory:
+
+```python
+# routines/process_candles.py
+async def compute_vwap(candles):
+    """Compute VWAP from candle data."""
+    total_volume = sum(c.volume for c in candles)
+    return sum(c.close * c.volume for c in candles) / total_volume
+```
+
+Routines are deterministic—same input always produces same output.
+
+## Inspecting Agent Activity
+
+| Location | Content |
+|----------|---------|
+| `sessions/session_N/journal.md` | Chronological summary, decisions, tick log |
+| `sessions/session_N/snapshots/snapshot_K.md` | Full tick: prompt, response, tool calls, risk state |
+| `learnings.md` | Lessons the agent chose to keep across sessions |
+| `dry_runs/experiment_N.md` | Dry-run / run-once results |
+
+## Injecting Information
+
+You can manually add to the learnings file—the agent doesn't know whether it wrote the entry or you did. This is useful for:
+
+- Pre-seeding knowledge before deployment
+- Adding market context the agent can't observe
+- Correcting agent behavior based on your observations
+
+**Via web dashboard**: Trading Agents → Select agent → Learnings → Edit
+
+**Via file**: Edit `trading_agents/my_strategy/learnings.md` directly

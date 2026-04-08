@@ -1,6 +1,6 @@
 ---
 title: "Installation"
-description: "Deploy Hummingbot API using Docker on a Linux server"
+description: "Deploy Condor and Hummingbot API"
 ---
 
 ## Prerequisites
@@ -9,7 +9,7 @@ description: "Deploy Hummingbot API using Docker on a Linux server"
   <Accordion title="System Requirements">
     | Component | Minimum | Recommended |
     |-----------|---------|-------------|
-    | OS | Linux x64 or ARM (Ubuntu 20.04+, Debian 10+) | Ubuntu 22.04 LTS |
+    | OS | Linux x64 or ARM (Ubuntu 20.04+), macOS | Ubuntu 22.04 LTS |
     | Memory | 4 GB RAM | 8 GB RAM |
     | Storage | 10 GB SSD | 20 GB SSD |
     | CPU | 2 vCPUs | 4 vCPUs |
@@ -20,83 +20,30 @@ description: "Deploy Hummingbot API using Docker on a Linux server"
     - **Google Cloud**: e2-medium or larger
     - **Digital Ocean**: Basic Droplet with 4GB RAM
     - **Hetzner**: CX21 or larger
+
+    Configure security group to allow ports 22 (SSH) and 8000 (API).
   </Accordion>
 </AccordionGroup>
 
-## Install Docker
+## Install Condor
 
-Connect to your server via SSH and install Docker:
-
-```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
-```
-
-Verify the installation:
+Clone the repository and run the install script:
 
 ```bash
-docker --version
+git clone https://github.com/hummingbot/condor.git
+cd condor
+
+make install     # Interactive setup + dependencies + AI CLI tools
+make run         # Start the bot
 ```
 
-## Deploy Hummingbot API
+The install script will prompt for:
+- Your Telegram bot token (see [Quickstart](/quickstart#2-connect-telegram) to create one)
+- Your authorized Telegram user IDs
 
-### 1. Clone the Repository
+## Verify Installation
 
-```bash
-git clone https://github.com/hummingbot/hummingbot-api.git
-cd hummingbot-api
-```
-
-### 2. Run Setup Script
-
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-The setup script will prompt you for:
-
-| Prompt | Description | Default |
-|--------|-------------|---------|
-| Username | API authentication username | `admin` |
-| Password | API authentication password | `admin` |
-
-<Warning>
-Change the default credentials for production deployments.
-</Warning>
-
-### 3. Start Services
-
-```bash
-make deploy
-```
-
-This starts all required services:
-- **Hummingbot API** on port 8000
-- **PostgreSQL** database
-- **EMQX** message broker
-
-### 4. Verify Installation
-
-Check that services are running:
-
-```bash
-docker ps
-```
-
-You should see containers for `hummingbot-api`, `postgres`, and `emqx`.
-
-Test the API:
-
-```bash
-curl -u admin:admin http://localhost:8000/accounts
-```
-
-Expected response:
-
-```json
-["master_account"]
-```
+Open your Telegram bot and send `/start`. You should see the main menu.
 
 ## Access Points
 
@@ -105,45 +52,26 @@ Expected response:
 | API | `http://localhost:8000` | REST API endpoints |
 | Swagger UI | `http://localhost:8000/docs` | Interactive API documentation |
 
-<Note>
-For remote access, replace `localhost` with your server's IP address or domain name. Ensure port 8000 is open in your firewall.
-</Note>
-
-## Configuration
-
-Environment variables can be set in the `.env` file:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `API_USERNAME` | Authentication username | `admin` |
-| `API_PASSWORD` | Authentication password | `admin` |
-| `DATABASE_URL` | PostgreSQL connection string | Auto-configured |
-| `EMQX_HOST` | Message broker host | `emqx` |
-
 ## Managing Services
 
 ```bash
-# View logs
-docker logs hummingbot-api
+# Start Condor
+make run
 
-# Stop all services
+# Stop Condor (Ctrl+C or from another terminal)
 make stop
 
-# Restart services
-make restart
-
-# Remove all data and start fresh
-make clean
-make deploy
+# View logs
+make logs
 ```
 
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Connect exchanges and execute your first trade
+    Connect Telegram, add keys, and start using Condor
   </Card>
-  <Card title="Gateway Setup" icon="server" href="/gateway-setup">
-    Enable DEX trading with Gateway
+  <Card title="Trading Agents" icon="robot" href="/trading-agents/overview">
+    Learn about the agent framework
   </Card>
 </CardGroup>

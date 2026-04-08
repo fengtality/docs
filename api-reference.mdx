@@ -1,9 +1,16 @@
 ---
 title: "API Reference"
-description: "Complete REST API reference for Hummingbot API - manage trading bots, execute trades, and access market data"
+description: "Complete REST API reference for Hummingbot API"
 ---
 
-The Hummingbot API is a comprehensive RESTful API for managing trading operations across centralized and decentralized exchanges. This reference documents all available endpoints.
+## What is Hummingbot API?
+
+**Hummingbot API** is a RESTful API server that provides programmatic access to all [Hummingbot](https://hummingbot.org) exchange connectors and trading strategies. It serves as the deterministic execution layer for Condor, handling:
+
+- **Data collection**: Standardized access to order books, candles, balances, and positions across 50+ exchanges
+- **Market access**: Connectors to spot, perpetual, and AMM exchanges, along with Solana and EVM networks
+- **Trade execution**: Place orders, manage positions, and track fills
+- **Bot management**: Deploy and manage containerized bots for long-running strategies
 
 ## Base URL
 
@@ -21,39 +28,169 @@ All endpoints require HTTP Basic Authentication:
 curl -u admin:admin http://localhost:8000/accounts
 ```
 
-Or with the Authorization header:
+## API Routers
 
-```bash
-curl -H "Authorization: Basic $(echo -n 'admin:admin' | base64)" http://localhost:8000/accounts
-```
+### Accounts
 
-## API Categories
+Manage trading accounts and exchange credentials.
 
-| Category | Description |
-|----------|-------------|
-| [Accounts](/api-reference/accounts/list-accounts) | Manage trading accounts and exchange credentials |
-| [Portfolio](/api-reference/portfolio/get-portfolio-state) | Real-time balances and portfolio analytics |
-| [Trading](/api-reference/trading/place-trade) | Execute orders, manage positions, view history |
-| [Connectors](/api-reference/connectors/available-connectors) | Exchange connector information and trading rules |
-| [Market Data](/api-reference/market-data/get-candles) | Prices, candles, order books, funding rates |
-| [Rate Oracle](/api-reference/rate-oracle/get-available-sources) | Cross-exchange price feeds and conversion rates |
-| [Bot Orchestration](/api-reference/bot-orchestration/get-active-bots-status) | Deploy and manage Hummingbot trading bots |
-| [Controllers](/api-reference/controllers/list-controllers) | V2 strategy controller management |
-| [Scripts](/api-reference/scripts/list-scripts) | V1 script management |
-| [Docker](/api-reference/docker/is-docker-running) | Container lifecycle management |
-| [Gateway](/api-reference/gateway/get-gateway-status) | DEX infrastructure and configuration |
-| [Gateway Swaps](/api-reference/gateway-swaps/get-swap-quote) | DEX token swaps |
-| [Gateway CLMM](/api-reference/gateway-clmm/get-clmm-pool-info) | Concentrated liquidity positions |
-| [Backtesting](/api-reference/backtesting/run-backtesting) | Strategy backtesting |
-| [Archived Bots](/api-reference/archived-bots/list-databases) | Historical bot performance data |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/accounts` | GET | List all account names |
+| `/accounts/{account_name}/credentials` | GET | List configured connectors for an account |
+| `/accounts/add-account` | POST | Create a new account |
+| `/accounts/delete-account` | POST | Delete an account |
+| `/accounts/add-credential/{account_name}/{connector_name}` | POST | Add exchange credentials |
+| `/accounts/delete-credential/{account_name}/{connector_name}` | POST | Remove exchange credentials |
 
-## Interactive Playground
+### Portfolio
 
-Each endpoint page includes an interactive playground where you can test API calls directly. Enter your credentials and server URL to make live requests.
+Real-time balances and portfolio analytics.
 
-<Note>
-The playground makes requests directly to your API server. Ensure your Hummingbot API is running and accessible.
-</Note>
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/portfolio/state` | POST | Get portfolio balances across all accounts and connectors |
+
+### Trading
+
+Execute orders and manage positions.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/trading/orders` | POST | Place a new order |
+| `/trading/orders/active` | POST | Get active orders |
+| `/trading/{account_name}/{connector_name}/orders/{order_id}/cancel` | POST | Cancel an order |
+| `/trading/positions` | POST | Get open positions (perpetual) |
+
+### Connectors
+
+Exchange connector information and trading rules.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/connectors` | GET | List available connectors |
+| `/connectors/{connector_name}/config-map` | GET | Get required credential fields |
+| `/connectors/{connector_name}/trading-rules` | GET | Get trading rules for pairs |
+| `/connectors/{connector_name}/trading-pairs` | GET | List available trading pairs |
+
+### Market Data
+
+Prices, candles, order books, and funding rates.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/market-data/candles` | POST | Get historical candles |
+| `/market-data/order-book` | POST | Get order book snapshot |
+| `/market-data/prices` | POST | Get current prices |
+| `/market-data/funding-rates` | POST | Get perpetual funding rates |
+
+### Rate Oracle
+
+Cross-exchange price feeds and conversion rates.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/rate-oracle/sources` | GET | List available price sources |
+| `/rate-oracle/rate` | GET | Get conversion rate between assets |
+
+### Executors
+
+Create and manage trading executors.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/executors` | GET | List active executors |
+| `/executors` | POST | Create a new executor |
+| `/executors/{executor_id}` | DELETE | Stop an executor |
+| `/executors/{executor_id}/status` | GET | Get executor status |
+
+### Bot Orchestration
+
+Deploy and manage Hummingbot trading bots.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/bot-orchestration/status` | GET | Get status of all bots |
+| `/bot-orchestration/deploy` | POST | Deploy a new bot |
+| `/bot-orchestration/{bot_id}/start` | POST | Start a bot |
+| `/bot-orchestration/{bot_id}/stop` | POST | Stop a bot |
+| `/bot-orchestration/{bot_id}/logs` | GET | Get bot logs |
+
+### Controllers
+
+V2 strategy controller management.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/controllers` | GET | List available controllers |
+| `/controllers/{controller_name}/config` | GET | Get controller configuration schema |
+
+### Scripts
+
+V1 script management.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/scripts` | GET | List available scripts |
+
+### Gateway
+
+DEX infrastructure via Hummingbot Gateway.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/gateway/status` | GET | Get Gateway status |
+| `/gateway/connectors` | GET | List Gateway connectors |
+| `/gateway/wallets` | GET | List configured wallets |
+| `/gateway/networks` | GET | List supported networks |
+
+### Gateway Swaps
+
+DEX token swaps.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/gateway/swaps/quote` | POST | Get swap quote |
+| `/gateway/swaps/execute` | POST | Execute a swap |
+
+### Gateway CLMM
+
+Concentrated liquidity positions.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/gateway/clmm/pools` | POST | Get pool information |
+| `/gateway/clmm/positions` | POST | Get LP positions |
+| `/gateway/clmm/add-liquidity` | POST | Add liquidity to a pool |
+| `/gateway/clmm/remove-liquidity` | POST | Remove liquidity from a pool |
+| `/gateway/clmm/collect-fees` | POST | Collect accumulated fees |
+
+### Backtesting
+
+Strategy backtesting.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/backtesting/run` | POST | Run a backtest |
+| `/backtesting/results/{backtest_id}` | GET | Get backtest results |
+
+### Archived Bots
+
+Historical bot performance data.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/archived-bots/databases` | GET | List archived bot databases |
+| `/archived-bots/{database}/performance` | GET | Get historical performance |
+
+### Docker
+
+Container lifecycle management.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/docker/status` | GET | Check if Docker is running |
+| `/docker/containers` | GET | List containers |
 
 ## Response Format
 
@@ -71,14 +208,18 @@ The playground makes requests directly to your API server. Ensure your Hummingbo
 }
 ```
 
+## Interactive Playground
+
+Each endpoint page includes an interactive playground where you can test API calls directly. Enter your credentials and server URL to make live requests.
+
 ## Resources
 
 <CardGroup cols={3}>
-  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
-    Source code and issues
+  <Card title="Condor GitHub" icon="github" href="https://github.com/hummingbot/condor">
+    Condor source code
   </Card>
-  <Card title="Hummingbot Docs" icon="book" href="https://hummingbot.org/docs">
-    Full Hummingbot documentation
+  <Card title="API GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
+    Hummingbot API source code
   </Card>
   <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
     Community support

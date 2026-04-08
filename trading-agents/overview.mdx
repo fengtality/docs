@@ -1,0 +1,86 @@
+---
+title: "Overview"
+description: "An autonomous LLM-driven trading agent framework built on top of Hummingbot"
+---
+
+A **Trading Agent** is an autonomous, file-backed entity that runs on a fixed tick interval, reasons about the market with an LLM, and translates its decisions into real trades through Hummingbot executors.
+
+<Frame>
+  <img src="/images/agent-structure.png" alt="Trading Agent Architecture" />
+</Frame>
+
+## How It Works
+
+Each Trading Agent combines deterministic execution with LLM-powered reasoning:
+
+| Layer | Type | What It Does |
+|-------|------|--------------|
+| **Deterministic** | Python routines, providers, executors | Pulls market data, computes indicators, fetches positions, runs order lifecycle |
+| **Reasoning** | LLM tick | Looks at pre-computed snapshot, reads journal and learnings, decides what to do next |
+
+The result is an agent that *thinks* like a discretionary trader but *acts* like a systematic one, with full auditability across every tick.
+
+## Core Principle: Executor-Based Trading
+
+The single most important design decision: **agents only act through Hummingbot executors**. Each agent spawns executors with its own `controller_id == agent_id`, which provides:
+
+1. **Isolation**: Two agents on the same account never see or touch each other's executors
+2. **Virtual Portfolio**: Each agent gets its own positions, breakeven prices, realized/unrealized P&L
+3. **Position Handover**: When an executor closes with `keep_position=true`, the agent retains the inventory and can manage it on the next tick
+
+## Mental Model
+
+> An agent is a *folder* on disk and a *tick loop* in memory. The folder is its long-term memory; providers give it short-term situational awareness; the LLM is its decision function; executors are its hands; the risk engine is the wrist it can't move past.
+
+Everything an agent owns is tagged with its `controller_id`, making the system safely composable: any number of agents can share the same exchange account without stepping on each other.
+
+## Run Modes
+
+| Mode | Behavior |
+|------|----------|
+| `dry_run` | One tick, no trading. Pure reasoning test. Saves experiment snapshot. |
+| `run_once` | One tick with trading. Manual single-shot execution. |
+| `loop` | Standard mode. Ticks every `frequency_sec` until stopped. Creates session with full journal. |
+
+## Components
+
+| Component | Description |
+|-----------|-------------|
+| [Architecture](/trading-agents/architecture) | File structure, agent.md, providers |
+| [Sessions](/trading-agents/sessions) | Journal management, snapshots, cross-session memory |
+| [Configs](/trading-agents/configs) | Agent-suggestible trading parameters |
+| [Risk Limits](/trading-agents/risk-limits) | User-only guardrails enforced by Risk Engine |
+| [Agent Builder](/trading-agents/agent-builder) | Create agents via Telegram or manually |
+
+## Quick Start
+
+**Via Telegram**:
+```
+/agent → Create New Agent → Configure → Start
+```
+
+**Programmatically**:
+```python
+from condor.trading_agent.engine import TickEngine
+from condor.trading_agent.strategy import StrategyStore
+
+store = StrategyStore()
+strategy = store.get_by_slug("my_strategy")
+
+engine = TickEngine(
+    strategy=strategy,
+    config={
+        "execution_mode": "loop",
+        "frequency_sec": 60,
+        "server_name": "binance_main",
+        "total_amount_quote": 500,
+        "risk_limits": {
+            "max_total_exposure_quote": 1500,
+            "max_drawdown_pct": 5,
+            "max_open_executors": 4,
+        },
+    },
+)
+
+await engine.start()
+```

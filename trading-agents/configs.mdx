@@ -1,0 +1,59 @@
+---
+title: "Configs"
+description: "Agent-suggestible configuration parameters"
+---
+
+**Configs** are agent-suggestible parameters that control how a Trading Agent operates.
+
+## Characteristics
+
+- Trading parameters the agent operates with
+- Agent can *suggest* changes based on learnings
+- User must approve changes before they take effect
+
+## Common Config Parameters
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `trading_pair` | The market to trade | `SOL-USDC` |
+| `tick_interval` | Seconds between OODA loop iterations | `60` |
+| `spread_percentage` | Bid/ask spread for market making | `0.3` |
+| `grid_levels` | Number of grid levels | `5` |
+
+## Example Configuration
+
+In `agent.md` frontmatter:
+
+```yaml
+configs:
+  trading_pair: SOL-USDC
+  grid_levels: 5
+  spread_percentage: 0.3
+  tick_interval: 60
+```
+
+In `config.yml` (runtime overrides):
+
+```yaml
+trading_pair: ETH-USDC
+spread_percentage: 0.5
+```
+
+## Agent Suggestions
+
+When an agent identifies a potentially better configuration through its learnings, it can suggest changes:
+
+```markdown
+# Suggested Config Change
+
+Based on analysis of the last 24 hours:
+- Current spread_percentage: 0.3
+- Suggested spread_percentage: 0.5
+- Reason: Wider spreads reduced adverse selection during high volatility periods
+
+Approve this change? [Yes/No]
+```
+
+<Info>
+Content to be expanded with more config parameter details.
+</Info>

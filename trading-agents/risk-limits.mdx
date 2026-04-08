@@ -1,0 +1,83 @@
+---
+title: "Risk Limits"
+description: "User-only guardrails enforced by the Risk Engine"
+---
+
+**Risk Limits** are user-only guardrails that the agent cannot exceed. They are enforced by the Risk Engine before every action.
+
+## Characteristics
+
+- Safety boundaries the agent cannot exceed
+- Only modifiable by the user, never by the agent
+- Enforced by the Risk Engine before every action
+
+## Default Limits
+
+| Limit | Default | Description |
+|-------|---------|-------------|
+| `max_position_size_quote` | 500 | Maximum total position size in quote currency |
+| `max_single_order_quote` | 100 | Maximum size per executor |
+| `max_open_executors` | 5 | Maximum simultaneous executors |
+| `max_daily_loss_quote` | 50 | Maximum daily loss before blocking |
+| `max_drawdown_pct` | 10 | Maximum drawdown percentage |
+| `max_cost_per_day_usd` | 5 | Maximum daily LLM cost |
+
+## Configuration
+
+In `agent.md` frontmatter:
+
+```yaml
+limits:
+  max_position_size_quote: 500
+  max_single_order_quote: 100
+  max_daily_loss_quote: 50
+  max_open_executors: 10
+  max_drawdown_pct: 10
+```
+
+Or in `config.yml`:
+
+```yaml
+risk_limits:
+  max_position_size_quote: 500.0
+  max_single_order_quote: 100.0
+  max_open_executors: 5
+  max_daily_loss_quote: 50.0
+  max_drawdown_pct: 10.0
+  max_cost_per_day_usd: 5.0
+```
+
+## Risk Engine Validation
+
+### Pre-tick Validation
+
+Blocks the entire tick if:
+
+- `daily_pnl < -max_daily_loss_quote`
+- `drawdown_pct > max_drawdown_pct`
+- `daily_cost > max_cost_per_day_usd`
+
+### Per-executor Validation
+
+Blocks executor creation if:
+
+- `executor_count >= max_open_executors`
+- `order_amount > max_single_order_quote`
+- `total_exposure + new_amount > max_position_size_quote`
+
+## Risk State
+
+The Risk Engine tracks:
+
+```python
+class RiskState:
+    daily_pnl: float          # Today's realized P&L
+    total_exposure: float     # Current open position value
+    executor_count: int       # Number of active executors
+    drawdown_pct: float       # Current drawdown percentage
+    daily_cost: float         # LLM costs today
+    is_blocked: bool          # Kill switch status
+    block_reason: str         # Why blocked (if applicable)
+```
+
+If any limit is exceeded, `is_blocked` is set to `true` with a descriptive `block_reason`.

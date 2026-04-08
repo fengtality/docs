@@ -1,0 +1,160 @@
+---
+title: "Telegram"
+description: "Mobile-friendly interface for controlling Condor via Telegram bot"
+---
+
+Condor provides a Telegram bot interface for mobile-friendly control of your trading infrastructure. You can interact with it conversationally or use structured commands.
+
+## Conversational Mode
+
+Before creating Trading Agents, you can talk to Condor directly using natural language:
+
+```
+You: What's my balance on Binance?
+Condor: Here's your Binance balance:
+- USDT: 1,234.56
+- BTC: 0.025
+- ETH: 0.5
+```
+
+```
+You: What routines do I have for market analysis?
+Condor: You have these analysis routines available:
+- technical_analysis: Analyze trend, volatility, support/resistance
+- support_resistance_ema: Identify S/R levels with EMA alignment
+```
+
+```
+You: Can you analyze BTC-USDT and tell me what you think?
+Condor: Running technical analysis routine...
+- Trend: EMA aligned (fast > mid > slow) - bullish
+- Key support: $62,500
+- Key resistance: $65,200
+- Suggestion: Consider grid with long bias
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Main menu with access to all features |
+| `/help` | Interactive help system |
+| `/portfolio` | Portfolio dashboard with P&L tracking |
+| `/bots` | Monitor and manage trading bots |
+| `/trade` | CEX/CLOB trading interface |
+| `/swap` | DEX token swaps via Gateway |
+| `/lp` | Liquidity pool management |
+| `/agent` | Trading Agent management and LLM connection |
+| `/keys` | Manage exchange API credentials |
+| `/config` | System configuration |
+
+## /start - Main Menu
+
+The welcome screen providing quick access to all features. Returns to the main menu at any time.
+
+## /portfolio - Portfolio Dashboard
+
+Comprehensive portfolio tracking across all connected accounts and exchanges.
+
+**Features:**
+- **P&L Tracking**: 24-hour, 7-day, and 30-day performance metrics
+- **Token Holdings**: Current balances with price changes
+- **Position Monitoring**: Perpetual futures and CLMM positions
+- **Visual Analytics**: Portfolio value charts and distribution graphs
+
+## /bots - Bot Management
+
+Monitor and control all Hummingbot trading bot instances.
+
+**Features:**
+- **Status Overview**: Health indicators for all bots
+- **System Metrics**: CPU usage, memory, uptime
+- **Controller Performance**: Track strategy metrics
+- **Start/Stop**: Control bot lifecycle
+- **Log Viewing**: Access bot logs for debugging
+
+## /agent - Trading Agents
+
+Create and manage autonomous Trading Agents.
+
+**Features:**
+- **Create Agent**: Guided setup for new Trading Agents
+- **Select LLM**: Connect to Claude, Gemini, or GPT via ACP
+- **Run Modes**: dry_run, run_once, or loop
+- **Monitor**: View active sessions and tick status
+- **Inject Directives**: Send real-time instructions to running agents
+
+## /trade - CEX Trading
+
+Unified trading interface for centralized exchanges.
+
+**Supported Exchanges:** Binance, Bybit, OKX, Kucoin, Kraken, Coinbase, Hyperliquid
+
+**Features:**
+- Market and limit orders
+- Position management (perpetual)
+- Leverage configuration
+- Order tracking and cancellation
+
+## /swap - DEX Token Swaps
+
+Execute token swaps on decentralized exchanges via Gateway.
+
+**Supported DEXs:** Jupiter (Solana), Uniswap (Ethereum, Base)
+
+**Features:**
+- Get quotes from multiple protocols
+- Slippage protection
+- Transaction status tracking
+
+## /lp - Liquidity Pool Management
+
+Manage Concentrated Liquidity Market Maker (CLMM) positions.
+
+**Supported Protocols:** Orca, Raydium, Meteora, Uniswap V3
+
+**Features:**
+- View active LP positions
+- Add/remove liquidity
+- Collect accumulated fees
+- Position range monitoring
+
+## /keys - Credential Management
+
+Manage exchange API credentials securely.
+
+1. Select **Perpetual** or **Spot**
+2. Choose the exchange to configure
+3. Enter API key and secret
+
+<Warning>
+For security, only enable **read + trade** permissions on your API keys. Do not enable withdraw or transfer permissions.
+</Warning>
+
+## /config - System Configuration
+
+Manage all system settings:
+
+| Section | Description |
+|---------|-------------|
+| **API Servers** | Add, edit, or remove Hummingbot API server connections |
+| **Gateway** | Deploy and configure Gateway for DEX trading |
+| **Wallets** | Create or import blockchain wallets |
+| **Networks** | Configure blockchain network RPC endpoints |
+
+## Notifications
+
+Condor sends notifications for:
+
+- Executor state changes (created, filled, stopped)
+- Risk limit violations
+- Bot status changes
+- Price alerts from routines
+
+Configure notification preferences in `/config`.
+
+## Security
+
+- **User Whitelist**: Only authorized Telegram user IDs can interact with the bot
+- **No Credential Storage**: API keys are stored encrypted on the server, not in Telegram
+- **Session Isolation**: Each user's session is isolated

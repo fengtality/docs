@@ -1,0 +1,114 @@
+---
+title: "Portfolio"
+description: "Track balances, positions, and P&L across all connected exchanges"
+---
+
+The Portfolio provides a unified view of balances and performance across all connected exchanges and accounts.
+
+## Portfolio State
+
+Fetch current balances:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+Response:
+
+```json
+{
+  "master_account": {
+    "binance": {
+      "BTC": {
+        "units": 0.5,
+        "price": 65000.0,
+        "value": 32500.0
+      },
+      "USDT": {
+        "units": 10000.0,
+        "price": 1.0,
+        "value": 10000.0
+      }
+    },
+    "hyperliquid_perpetual": {
+      "USDC": {
+        "units": 5000.0,
+        "price": 1.0,
+        "value": 5000.0
+      }
+    }
+  }
+}
+```
+
+## Filtering by Account
+
+Request specific accounts:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{"account_names": ["master_account"]}'
+```
+
+## Filtering by Connector
+
+Request specific connectors:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{"connector_names": ["binance", "binance_perpetual"]}'
+```
+
+## Via Telegram
+
+Use `/portfolio` to view:
+
+### Dashboard Features
+
+- **Total Value**: Aggregated portfolio value in USD
+- **24h Change**: Portfolio value change over last 24 hours
+- **Distribution**: Visual breakdown by asset and exchange
+
+### Token Holdings
+
+View current balances with:
+- Token amount
+- Current price
+- USD value
+- 24h price change
+
+### Position Monitoring
+
+For perpetual accounts:
+- Open positions with entry price
+- Unrealized P&L
+- Leverage and liquidation price
+
+### Time Periods
+
+Analyze performance over:
+- 24 hours
+- 7 days
+- 30 days
+- Custom ranges
+
+## Portfolio Metrics
+
+| Metric | Description |
+|--------|-------------|
+| **Total Value** | Sum of all holdings in quote currency |
+| **Unrealized P&L** | Mark-to-market value of open positions |
+| **Realized P&L** | Locked-in P&L from closed positions |
+| **24h Volume** | Trading volume over last 24 hours |
+
+## Refresh
+
+Balances are fetched in real-time from exchanges. Use the refresh button in Telegram or call the API again for updated data.
+
+<Note>
+Some exchanges have rate limits on balance queries. The API caches results briefly to avoid hitting limits.
+</Note>

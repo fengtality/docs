@@ -1,0 +1,84 @@
+---
+title: "Web Dashboard"
+description: "Browser-based interface for managing Condor"
+---
+
+Condor Dashboard is a modern, browser-based interface for managing trading bots and agents. It syncs with Condor Telegram for seamless mobile-to-desktop workflows.
+
+<Info>
+The web dashboard is under active development. Follow [#condor-feedback](https://discord.gg/hummingbot) for updates.
+</Info>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Trade" icon="chart-line">
+    View market data (order book, price charts), place orders, and monitor positions
+  </Card>
+  <Card title="AMM Markets" icon="coins">
+    Swap tokens and manage LP positions on DEXs via Gateway
+  </Card>
+  <Card title="Manage Keys" icon="key">
+    Add and remove exchange API credentials
+  </Card>
+  <Card title="Strategies" icon="chess">
+    Browse, create, and configure V2 controllers
+  </Card>
+  <Card title="Bots" icon="robot">
+    Deploy, monitor, start/stop, and archive trading bots
+  </Card>
+  <Card title="Agents" icon="brain">
+    Create and manage Trading Agents with LLM integration
+  </Card>
+</CardGroup>
+
+## Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| Vite + React 19 | Framework |
+| TypeScript | Type safety |
+| Tailwind CSS v4 | Styling |
+| shadcn/ui + Radix UI | Component library |
+
+## Prerequisites
+
+- Node.js 20.19+ or 22.12+
+- A running Hummingbot API server
+
+## Session Continuity
+
+The web dashboard shares session state with Telegram:
+
+- Start a Trading Agent on Telegram
+- Monitor and adjust in the web dashboard
+- Receive notifications on mobile
+
+Same session, same agent state, same conversation history.
+
+## Development
+
+```bash
+# Clone the dashboard repo
+git clone https://github.com/hummingbot/dashboard.git
+cd dashboard
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The dashboard connects to your Hummingbot API server at `http://localhost:8000` by default.
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/dashboard">
+    Dashboard source code
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/hummingbot">
+    Community support
+  </Card>
+</CardGroup>

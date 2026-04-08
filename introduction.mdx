@@ -1,81 +1,71 @@
 ---
 title: "Introduction"
-description: "RESTful API for building algorithmic trading applications with Hummingbot"
+description: "An open source harness for building autonomous AI trading agents"
 ---
 
-Hummingbot API is a RESTful API server that provides full access to all [Hummingbot](https://hummingbot.org) exchange connectors and trading strategies. Build any trading application on top of it—from simple portfolio trackers to sophisticated algorithmic trading systems.
+**Condor** is an open source **agent harness** for building and running autonomous **Trading Agents**. It connects LLM-powered decision-making to deterministic trade execution via the [Hummingbot API](/api-reference), enabling traders to deploy AI agents that can observe markets, reason about strategy, and execute trades across 50+ exchanges and blockchains.
 
-[Condor](/condor/overview) (Telegram) and [Condor Dashboard](/dashboard/overview) (web) are reference clients that demonstrate how to build applications using the API.
+<Note>
+Everything in Condor is free and open source. We're supported by exchanges as partners, so you can use everything without paying. Join [#condor-feedback](https://discord.gg/hummingbot) in Discord to share feedback.
+</Note>
 
-## What You Can Build
+## Why Condor?
+
+It's easy to create a simple AI trading demo. But to make money over the long term, you need to:
+
+- Calculate P&L accurately across different exchanges
+- Have the agent actually learn from what it's doing
+- Run many agents that operate independently but also work together
+
+Condor provides the **structure** for how you define and build agents—making the process more scalable, more reliable, and fully auditable.
+
+## Key Features
 
 <CardGroup cols={2}>
-  <Card title="Portfolio Trackers" icon="chart-pie">
-    Aggregate balances and track PnL across multiple exchanges in real-time
+  <Card title="Autonomous Trading" icon="robot">
+    Deploy AI agents that observe, reason, and execute independently—no manual intervention
   </Card>
-  <Card title="Market Making Systems" icon="robot">
-    Deploy and orchestrate Hummingbot instances running automated strategies
+  <Card title="Multi-Agent Support" icon="users">
+    Run dozens of agents on shared accounts with isolated P&L tracking per agent
   </Card>
-  <Card title="Smart Order Routers" icon="arrow-right-arrow-left">
-    Execute orders, manage positions, and track fills across CEX and DEX markets
+  <Card title="50+ Exchanges" icon="arrows-repeat">
+    Trade on CEX, DEX, and blockchain networks with standardized execution
   </Card>
-  <Card title="AI Trading Agents" icon="microchip-ai">
-    Integrate with Claude, ChatGPT, or Gemini via the Model Context Protocol (MCP)
+  <Card title="LLM Integration" icon="microchip">
+    Connect to Claude, Gemini, GPT, or local models via Agent Client Protocol
+  </Card>
+  <Card title="Full Observability" icon="magnifying-glass">
+    Every tick captured: prompt, reasoning, tool calls, and results
+  </Card>
+  <Card title="Deterministic Routines" icon="code">
+    Move expensive computations out of the LLM into reusable Python code
   </Card>
 </CardGroup>
 
-## Architecture
+## How It Works
 
-```mermaid
-flowchart TB
-    subgraph Clients["Your Applications"]
-        Condor["Condor<br/>(Telegram)"]
-        Dashboard["Condor Dashboard<br/>(Web)"]
-        MCP["MCP Server<br/>(AI Agents)"]
-        Custom["Your App"]
-    end
+Condor uses a [two-server architecture](/motivation) separating the agentic layer (LLM reasoning) from the execution layer (Hummingbot API):
 
-    subgraph API["Hummingbot API Server"]
-        PostgreSQL["PostgreSQL<br/>(Storage)"]
-        EMQX["EMQX<br/>(Broker)"]
-        Connectors["Exchange Connectors"]
-    end
+| Component | Role |
+|-----------|------|
+| **Condor Server** | LLM integration, Telegram interface, agent state management |
+| **Hummingbot API** | Data collection, trade execution, bot orchestration |
 
-    Condor --> API
-    Dashboard --> API
-    MCP --> API
-    Custom --> API
-
-    API --> Bots["Bot Instances<br/>(Strategies)"]
-    API --> Gateway["Gateway<br/>(DEXs)"]
-    API --> Exchanges["Exchanges<br/>(CEXs)"]
-```
-
-## API Capabilities
-
-| Category | Endpoints | Description |
-|----------|-----------|-------------|
-| **Accounts** | `/accounts` | Manage exchange credentials and trading accounts |
-| **Portfolio** | `/portfolio` | Track balances, PnL, and portfolio distribution |
-| **Trading** | `/trading` | Place orders, manage positions, view trade history |
-| **Market Data** | `/market-data` | Prices, order books, candles, funding rates |
-| **Bot Orchestration** | `/bot-orchestration` | Deploy and control Hummingbot trading bots |
-| **Connectors** | `/connectors` | Access 50+ CEX connectors and trading rules |
-| **Gateway** | `/gateway` | DEX swaps and liquidity management |
+Trading Agents follow the [OODA loop](/motivation#the-ooda-loop): Observe → Orient → Decide → Act.
 
 ## Getting Started
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Deploy Hummingbot API and control it with Condor
+  <Card title="Motivation" icon="lightbulb" href="/motivation">
+    Understand why Condor is architected this way
   </Card>
-  <Card title="Developer Guide" icon="code" href="/developer-guide">
-    Use the API directly with curl or Python
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Deploy Condor and execute your first trade
   </Card>
   <Card title="API Reference" icon="book" href="/api-reference">
-    Explore all endpoints and schemas
+    Explore all Hummingbot API endpoints
   </Card>
-  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/hummingbot-api">
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/condor">
     Source code and issues
   </Card>
 </CardGroup>

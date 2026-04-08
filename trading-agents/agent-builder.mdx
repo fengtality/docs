@@ -1,0 +1,150 @@
+---
+title: "Agent Builder"
+description: "Create and configure Trading Agents via Telegram or manually"
+---
+
+Trading Agents can be created using the `/agent` command in Telegram or by manually creating the required files.
+
+## 5-Phase Development Flow
+
+The recommended flow for building Trading Agents:
+
+| Phase | Description |
+|-------|-------------|
+| **1. Strategy Design** | Define your edge, timeframe, and instruments |
+| **2. Market Data Selection** | Choose which data providers and routines to use |
+| **3. Strategy Logic** | Write `agent.md` with rules and constraints |
+| **4. Test in Dry-Run** | One tick, no trading—verify reasoning |
+| **5. Test in Run-Once** | One tick with real trading—controlled test |
+| **6. Deploy Live** | Loop mode with frequency and risk limits |
+
+### Run Modes
+
+These modes exist for debugging—you don't want to put an agent to trade without understanding its reasoning first.
+
+| Mode | Behavior |
+|------|----------|
+| `dry_run` | One tick, no trading capability. The agent gets told in its prompt that executor creation is blocked. You see how it gathers data, reasons about it, and what decision it *would* take. |
+| `run_once` | One tick with real trading. Before looping, try it once to see actual outputs. |
+| `loop` | Standard mode. Ticks every `frequency_sec` until stopped or `max_ticks` reached. |
+
+**Recommended flow**: Start with dry_run to verify reasoning, then run_once to test with real money, then loop when confident.
+
+## Via Telegram
+
+Use the `/agent` command to access the Agent Builder:
+
+1. **Create Agent**: Start a new Trading Agent with guided setup
+2. **Select LLM**: Choose your LLM provider (Claude, Gemini, GPT)
+3. **Configure Strategy**: Set trading parameters and risk limits
+4. **Select Run Mode**: Choose dry_run, run_once, or loop
+5. **Start Session**: Begin the agent's OODA loop
+
+## Manual Creation
+
+Create a new agent directory with the required files:
+
+```bash
+mkdir -p ~/condor/trading_agents/my-strategy/trading_sessions
+```
+
+### Required Files
+
+#### agent.md
+
+The strategy definition with YAML frontmatter and Markdown instructions:
+
+```yaml
+---
+name: My Trading Strategy
+tick_interval: 60
+connectors:
+  - binance_perpetual
+
+configs:
+  trading_pair: SOL-USDT
+  position_size: 100
+
+limits:
+  max_position_size_quote: 500
+  max_single_order_quote: 100
+  max_daily_loss_quote: 50
+  max_open_executors: 5
+  max_drawdown_pct: 10
+---
+
+## Goal
+
+Describe what this agent should accomplish.
+
+## Strategy Rules
+
+1. Rule one
+2. Rule two
+3. Rule three
+
+## Constraints
+
+- List any constraints or special considerations
+```
+
+#### config.yml
+
+Runtime configuration that can be modified without editing agent.md:
+
+```yaml
+# Override configs from agent.md
+trading_pair: ETH-USDT
+position_size: 50
+
+# Risk limits
+risk_limits:
+  max_position_size_quote: 500.0
+  max_single_order_quote: 100.0
+  max_open_executors: 5
+```
+
+#### learnings.md
+
+Start with an empty learnings file:
+
+```markdown
+# Learnings
+
+## Active Insights
+
+(Agent will populate this as it learns)
+```
+
+## Connecting to an LLM
+
+After creating the agent files, connect to an LLM via ACP:
+
+### Claude (Anthropic)
+
+```bash
+# Ensure Claude Code or Claude CLI is installed
+claude --agent ~/condor/trading_agents/my-strategy
+```
+
+### Gemini (Google)
+
+```bash
+# Ensure Gemini CLI is installed
+gemini --agent ~/condor/trading_agents/my-strategy
+```
+
+## Agent Templates
+
+Common strategy templates to start from:
+
+| Template | Description |
+|----------|-------------|
+| **Grid Maker** | Provide liquidity across price levels |
+| **Momentum** | Trade breakouts and trends |
+| **Mean Reversion** | Fade extreme moves |
+| **Arbitrage** | Capture cross-exchange spreads |
+
+<Info>
+Templates will be available in a future release. For now, create agents manually using the structure above.
+</Info>
