@@ -1,0 +1,131 @@
+---
+title: "Gateway"
+description: "DEX trading via Gateway for swaps and liquidity provision"
+---
+
+**Gateway** is a separate service that enables DEX trading—swaps on AMMs and liquidity provision on CLMMs.
+
+## Supported Protocols
+
+| Protocol | Chain | Features |
+|----------|-------|----------|
+| **Jupiter** | Solana | Swaps, routing |
+| **Orca** | Solana | CLMM LP, swaps |
+| **Raydium** | Solana | CLMM LP, swaps |
+| **Meteora** | Solana | CLMM LP |
+| **Uniswap V3** | Ethereum, Base | CLMM LP, swaps |
+
+## Setup
+
+Deploy Gateway via Telegram:
+
+```
+/config → Gateway → Deploy Gateway
+```
+
+Or via API:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/deploy
+```
+
+## Swaps
+
+Execute token swaps via `/swap` in Telegram or the API.
+
+**Telegram**:
+```
+/swap → Select chain → Enter tokens → Get quote → Execute
+```
+
+**API**:
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/swap/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "jupiter",
+    "base_token": "SOL",
+    "quote_token": "USDC",
+    "amount": "1.0",
+    "side": "sell"
+  }'
+```
+
+## Liquidity Provision
+
+Manage CLMM positions via `/lp` in Telegram.
+
+**Add Liquidity**:
+```
+/lp → Add Liquidity → Select pool → Set range → Deposit
+```
+
+**Remove Liquidity**:
+```
+/lp → My Positions → Select position → Remove
+```
+
+**Collect Fees**:
+```
+/lp → My Positions → Select position → Collect Fees
+```
+
+## Pool Discovery
+
+Explore available pools:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "orca"
+  }'
+```
+
+## Via MCP Tools
+
+Agents can use Gateway tools:
+
+```python
+# Get swap quote
+quote = await mcp_tools.manage_gateway_swaps(
+    action="quote",
+    chain="solana",
+    connector="jupiter",
+    base_token="SOL",
+    quote_token="USDC",
+    amount="1.0",
+    side="sell"
+)
+
+# Execute swap
+result = await mcp_tools.manage_gateway_swaps(
+    action="execute",
+    chain="solana",
+    connector="jupiter",
+    base_token="SOL",
+    quote_token="USDC",
+    amount="1.0",
+    side="sell"
+)
+```
+
+## Wallet Management
+
+Gateway requires blockchain wallets for DEX trading.
+
+**Create Wallet**:
+```
+/config → Wallets → Create Wallet → Select chain
+```
+
+**Import Wallet**:
+```
+/config → Wallets → Import Wallet → Enter private key
+```
+
+<Warning>
+Private keys are stored encrypted on the server. Never share your private keys.
+</Warning>

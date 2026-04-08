@@ -173,3 +173,54 @@ You can manually add to the learnings file—the agent doesn't know whether it w
 **Via web dashboard**: Trading Agents → Select agent → Learnings → Edit
 
 **Via file**: Edit `trading_agents/my_strategy/learnings.md` directly
+
+## Configs
+
+**Configs** are agent-suggestible parameters that control how the agent operates. The agent can suggest changes based on learnings, but the user must approve.
+
+In `agent.md` frontmatter:
+
+```yaml
+configs:
+  trading_pair: SOL-USDC
+  grid_levels: 5
+  spread_percentage: 0.3
+  tick_interval: 60
+```
+
+Runtime overrides in `config.yml`:
+
+```yaml
+trading_pair: ETH-USDC
+spread_percentage: 0.5
+```
+
+## Risk Limits
+
+**Risk Limits** are user-only guardrails enforced by the Risk Engine before every action. The agent cannot modify or exceed these.
+
+| Limit | Default | Description |
+|-------|---------|-------------|
+| `max_position_size_quote` | 500 | Maximum total position size |
+| `max_single_order_quote` | 100 | Maximum size per executor |
+| `max_open_executors` | 5 | Maximum simultaneous executors |
+| `max_daily_loss_quote` | 50 | Maximum daily loss before blocking |
+| `max_drawdown_pct` | 10 | Maximum drawdown percentage |
+
+In `agent.md` frontmatter:
+
+```yaml
+limits:
+  max_position_size_quote: 500
+  max_single_order_quote: 100
+  max_open_executors: 10
+  max_drawdown_pct: 10
+```
+
+### Risk Engine Validation
+
+**Pre-tick**: Blocks the entire tick if daily loss or drawdown limits exceeded.
+
+**Per-executor**: Blocks creation if executor count, order size, or exposure limits would be violated.
+
+If any limit is exceeded, the agent receives a clear error message explaining which limit was hit.

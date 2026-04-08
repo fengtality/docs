@@ -1,0 +1,116 @@
+---
+title: "Trade"
+description: "Direct trading on centralized exchanges"
+---
+
+The `/trade` command provides direct trading on centralized exchanges without creating executors.
+
+## Supported Exchanges
+
+| Exchange | Spot | Perpetual |
+|----------|------|-----------|
+| **Binance** | Yes | Yes |
+| **Bybit** | Yes | Yes |
+| **OKX** | Yes | Yes |
+| **Kucoin** | Yes | Yes |
+| **Kraken** | Yes | No |
+| **Coinbase** | Yes | No |
+| **Hyperliquid** | No | Yes |
+
+## Via Telegram
+
+### Place Order
+
+```
+/trade → Select exchange → Select market → Buy/Sell → Enter amount
+```
+
+### Order Types
+
+| Type | Description |
+|------|-------------|
+| **Market** | Execute immediately at best price |
+| **Limit** | Execute at specified price or better |
+
+### Position Management (Perpetual)
+
+For perpetual markets:
+- Set leverage before opening position
+- View entry price and unrealized P&L
+- Close position partially or fully
+
+```
+/trade → Positions → Select position → Close
+```
+
+## Via API
+
+### Get Markets
+
+```bash
+curl -u admin:admin http://localhost:8000/connectors/binance/trading-pairs
+```
+
+### Place Market Order
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector_name": "binance",
+    "trading_pair": "BTC-USDT",
+    "side": "BUY",
+    "amount": 0.001,
+    "order_type": "MARKET"
+  }'
+```
+
+### Place Limit Order
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector_name": "binance",
+    "trading_pair": "BTC-USDT",
+    "side": "BUY",
+    "amount": 0.001,
+    "order_type": "LIMIT",
+    "price": 60000.0
+  }'
+```
+
+### Cancel Order
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/cancel-order \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector_name": "binance",
+    "trading_pair": "BTC-USDT",
+    "order_id": "12345"
+  }'
+```
+
+### Set Leverage (Perpetual)
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/trading/set-leverage \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector_name": "binance_perpetual",
+    "trading_pair": "BTC-USDT",
+    "leverage": 5
+  }'
+```
+
+## Trade vs Executors
+
+| Aspect | /trade | Executors |
+|--------|--------|-----------|
+| **Use Case** | Quick manual trades | Agent-controlled operations |
+| **P&L Tracking** | Exchange-level | Per-agent via `controller_id` |
+| **Exit Conditions** | Manual | Automatic (TP/SL/time) |
+| **Attribution** | None | Tagged to agent |
+
+For agent-controlled trading with P&L attribution, use [Executors](/trading-agents/executors) instead.

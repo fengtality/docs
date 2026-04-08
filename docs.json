@@ -28,7 +28,9 @@
               "motivation",
               "quickstart",
               "installation",
-              "llm-integration"
+              "llm-integration",
+              "telegram",
+              "web-dashboard"
             ]
           },
           {
@@ -36,47 +38,22 @@
             "pages": [
               "trading-agents/overview",
               "trading-agents/architecture",
-              "trading-agents/agent-builder",
               "trading-agents/sessions",
               "trading-agents/routines",
               "trading-agents/mcp-tools",
-              "trading-agents/configs",
-              "trading-agents/risk-limits"
+              "trading-agents/accounts",
+              "trading-agents/executors",
+              "trading-agents/inventory",
+              "trading-agents/agent-builder"
             ]
           },
           {
-            "group": "Accounts",
+            "group": "Other Features",
             "pages": [
-              "accounts/overview",
-              "accounts/connectors",
-              "accounts/portfolio",
-              "accounts/inventory"
-            ]
-          },
-          {
-            "group": "Executors",
-            "pages": [
-              "executors/overview",
-              "executors/order",
-              "executors/position",
-              "executors/grid",
-              "executors/lp"
-            ]
-          },
-          {
-            "group": "Bots",
-            "pages": [
-              "bots/overview",
-              "bots/controllers",
-              "bots/scripts"
-            ]
-          },
-          {
-            "group": "Interfaces",
-            "pages": [
-              "interfaces/telegram",
-              "interfaces/web",
-              "interfaces/future"
+              "other-features/portfolio",
+              "other-features/bots",
+              "other-features/gateway",
+              "other-features/trade"
             ]
           }
         ]
