@@ -1,0 +1,137 @@
+---
+title: "LP"
+description: "Liquidity provision on concentrated liquidity DEXs"
+---
+
+The `/lp` command manages concentrated liquidity (CLMM) positions on decentralized exchanges.
+
+## Supported Protocols
+
+| Protocol | Chain | Type |
+|----------|-------|------|
+| **Orca** | Solana | CLMM |
+| **Raydium** | Solana | CLMM |
+| **Meteora** | Solana | CLMM |
+| **Uniswap V3** | Ethereum, Base | CLMM |
+
+## View Positions
+
+```
+/lp → My Positions
+```
+
+Shows all active LP positions with:
+- Pool and token pair
+- Price range (lower - upper)
+- Current price and in-range status
+- Uncollected fees
+- Position value
+
+## Add Liquidity
+
+```
+/lp → Add Liquidity → Select pool → Set range → Deposit
+```
+
+1. **Select Pool**: Choose from available pools or search
+2. **Set Range**: Define price range for concentrated liquidity
+3. **Enter Amounts**: Specify base and quote token amounts
+4. **Confirm**: Review and execute transaction
+
+## Remove Liquidity
+
+```
+/lp → My Positions → Select position → Remove
+```
+
+Options:
+- **Remove All**: Close entire position
+- **Remove Partial**: Specify percentage to remove
+
+## Collect Fees
+
+```
+/lp → My Positions → Select position → Collect Fees
+```
+
+Collects accumulated trading fees without closing the position.
+
+## Via API
+
+### List Positions
+
+```bash
+curl -u admin:admin http://localhost:8000/gateway/clmm/positions
+```
+
+### Add Liquidity
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add-liquidity \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "orca",
+    "pool_address": "5Q544fK...",
+    "lower_price": 140.0,
+    "upper_price": 160.0,
+    "base_amount": 1.0,
+    "quote_amount": 150.0
+  }'
+```
+
+### Remove Liquidity
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove-liquidity \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "orca",
+    "position_id": "position_123",
+    "percent": 100
+  }'
+```
+
+### Collect Fees
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/collect-fees \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "orca",
+    "position_id": "position_123"
+  }'
+```
+
+## LP Executor
+
+For agent-controlled LP positions, use the [LP Executor](/trading-agents/executors#lp-executor) which provides:
+- Automatic out-of-range handling
+- P&L tracking per agent
+- Integration with Trading Agent lifecycle
+
+## Pool Discovery
+
+Find pools via MCP tools:
+
+```python
+pools = await mcp_tools.explore_dex_pools(
+    chain="solana",
+    connector="orca",
+    base_token="SOL",
+    quote_token="USDC"
+)
+```
+
+Or via API:
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "solana",
+    "connector": "orca"
+  }'
+```

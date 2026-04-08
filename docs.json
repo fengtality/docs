@@ -41,19 +41,21 @@
               "trading-agents/sessions",
               "trading-agents/routines",
               "trading-agents/mcp-tools",
-              "trading-agents/accounts",
               "trading-agents/executors",
               "trading-agents/inventory",
               "trading-agents/agent-builder"
             ]
           },
           {
-            "group": "Other Features",
+            "group": "Other Condor Features",
             "pages": [
               "other-features/portfolio",
+              "other-features/trade",
+              "other-features/keys",
+              "other-features/server",
+              "other-features/lp",
               "other-features/bots",
-              "other-features/gateway",
-              "other-features/trade"
+              "other-features/gateway"
             ]
           }
         ]
