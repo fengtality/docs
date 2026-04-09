@@ -1,0 +1,168 @@
+---
+title: "Global Routines"
+description: "Built-in routines available to all agents"
+---
+
+Global routines in `~/condor/routines/` are available to all agents. Condor includes several built-in routines for common trading tasks.
+
+## Built-in Routines
+
+| Routine | Description |
+|---------|-------------|
+| `technical_analysis` | EMA, RSI, support/resistance levels |
+| `funding_rates` | Fetch perpetual funding rates |
+| `volume_analysis` | Volume profile and VWAP |
+
+## Directory Structure
+
+```
+~/condor/routines/
+├── indicators/
+│   ├── vwap.py
+│   ├── bollinger.py
+│   └── rsi.py
+├── webhooks/
+│   ├── tradingview.py
+│   └── custom.py
+├── reports/
+│   ├── daily_performance.py
+│   └── weekly_summary.py
+└── alerts/
+    ├── price_alerts.py
+    ├── volume_alerts.py
+    └── funding_alerts.py
+```
+
+## Use Cases
+
+### Custom Indicators
+
+Define technical indicators not built into exchanges:
+
+```python
+# routines/indicators/vwap.py
+async def calculate_vwap(connector: str, trading_pair: str, periods: int = 20):
+    """Calculate Volume-Weighted Average Price."""
+    candles = await get_candles(connector, trading_pair, periods)
+    total_volume = sum(c.volume for c in candles)
+    vwap = sum(c.close * c.volume for c in candles) / total_volume
+    return {
+        "vwap": vwap,
+        "periods": periods,
+        "total_volume": total_volume
+    }
+```
+
+```python
+# routines/indicators/bollinger.py
+async def calculate_bollinger_bands(connector: str, trading_pair: str, periods: int = 20, std_dev: float = 2.0):
+    """Calculate Bollinger Bands."""
+    candles = await get_candles(connector, trading_pair, periods)
+    closes = [c.close for c in candles]
+
+    sma = sum(closes) / len(closes)
+    variance = sum((c - sma) ** 2 for c in closes) / len(closes)
+    std = variance ** 0.5
+
+    return {
+        "upper": sma + (std_dev * std),
+        "middle": sma,
+        "lower": sma - (std_dev * std),
+        "std": std
+    }
+```
+
+### TradingView Webhooks
+
+Receive alerts from TradingView and trigger agent actions:
+
+```python
+# routines/webhooks/tradingview.py
+async def handle_tradingview_alert(request: Request):
+    """Process TradingView webhook alerts."""
+    payload = await request.json()
+
+    alert = {
+        "symbol": payload.get("ticker"),
+        "action": payload.get("action"),  # "buy" or "sell"
+        "price": float(payload.get("price", 0)),
+        "message": payload.get("message"),
+    }
+
+    # Route to appropriate agent
+    agent_id = get_agent_for_symbol(alert["symbol"])
+    await notify_agent(agent_id, alert)
+
+    return {"status": "received", "alert": alert}
+```
+
+### Daily Reports
+
+Generate scheduled reports aggregating performance data:
+
+```python
+# routines/reports/daily_performance.py
+async def generate_daily_report(agent_id: str):
+    """Generate daily performance report for an agent."""
+    from datetime import datetime, timedelta
+
+    cutoff = datetime.utcnow() - timedelta(days=1)
+    executors = await get_executors(controller_id=agent_id, since=cutoff)
+
+    return {
+        "agent_id": agent_id,
+        "period": "24h",
+        "generated_at": datetime.utcnow().isoformat(),
+        "summary": {
+            "total_executors": len(executors),
+            "win_rate": calculate_win_rate(executors),
+            "net_pnl_quote": sum(e.net_pnl_quote for e in executors),
+            "volume_quote": sum(e.volume_quote for e in executors),
+        }
+    }
+```
+
+### Custom Alerts
+
+Monitor conditions and trigger notifications:
+
+```python
+# routines/alerts/funding_rate.py
+async def check_funding_rates(threshold: float = 0.01):
+    """Alert when funding rate exceeds threshold."""
+    alerts = []
+
+    for connector in perpetual_connectors:
+        rates = await get_funding_rates(connector)
+        for pair, rate in rates.items():
+            if abs(rate) > threshold:
+                alerts.append({
+                    "type": "funding_rate",
+                    "connector": connector,
+                    "pair": pair,
+                    "rate": rate,
+                    "direction": "long_paying" if rate > 0 else "short_paying"
+                })
+
+    return alerts
+```
+
+## Scheduling Routines
+
+Configure scheduled execution in `config.yml`:
+
+```yaml
+routines:
+  daily_report:
+    module: routines.reports.daily_performance
+    function: generate_daily_report
+    schedule: "0 0 * * *"  # Midnight UTC daily
+    notify: ["telegram"]
+
+  funding_check:
+    module: routines.alerts.funding_rate
+    function: check_funding_rates
+    schedule: "*/15 * * * *"  # Every 15 minutes
+    params:
+      threshold: 0.005
+```

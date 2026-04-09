@@ -1,37 +1,9 @@
 ---
-title: "Adding Custom Routines"
-description: "Extend agents with deterministic Python code"
+title: "Creating Routines"
+description: "Build custom routines for your trading agents"
 ---
 
-**Routines** are deterministic Python functions that agents call for data processing. They reduce token usage and make agent behavior reproducible.
-
-## Why Routines?
-
-Without routines, agents spend tokens computing indicators every tick. With routines:
-- **Session time drops** from 2 minutes to under 1 minute
-- **Token usage reduced** by moving computation to Python
-- **Results are reproducible** - same input, same output
-
-## Built-in Routines
-
-Condor includes common routines:
-
-| Routine | Description |
-|---------|-------------|
-| `technical_analysis` | EMA, RSI, support/resistance |
-| `funding_rates` | Fetch perpetual funding rates |
-| `volume_analysis` | Volume profile and VWAP |
-
-## Using Routines
-
-Agents call routines via MCP tools:
-
-```
-Agent: "Let me analyze SOL-USDT..."
-→ Calls run_routine("technical_analysis", {pair: "SOL-USDT"})
-→ Returns: {trend: "bullish", ema_7: 156.2, support: [154.5, 152.0]...}
-Agent: "Trend is bullish with support at $154.50..."
-```
+Create custom routines to extend agent capabilities with deterministic Python code.
 
 ## Create a Custom Routine
 
@@ -121,6 +93,55 @@ Dry Run Result:
 - Decision: Would open LONG
 ```
 
+## Creating with Agent Builder
+
+When you create an agent via `/agent` → Agent Builder, the system can generate custom routines for your strategy. For example, if you specify:
+
+> "I want to use one-minute candles and look for support and resistance levels plus EMAs of 7, 25, and 99"
+
+The Agent Builder creates a routine like:
+
+```python
+# routines/support_resistance_ema_levels.py
+async def analyze_levels(
+    trading_pair: str,
+    connector_name: str,
+    candle_count: int = 100,
+    lookback: int = 20,
+    tolerance: float = 0.02
+):
+    """Identify support/resistance levels and EMA alignment."""
+    candles = await get_candles(connector_name, trading_pair, candle_count)
+
+    # Calculate EMAs
+    ema_7 = calculate_ema(candles, 7)
+    ema_25 = calculate_ema(candles, 25)
+    ema_99 = calculate_ema(candles, 99)
+
+    # Determine trend from EMA alignment
+    if ema_7 > ema_25 > ema_99:
+        trend = "bullish"
+    elif ema_7 < ema_25 < ema_99:
+        trend = "bearish"
+    else:
+        trend = "mixed"
+
+    # Find support/resistance levels
+    supports, resistances = find_sr_levels(candles, lookback, tolerance)
+
+    return {
+        "price": candles[-1].close,
+        "trend": trend,
+        "ema_7": ema_7,
+        "ema_25": ema_25,
+        "ema_99": ema_99,
+        "supports": supports,
+        "resistances": resistances
+    }
+```
+
+The routine is configurable—you can adjust parameters without modifying code.
+
 ## Routine Best Practices
 
 <AccordionGroup>
@@ -150,45 +171,3 @@ Dry Run Result:
 | `trading_agents/{slug}/routines/` | Specific to one agent |
 
 Agent-specific routines override global ones with the same name.
-
-## View Available Routines
-
-```
-You: What routines are available?
-
-Condor: Available routines for SOL Scalper:
-
-Agent-specific:
-- momentum_scanner: Scan for momentum breakouts
-
-Global:
-- technical_analysis: EMA, RSI, support/resistance
-- funding_rates: Fetch perpetual funding rates
-- volume_analysis: Volume profile and VWAP
-```
-
-## What's Next?
-
-You've completed the Getting Started guide! You now know how to:
-
-- ✓ Install Condor and Hummingbot API
-- ✓ Add exchange credentials
-- ✓ View your portfolio
-- ✓ Build a Trading Agent
-- ✓ Manage agent sessions
-- ✓ Create custom routines
-
-<CardGroup cols={2}>
-  <Card title="Trading Agents" icon="robot" href="/trading-agents/overview">
-    Deep dive into agent architecture
-  </Card>
-  <Card title="Executors" icon="bolt" href="/trading-agents/executors">
-    Learn about executor types
-  </Card>
-  <Card title="MCP Tools" icon="wrench" href="/trading-agents/mcp-tools">
-    Explore all available tools
-  </Card>
-  <Card title="API Reference" icon="book" href="/api-reference">
-    Full API documentation
-  </Card>
-</CardGroup>

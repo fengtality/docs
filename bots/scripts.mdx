@@ -1,0 +1,173 @@
+---
+title: "Scripts"
+description: "V1 scripts for simpler trading automation"
+---
+
+**Scripts** are V1 Python scripts that run inside bot containers for simpler automation tasks. They're ideal for straightforward strategies that don't require the full controller framework.
+
+## Scripts vs Controllers
+
+| Aspect | Scripts | Controllers |
+|--------|---------|-------------|
+| **Complexity** | Simple, single-file | Complex, multi-component |
+| **Framework** | V1 (legacy) | V2 (current) |
+| **Best For** | Quick automation | Full strategies |
+| **Executor Management** | Manual | Automatic |
+
+## Built-in Scripts
+
+| Script | Description |
+|--------|-------------|
+| `simple_pmm` | Basic pure market making |
+| `simple_xemm` | Cross-exchange market making |
+| `spot_perpetual_arbitrage` | Spot-perp basis trading |
+| `twap` | Time-weighted average price execution |
+
+## Script Structure
+
+```python
+# scripts/simple_strategy.py
+from hummingbot.strategy.script_strategy_base import ScriptStrategyBase
+
+class SimpleStrategy(ScriptStrategyBase):
+    """
+    A simple trading script.
+    """
+
+    # Configuration
+    trading_pair = "SOL-USDT"
+    exchange = "binance"
+    order_amount = 10
+
+    def on_tick(self):
+        """Called every tick."""
+        # Get current price
+        price = self.connectors[self.exchange].get_mid_price(self.trading_pair)
+
+        # Simple logic
+        if self.should_buy(price):
+            self.buy(
+                connector_name=self.exchange,
+                trading_pair=self.trading_pair,
+                amount=self.order_amount,
+                order_type=OrderType.MARKET
+            )
+
+    def should_buy(self, price):
+        """Determine if we should buy."""
+        # Your logic here
+        return False
+```
+
+## Running Scripts
+
+### Via Telegram
+
+```
+/bots → Create New Bot → Script
+→ Select script
+→ Configure
+→ Start
+```
+
+### Via API
+
+```bash
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bot_name": "my-script-bot",
+    "script_name": "simple_pmm",
+    "config": {
+      "exchange": "binance",
+      "trading_pair": "BTC-USDT",
+      "order_amount": 0.001
+    }
+  }'
+```
+
+## Script Configuration
+
+Scripts use a simpler configuration format:
+
+```yaml
+# config/simple_pmm.yml
+script_name: simple_pmm
+
+# Exchange settings
+exchange: binance
+trading_pair: BTC-USDT
+
+# Strategy parameters
+bid_spread: 0.001
+ask_spread: 0.001
+order_amount: 0.001
+order_refresh_time: 15
+```
+
+## Creating Custom Scripts
+
+1. Create a Python file in `scripts/`
+2. Inherit from `ScriptStrategyBase`
+3. Implement `on_tick()` method
+
+```python
+# scripts/my_script.py
+from hummingbot.strategy.script_strategy_base import ScriptStrategyBase
+from hummingbot.core.data_type.common import OrderType
+
+class MyScript(ScriptStrategyBase):
+    """
+    My custom trading script.
+    """
+
+    # Default configuration
+    markets = {"binance": {"SOL-USDT"}}
+
+    def on_tick(self):
+        """Main strategy logic."""
+        for connector_name, trading_pairs in self.markets.items():
+            for trading_pair in trading_pairs:
+                self.process_pair(connector_name, trading_pair)
+
+    def process_pair(self, connector_name, trading_pair):
+        """Process a single trading pair."""
+        connector = self.connectors[connector_name]
+        mid_price = connector.get_mid_price(trading_pair)
+
+        # Your logic here
+        self.logger().info(f"{trading_pair} mid price: {mid_price}")
+```
+
+## Script Lifecycle
+
+Scripts have a simpler lifecycle than controllers:
+
+```python
+def __init__(self):
+    """Initialize the script."""
+    super().__init__()
+    # Setup code
+
+def on_tick(self):
+    """Called every tick interval."""
+    # Main logic
+
+def on_stop(self):
+    """Called when script stops."""
+    # Cleanup code
+```
+
+## When to Use Scripts
+
+**Use Scripts for:**
+- Simple market making
+- Basic arbitrage
+- One-off automation tasks
+- Learning/prototyping
+
+**Use Controllers for:**
+- Complex multi-executor strategies
+- Advanced risk management
+- Production trading systems
+- Strategies requiring state management

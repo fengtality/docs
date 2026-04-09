@@ -1,0 +1,88 @@
+---
+title: "Routines Overview"
+description: "Deterministic Python workflows that reduce token usage and improve reproducibility"
+---
+
+**Routines** are deterministic Python workflows that process data consistently. We call them "routines" (not "skills") because they're designed to be deterministic—same input always produces same output.
+
+## Why Routines Matter
+
+When testing agents, we found they waste enormous amounts of tokens processing data and computing indicators during runtime. An agent might get candles, then write Python code to compute EMAs and support/resistance—spending tokens on computation that should be deterministic.
+
+By moving this into routines:
+- **Session time dropped from 2 minutes to under 1 minute**
+- **Token usage reduced significantly**
+- **Results became reproducible and debuggable**
+
+If Python code can be created by the agent, it should be encapsulated in a routine so it can be reused without spending tokens.
+
+## Routines vs LLM Reasoning
+
+| Aspect | LLM Reasoning | Routines |
+|--------|---------------|----------|
+| Execution | Probabilistic | Deterministic |
+| Purpose | Strategy decisions | Data processing and automation |
+| Variability | May produce different outputs | Same input → same output |
+| Cost | LLM tokens | None |
+| Speed | Seconds | Milliseconds |
+
+## Types of Routines
+
+### Global Routines
+
+Routines in `~/condor/routines/` are available to all agents. These include built-in routines for common tasks like technical analysis, funding rates, and volume analysis.
+
+### Agent-Specific Routines
+
+Routines in an agent's `routines/` folder are specific to that agent:
+
+```
+trading_agents/my_scalper/
+└── routines/
+    ├── support_resistance_ema_levels.py
+    └── process_news.py
+```
+
+This design lets you share an agent folder with someone else—they get everything needed to run it.
+
+<Note>
+Agent-specific routines override global ones with the same name.
+</Note>
+
+## Calling Routines
+
+Agents invoke routines via MCP tools:
+
+```python
+# From within an agent's decision process
+vwap = await mcp_tools.run_routine(
+    routine="indicators.vwap",
+    params={
+        "connector": "binance",
+        "trading_pair": "BTC-USDT",
+        "periods": 50
+    }
+)
+
+if current_price < vwap["vwap"] * 0.98:
+    # Price 2% below VWAP - consider buying
+    pass
+```
+
+## View Available Routines
+
+Ask Condor what routines are available:
+
+```
+You: What routines are available?
+
+Condor: Available routines for SOL Scalper:
+
+Agent-specific:
+- momentum_scanner: Scan for momentum breakouts
+
+Global:
+- technical_analysis: EMA, RSI, support/resistance
+- funding_rates: Fetch perpetual funding rates
+- volume_analysis: Volume profile and VWAP
+```

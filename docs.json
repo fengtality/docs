@@ -40,8 +40,7 @@
               "getting-started/credentials",
               "getting-started/portfolio",
               "getting-started/first-agent",
-              "getting-started/sessions",
-              "getting-started/routines"
+              "getting-started/sessions"
             ]
           },
           {
@@ -50,11 +49,26 @@
               "trading-agents/overview",
               "trading-agents/architecture",
               "trading-agents/sessions",
-              "trading-agents/routines",
               "trading-agents/mcp-tools",
               "trading-agents/executors",
               "trading-agents/inventory",
               "trading-agents/agent-builder"
+            ]
+          },
+          {
+            "group": "Routines",
+            "pages": [
+              "routines/overview",
+              "routines/global-routines",
+              "routines/creating-routines"
+            ]
+          },
+          {
+            "group": "Bots",
+            "pages": [
+              "bots/overview",
+              "bots/controllers",
+              "bots/scripts"
             ]
           },
           {
@@ -65,7 +79,6 @@
               "other-features/keys",
               "other-features/server",
               "other-features/lp",
-              "other-features/bots",
               "other-features/gateway"
             ]
           }

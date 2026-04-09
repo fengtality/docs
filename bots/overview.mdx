@@ -1,5 +1,5 @@
 ---
-title: "Bots"
+title: "Bots Overview"
 description: "Docker containers for long-running trading automation"
 ---
 
@@ -110,26 +110,6 @@ curl -u admin:admin http://localhost:8000/bot-orchestration/status
 **API**:
 ```bash
 curl -u admin:admin http://localhost:8000/bot-orchestration/{bot_id}/logs
-```
-
-## Bot Configuration
-
-Bots are configured via YAML files:
-
-```yaml
-# config/mm_strategy.yml
-exchange: binance_perpetual
-trading_pair: SOL-USDT
-
-# Strategy parameters
-bid_spread: 0.001
-ask_spread: 0.001
-order_amount: 10
-order_refresh_time: 15
-
-# Risk management
-max_order_age: 300
-inventory_target_base_pct: 50
 ```
 
 ## Container Isolation
