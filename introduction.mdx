@@ -1,69 +1,73 @@
 ---
 title: "Introduction"
-description: "An open source harness for building autonomous AI trading agents"
+description: "An open source harness for deploying and managing fleets of AI trading agents"
 ---
 
-**Condor** is an open source **agent harness** for building and running autonomous **Trading Agents**. It connects LLM-powered decision-making to deterministic trade execution via the [Hummingbot API](/api-reference), enabling traders to deploy AI agents that can observe markets, reason about strategy, and execute trades across 50+ exchanges and blockchains.
+## What is Condor?
+
+Condor is an open source **agent harness** for deploying and managing fleets of AI trading agents. It connects LLM-powered decision-making to deterministic trade execution, enabling you to run autonomous agents that observe markets, reason about strategy, and execute trades.
 
 <Note>
 Everything in Condor is free and open source. We're supported by exchanges as partners, so you can use everything without paying. Join [#condor-feedback](https://discord.gg/hummingbot) in Discord to share feedback.
 </Note>
 
-## Why Condor?
+## What can you do with it?
 
-It's easy to create a simple AI trading demo. But to make money over the long term, you need to:
+**Scale your trading operation**
+- Run dozens of agents simultaneously on shared accounts
+- Each agent tracks its own P&L independently
+- Experiment with different strategies in parallel
 
-- Calculate P&L accurately across different exchanges
-- Have the agent actually learn from what it's doing
-- Run many agents that operate independently but also work together
+**Trade anywhere**
+- 50+ CEX connectors (Binance, Bybit, OKX, Hyperliquid, etc.)
+- DEX support via Gateway (Uniswap, Jupiter, Raydium)
+- Multi-leg strategies across exchanges and chains
 
-Condor provides the **structure** for how you define and build agents—making the process more scalable, more reliable, and fully auditable.
+**Choose your execution style**
+- **Trading Agents**: AI-powered, make decisions each tick
+- **Bots**: Long-running containers for market making, grid trading
+- **Executors**: Single trades with defined entry/exit
 
-## Key Features
+## Who is it for?
 
-<CardGroup cols={2}>
-  <Card title="Autonomous Trading" icon="robot">
-    Deploy AI agents that observe, reason, and execute independently—no manual intervention
-  </Card>
-  <Card title="Multi-Agent Support" icon="users">
-    Run dozens of agents on shared accounts with isolated P&L tracking per agent
-  </Card>
-  <Card title="50+ Exchanges" icon="arrows-repeat">
-    Trade on CEX, DEX, and blockchain networks with standardized execution
-  </Card>
-  <Card title="LLM Integration" icon="microchip">
-    Connect to Claude, Gemini, GPT, or local models via Agent Client Protocol
-  </Card>
-  <Card title="Full Observability" icon="magnifying-glass">
-    Every tick captured: prompt, reasoning, tool calls, and results
-  </Card>
-  <Card title="Deterministic Routines" icon="code">
-    Move expensive computations out of the LLM into reusable Python code
-  </Card>
-</CardGroup>
+**Algorithmic traders** who want to add AI reasoning to their strategies without rebuilding execution infrastructure.
 
-## How It Works
+**Quants and researchers** who want to experiment with many agents, compare performance, and iterate quickly.
 
-Condor uses a [two-server architecture](/motivation) separating the agentic layer (LLM reasoning) from the execution layer (Hummingbot API):
+**Developers** who want to build trading applications on top of a battle-tested execution layer.
 
-| Component | Role |
-|-----------|------|
-| **Condor Server** | LLM integration, Telegram interface, agent state management |
-| **Hummingbot API** | Data collection, trade execution, bot orchestration |
+**Crypto funds** who need multi-agent orchestration with proper P&L isolation and audit trails.
 
-Trading Agents follow the [OODA loop](/motivation#the-ooda-loop): Observe → Orient → Decide → Act.
+## What makes it different?
 
-## Getting Started
+**Two-server architecture** separates LLM reasoning from trade execution. The Condor Server handles agent logic and state; the Hummingbot API handles data and execution. This means:
+- Execution continues even if the LLM is slow
+- Agents can share market data efficiently
+- You can swap LLM providers without touching execution code
+
+**Full observability**. Every tick is captured: the prompt sent to the LLM, its reasoning, tool calls made, and results. You can replay any decision.
+
+**Deterministic routines** move expensive computations (indicators, data processing) out of the LLM into reusable Python code. This cuts token costs and makes behavior reproducible.
+
+**Multi-agent by design**. Agents use `controller_id` to isolate their positions and P&L on shared exchange accounts. Run 50 agents on one API key.
+
+## Who is behind this?
+
+Condor is built by [Hummingbot Foundation](https://hummingbot.org/about/), a not-for-profit organization that maintains the open source Hummingbot trading framework used by thousands of traders worldwide.
+
+The Foundation is supported by exchange partners and community contributions. There's no VC funding or token—just open source software.
+
+## How do I get started?
 
 <CardGroup cols={2}>
   <Card title="Motivation" icon="lightbulb" href="/motivation">
     Understand why Condor is architected this way
   </Card>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Deploy Condor and execute your first trade
+  <Card title="Installation" icon="download" href="/installation">
+    Install Condor and Hummingbot API
   </Card>
-  <Card title="API Reference" icon="book" href="/api-reference">
-    Explore all Hummingbot API endpoints
+  <Card title="Getting Started" icon="rocket" href="/getting-started/overview">
+    Build your first trading agent
   </Card>
   <Card title="GitHub" icon="github" href="https://github.com/hummingbot/condor">
     Source code and issues
