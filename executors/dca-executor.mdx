@@ -1,0 +1,128 @@
+---
+title: "DCA Executor"
+description: "Dollar cost averaging across multiple price levels"
+---
+
+The **DCA Executor** implements Dollar Cost Averaging by spreading investment across multiple orders at different price levels, reducing the impact of volatility.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| Position Type | Spot or Perp |
+| keep_position | Configurable |
+| Use Cases | Building positions, averaging down, systematic entry |
+
+## Configuration
+
+```python
+from hummingbot.strategy_v2.executors.dca_executor.data_types import (
+    DCAExecutorConfig,
+    DCAMode,
+    TrailingStop,
+)
+
+config = DCAExecutorConfig(
+    controller_id="my-agent",
+    connector_name="binance",
+    trading_pair="BTC-USDT",
+    side=TradeType.BUY,
+    leverage=1,
+    amounts_quote=[100, 150, 200, 300],  # Increasing amounts
+    prices=[65000, 63000, 61000, 59000],  # Entry prices
+    take_profit=Decimal("0.05"),          # 5% TP from avg
+    stop_loss=Decimal("0.10"),            # 10% SL from avg
+    time_limit=86400,                      # 24 hours
+    mode=DCAMode.MAKER,
+)
+```
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `amounts_quote` | List of order amounts in quote currency |
+| `prices` | List of entry prices for each level |
+| `take_profit` | Exit target as % from average entry |
+| `stop_loss` | Stop loss as % from average entry |
+| `time_limit` | Maximum duration in seconds |
+| `mode` | `MAKER` (limit) or `TAKER` (market) |
+| `activation_bounds` | Optional price bounds for activation |
+
+## How It Works
+
+1. **Level Setup**: Creates orders at each price/amount pair
+2. **Order Management**: Places limit orders at specified prices
+3. **Fill Tracking**: Tracks fills and calculates average entry
+4. **Exit Management**: Applies TP/SL relative to average entry
+
+## DCA Modes
+
+| Mode | Behavior |
+|------|----------|
+| `MAKER` | Places limit orders at each price level |
+| `TAKER` | Uses market orders when price reaches level |
+
+## Example: Systematic BTC Entry
+
+```python
+# Build BTC position with increasing size at lower prices
+btc_dca = DCAExecutorConfig(
+    controller_id="btc-dca",
+    connector_name="binance",
+    trading_pair="BTC-USDT",
+    side=TradeType.BUY,
+    amounts_quote=[
+        Decimal("200"),   # First entry
+        Decimal("300"),   # Avg down
+        Decimal("500"),   # Larger at support
+    ],
+    prices=[
+        Decimal("67000"),
+        Decimal("64000"),
+        Decimal("61000"),
+    ],
+    take_profit=Decimal("0.08"),  # 8% from avg
+    stop_loss=Decimal("0.15"),    # 15% from avg
+    mode=DCAMode.MAKER,
+)
+```
+
+## Example: Quick DCA with Trailing Stop
+
+```python
+# Tighter DCA with trailing stop
+quick_dca = DCAExecutorConfig(
+    controller_id="quick-dca",
+    connector_name="binance_perpetual",
+    trading_pair="ETH-USDT",
+    side=TradeType.BUY,
+    leverage=3,
+    amounts_quote=[
+        Decimal("100"),
+        Decimal("100"),
+        Decimal("100"),
+    ],
+    prices=[
+        Decimal("3200"),
+        Decimal("3100"),
+        Decimal("3000"),
+    ],
+    take_profit=Decimal("0.05"),
+    stop_loss=Decimal("0.08"),
+    trailing_stop=TrailingStop(
+        activation_price=Decimal("0.03"),
+        trailing_delta=Decimal("0.015"),
+    ),
+    time_limit=7200,  # 2 hours
+)
+```
+
+## Spot vs Perpetual
+
+| Market | Behavior |
+|--------|----------|
+| **Spot** | Accumulates base asset across levels |
+| **Perpetual** | Builds leveraged position across levels |
+
+On perpetual markets, leverage is applied to all orders uniformly.

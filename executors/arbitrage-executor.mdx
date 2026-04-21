@@ -1,0 +1,123 @@
+---
+title: "Arbitrage Executor"
+description: "Simultaneous execution across markets for arbitrage profits"
+---
+
+The **Arbitrage Executor** captures price discrepancies between markets by simultaneously executing buy and sell orders, particularly useful for CEX-DEX arbitrage.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| Position Type | Spot |
+| keep_position | Configurable |
+| Use Cases | CEX-DEX arbitrage, cross-market spreads |
+
+## Configuration
+
+```python
+from hummingbot.strategy_v2.executors.arbitrage_executor.data_types import (
+    ArbitrageExecutorConfig,
+    ExchangePair,
+)
+
+config = ArbitrageExecutorConfig(
+    controller_id="my-agent",
+    buying_market=ExchangePair(
+        exchange="uniswap_polygon_mainnet",
+        trading_pair="WMATIC-USDT",
+    ),
+    selling_market=ExchangePair(
+        exchange="binance",
+        trading_pair="MATIC-USDT",
+    ),
+    order_amount=Decimal("500"),        # In base asset
+    min_profitability=Decimal("0.004"), # 0.4% minimum
+)
+```
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `buying_market` | Exchange and pair for buy side |
+| `selling_market` | Exchange and pair for sell side |
+| `order_amount` | Amount in base asset |
+| `min_profitability` | Minimum profit threshold |
+
+## How It Works
+
+1. **Validation**: Confirms trading pairs are interchangeable
+2. **Price Comparison**: Monitors prices on both markets
+3. **Profitability Check**: Calculates profit after all fees
+4. **Simultaneous Execution**: Places both orders when profitable
+5. **Tracking**: Records fill prices and actual profit
+
+## CEX-DEX Arbitrage
+
+Common use case is arbitraging between centralized and decentralized exchanges:
+
+```python
+cex_dex_arb = ArbitrageExecutorConfig(
+    controller_id="cex-dex-arb",
+    buying_market=ExchangePair(
+        exchange="jupiter",  # DEX
+        trading_pair="SOL-USDC",
+    ),
+    selling_market=ExchangePair(
+        exchange="binance",  # CEX
+        trading_pair="SOL-USDT",
+    ),
+    order_amount=Decimal("10"),
+    min_profitability=Decimal("0.005"),
+)
+```
+
+## Token Interchangeability
+
+The executor validates tokens are equivalent:
+
+| Check | Example |
+|-------|---------|
+| Same token | MATIC = MATIC |
+| Wrapped equivalents | ETH = WETH |
+| Stablecoin equivalents | USDT ≈ USDC (configurable) |
+
+## Profitability Formula
+
+```
+Buy Cost = Buy Amount × Buy Price + Buy Fees + Gas
+Sell Revenue = Sell Amount × Sell Price - Sell Fees
+
+Net Profit = Sell Revenue - Buy Cost
+Profitability = Net Profit / Buy Cost
+
+Execute if: Profitability > min_profitability
+```
+
+## Example: Polygon MATIC Arbitrage
+
+```python
+matic_arb = ArbitrageExecutorConfig(
+    controller_id="matic-arb",
+    buying_market=ExchangePair(
+        exchange="uniswap_polygon_mainnet",
+        trading_pair="WMATIC-USDT",
+    ),
+    selling_market=ExchangePair(
+        exchange="binance",
+        trading_pair="MATIC-USDT",
+    ),
+    order_amount=Decimal("1000"),
+    min_profitability=Decimal("0.004"),
+)
+```
+
+## Considerations
+
+| Factor | Impact |
+|--------|--------|
+| **Gas Costs** | DEX trades have variable gas costs |
+| **Slippage** | Large orders may move price |
+| **Bridge Time** | Cross-chain requires bridging |
+| **Latency** | Speed matters for volatile spreads |

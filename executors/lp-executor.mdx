@@ -1,0 +1,142 @@
+---
+title: "LP Executor"
+description: "Concentrated liquidity provision on CLMM DEXs"
+---
+
+The **LP Executor** automates liquidity provision on Concentrated Liquidity Market Maker (CLMM) DEXs like Meteora, Raydium, Orca, and Uniswap V3.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| Position Type | LP |
+| P&L Calculation | Fees earned - impermanent loss - tx fees |
+| keep_position | Configurable |
+| Use Cases | Earning LP fees, concentrated liquidity, range trading |
+
+## Configuration
+
+```python
+from hummingbot.strategy_v2.executors.lp_executor.data_types import LPExecutorConfig
+
+config = LPExecutorConfig(
+    controller_id="my-agent",
+    connector_name="meteora",
+    pool_address="5Q544fK...",
+    trading_pair="SOL-USDC",
+    lower_price=Decimal("140.0"),
+    upper_price=Decimal("160.0"),
+    base_amount=Decimal("1.0"),
+    quote_amount=Decimal("150.0"),
+    side=0,  # 0=both, 1=buy only, 2=sell only
+    auto_close_above_range_seconds=3600,
+    auto_close_below_range_seconds=3600,
+    keep_position=True,
+)
+```
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `connector_name` | DEX connector (meteora, raydium, orca, uniswap) |
+| `pool_address` | On-chain pool address |
+| `trading_pair` | Token pair (e.g., SOL-USDC) |
+| `lower_price` | Price range lower bound |
+| `upper_price` | Price range upper bound |
+| `base_amount` | Base token to deposit |
+| `quote_amount` | Quote token to deposit |
+| `side` | 0=both sides, 1=buy only, 2=sell only |
+| `auto_close_above_range_seconds` | Close if above range for N seconds |
+| `auto_close_below_range_seconds` | Close if below range for N seconds |
+
+## Lifecycle States
+
+| State | Description |
+|-------|-------------|
+| `NOT_ACTIVE` | Initial state |
+| `OPENING` | Adding liquidity |
+| `IN_RANGE` | Position active, price within range |
+| `OUT_OF_RANGE` | Price moved outside range |
+| `CLOSING` | Removing liquidity |
+| `COMPLETE` | Position closed |
+| `FAILED` | Failed after retries |
+
+## How It Works
+
+1. **Open**: Deploys liquidity at configured price range
+2. **Monitor**: Tracks if current price is within range
+3. **Fees**: Accumulates trading fees while in range
+4. **Close**: Removes liquidity when conditions met
+
+## P&L Tracking
+
+The executor tracks:
+
+| Metric | Description |
+|--------|-------------|
+| `base_fee` | Fees earned in base token |
+| `quote_fee` | Fees earned in quote token |
+| `position_rent` | Solana rent for position NFT |
+| `tx_fee` | Transaction fees |
+| `impermanent_loss` | Value loss from price movement |
+
+## Example: SOL-USDC LP
+
+```python
+sol_lp = LPExecutorConfig(
+    controller_id="sol-lp",
+    connector_name="meteora",
+    pool_address="5Q544fK...",
+    trading_pair="SOL-USDC",
+    lower_price=Decimal("130"),
+    upper_price=Decimal("170"),
+    base_amount=Decimal("5.0"),
+    quote_amount=Decimal("750.0"),
+    side=0,
+    auto_close_above_range_seconds=7200,  # 2 hours
+    auto_close_below_range_seconds=3600,  # 1 hour
+)
+```
+
+## Example: Single-Sided LP
+
+```python
+# Only provide sell-side liquidity (sell SOL as price rises)
+sell_side_lp = LPExecutorConfig(
+    controller_id="sell-lp",
+    connector_name="raydium",
+    pool_address="...",
+    trading_pair="SOL-USDC",
+    lower_price=Decimal("150"),
+    upper_price=Decimal("200"),
+    base_amount=Decimal("10.0"),
+    quote_amount=Decimal("0"),
+    side=2,  # Sell only
+)
+```
+
+## Via API
+
+```bash
+POST /executors/create
+{
+  "type": "lp_executor",
+  "connector_name": "meteora",
+  "trading_pair": "SOL-USDC",
+  "total_amount_quote": 0.30,
+  "side": 2,
+  "width_percent": 0.4
+}
+```
+
+## Position Handover
+
+When `keep_position=true` and executor closes:
+
+1. LP position is **always closed on-chain** (liquidity withdrawn)
+2. Net token change tracked in Position Hold
+3. ADD events → SELL (tokens deposited)
+4. REMOVE events → BUY (tokens + fees returned)
+
+This allows agents to track LP performance as standard trades.

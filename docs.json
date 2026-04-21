@@ -50,9 +50,23 @@
               "trading-agents/architecture",
               "trading-agents/sessions",
               "trading-agents/mcp-tools",
-              "trading-agents/executors",
               "trading-agents/inventory",
               "trading-agents/agent-builder"
+            ]
+          },
+          {
+            "group": "Executors",
+            "pages": [
+              "executors/overview",
+              "executors/order-executor",
+              "executors/position-executor",
+              "executors/grid-executor",
+              "executors/dca-executor",
+              "executors/twap-executor",
+              "executors/xemm-executor",
+              "executors/arbitrage-executor",
+              "executors/lp-executor",
+              "executors/position-handover"
             ]
           },
           {

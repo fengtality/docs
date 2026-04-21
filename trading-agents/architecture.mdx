@@ -36,25 +36,26 @@ Each Trading Agent is a folder-based entity with structured files that define it
 
 ## Directory Structure
 
+Each Condor Trading Agent (CTA) is a directory containing structured files:
+
 ```
 trading_agents/
   my_strategy/
     agent.md                  # Strategy definition (frontmatter + LLM instructions)
-    learnings.md              # Cross-session lessons the agent writes itself
+    config.yml                # Runtime configuration (editable)
+    learnings.md              # Cross-session insights (max 20)
     routines/                 # Deterministic Python helpers
-    sessions/
-      session_1/
-        config.yml            # Frozen runtime config for this session
-        journal.md            # Summary, decisions, ticks, snapshots index
+    trading_sessions/
+      session_N/
+        journal.md            # Summary, decisions, ticks, executors
         snapshots/
-          snapshot_1.md       # Full prompt + response + tool calls for tick 1
+          snapshot_1.md       # Full prompt + response for tick 1
           snapshot_2.md
-          ...
     dry_runs/
-      experiment_1.md         # One-shot dry-run / run-once snapshots
+      experiment_1.md         # One-shot dry-run results
 ```
 
-### Why Two Memory Files?
+### Two Memory Files
 
 | File | Scope | Purpose |
 |------|-------|---------|
@@ -63,68 +64,115 @@ trading_agents/
 
 **Journal**: What the agent did in *this* session—tick log, decisions, executor states.
 
-**Learnings**: Lessons that apply to *all* sessions—common errors, configuration tips, market insights. When a session ends or the agent detects something important, it writes to learnings.
-
-The same agent can be deployed in multiple sessions (e.g., scalper on BTC-USDT and scalper on ETH-USDT). Each session has its own journal, but they share the learnings file.
-
-## Core Components
-
-| File | Role |
-|------|------|
-| `engine.py` | `TickEngine` — one instance per running agent. Runs tick loop, builds prompts, drives ACP sessions, captures tool calls, persists snapshots. |
-| `strategy.py` | `Strategy` + `StrategyStore`. Strategies live as `agent.md` files under `trading_agents/{slug}/`. |
-| `journal.py` | `JournalManager` — compact, human-readable per-session memory: summary, decisions, ticks, snapshots, executors. |
-| `prompts.py` | Builds per-tick prompt: system prompt + strategy + provider summaries + journal context + risk state. |
-| `risk.py` | `RiskEngine` + `RiskLimits`. Hard guardrails and permission callback that auto-approves tool calls only if they pass risk check. |
-| `providers/` | Deterministic pre-tick data fetchers: `executors.py` and `positions.py`, both filtered by `controller_id`. |
+**Learnings**: Lessons that apply to *all* sessions—common errors, configuration tips, market insights.
 
 ## agent.md
 
-The strategy definition uses YAML frontmatter and Markdown body:
+The strategy definition uses YAML frontmatter for configuration and Markdown for instructions:
 
 ```yaml
 ---
-id: a1b2c3d4e5f6
-name: River Scalper
-description: VWAP-pullback scalper on majors with grid hold-on-loss
-agent_key: claude-code
-skills: []
-default_config:
-  frequency_sec: 60
-  total_amount_quote: 500
-  risk_limits:
-    max_total_exposure_quote: 1500
-    max_drawdown_pct: 5
-    max_open_executors: 4
-default_trading_context: |
-  Trade BTC-USDT and ETH-USDT on Binance perp. Bias long.
-created_by: 12345
-created_at: 2026-04-01T00:00:00Z
+name: Grid Market Maker
+tick_interval: 60
+connectors:
+  - binance_perpetual
+  - jupiter
+
+configs:
+  trading_pair: SOL-USDC
+  grid_levels: 5
+  spread_percentage: 0.3
+
+limits:
+  max_position_size_quote: 500
+  max_single_order_quote: 100
+  max_daily_loss_quote: 50
+  max_open_executors: 10
+  max_drawdown_pct: 10
 ---
 
-You are a disciplined scalper. Each tick:
+## Goal
+Provide liquidity around the mid-price while managing inventory risk.
 
-1. Inspect the active executors and any held positions.
-2. Pull 5m candles via the candles tool; compute your bias.
-3. If flat and conditions are favorable, spawn a GridExecutor sized to
-   `total_amount_quote`, with `stop_loss_keep_position = true`.
-4. If you are holding a leftover position from a closed grid, wait for a
-   recovery within 1% of breakeven, then exit with an OrderExecutor.
-5. Never exceed the risk limits — the framework will block you anyway.
-6. After acting, write one line to the journal explaining *why*.
+## Strategy Rules
+1. Maintain symmetric grid unless inventory exceeds threshold
+2. Widen spreads during high volatility (ATR > 2%)
+3. Pause trading if funding rate exceeds 0.1% against position
 ```
+
+## Configs vs Limits
+
+### Configs
+
+Agent-suggestible parameters that control trading behavior:
+
+- The agent can *suggest* changes based on learnings
+- User must approve before changes take effect
+- Examples: `trading_pair`, `spread_percentage`, `tick_interval`, `grid_levels`
+
+### Limits
+
+User-only guardrails enforced by the Risk Engine:
+
+- Safety boundaries the agent **cannot** exceed
+- Only modifiable by the user, never by the agent
+- Examples: `max_position_size_quote`, `max_daily_loss_quote`, `max_drawdown_pct`
+
+## learnings.md
+
+Persists across sessions, accumulating insights:
+
+```markdown
+# Learnings
+
+## Active Insights
+- [2026-03-27 14:30] Wider spreads (0.5% vs 0.3%) reduced adverse selection during Asian session
+- [2026-03-26 09:15] Grid rebalancing at 5% threshold outperforms 10% for SOL-USDC
+- [2026-03-25 16:45] Funding rate spikes above 0.05% correlate with 2-hour reversals
+```
+
+Maximum 20 entries to prevent context bloat. New insights replace older ones.
 
 ## Tick Loop
 
 Each tick (`TickEngine._tick`) executes:
 
 1. **Resolve API client** for the configured server
-2. **Run core providers** — `executors` and `positions`, filtered by `controller_id == agent_id`
-3. **Read journal context** — `learnings.md`, summary, last 3 decisions
-4. **Get risk state** — exposure, drawdown, open count. If blocked, return without invoking LLM
-5. **Build prompt** via `build_tick_prompt(...)`, appending any user directives
-6. **Spawn ACP session** with MCP servers (Hummingbot tools, market data, notifications)
-7. **Persist** — write `snapshot_N.md`, append tick to journal, update summary
+2. **Run providers** — `executors` and `positions`, filtered by `controller_id`
+3. **Read journal context** — learnings, summary, last 3 decisions
+4. **Get risk state** — exposure, drawdown, open count. If blocked, skip LLM
+5. **Build prompt** — system prompt + strategy + provider summaries + journal
+6. **Spawn ACP session** with MCP servers (Hummingbot tools, market data)
+7. **Persist** — write snapshot, append tick to journal, update summary
+
+## Risk Engine
+
+The Risk Engine (`condor/trading_agent/risk.py`) tracks state and enforces limits:
+
+```python
+class RiskState:
+    daily_pnl: float          # Today's realized P&L
+    total_exposure: float     # Current open position value
+    executor_count: int       # Number of active executors
+    drawdown_pct: float       # Current drawdown percentage
+    daily_cost: float         # LLM costs today
+    is_blocked: bool          # Kill switch status
+    block_reason: str         # Why blocked (if applicable)
+```
+
+### Pre-tick Validation
+
+Blocks the entire tick if:
+- `daily_pnl < -max_daily_loss_quote`
+- `drawdown_pct > max_drawdown_pct`
+- `daily_cost > max_cost_per_day_usd`
+
+### Per-executor Validation
+
+Blocks executor creation if:
+- `executor_count >= max_open_executors`
+- `order_amount > max_single_order_quote`
+- `total_exposure + new_amount > max_position_size_quote`
 
 ## Providers
 
@@ -153,74 +201,23 @@ async def compute_vwap(candles):
 
 Routines are deterministic—same input always produces same output.
 
-## Inspecting Agent Activity
+## Inspecting Activity
 
 | Location | Content |
 |----------|---------|
 | `sessions/session_N/journal.md` | Chronological summary, decisions, tick log |
-| `sessions/session_N/snapshots/snapshot_K.md` | Full tick: prompt, response, tool calls, risk state |
-| `learnings.md` | Lessons the agent chose to keep across sessions |
-| `dry_runs/experiment_N.md` | Dry-run / run-once results |
+| `sessions/session_N/snapshots/snapshot_K.md` | Full tick: prompt, response, tool calls |
+| `learnings.md` | Lessons the agent chose to keep |
+| `dry_runs/experiment_N.md` | Dry-run results |
 
 ## Injecting Information
 
-You can manually add to the learnings file—the agent doesn't know whether it wrote the entry or you did. This is useful for:
+You can manually add to `learnings.md`—the agent doesn't know whether it wrote the entry or you did. Useful for:
 
 - Pre-seeding knowledge before deployment
 - Adding market context the agent can't observe
-- Correcting agent behavior based on your observations
+- Correcting agent behavior
 
 **Via web dashboard**: Trading Agents → Select agent → Learnings → Edit
 
 **Via file**: Edit `trading_agents/my_strategy/learnings.md` directly
-
-## Configs
-
-**Configs** are agent-suggestible parameters that control how the agent operates. The agent can suggest changes based on learnings, but the user must approve.
-
-In `agent.md` frontmatter:
-
-```yaml
-configs:
-  trading_pair: SOL-USDC
-  grid_levels: 5
-  spread_percentage: 0.3
-  tick_interval: 60
-```
-
-Runtime overrides in `config.yml`:
-
-```yaml
-trading_pair: ETH-USDC
-spread_percentage: 0.5
-```
-
-## Risk Limits
-
-**Risk Limits** are user-only guardrails enforced by the Risk Engine before every action. The agent cannot modify or exceed these.
-
-| Limit | Default | Description |
-|-------|---------|-------------|
-| `max_position_size_quote` | 500 | Maximum total position size |
-| `max_single_order_quote` | 100 | Maximum size per executor |
-| `max_open_executors` | 5 | Maximum simultaneous executors |
-| `max_daily_loss_quote` | 50 | Maximum daily loss before blocking |
-| `max_drawdown_pct` | 10 | Maximum drawdown percentage |
-
-In `agent.md` frontmatter:
-
-```yaml
-limits:
-  max_position_size_quote: 500
-  max_single_order_quote: 100
-  max_open_executors: 10
-  max_drawdown_pct: 10
-```
-
-### Risk Engine Validation
-
-**Pre-tick**: Blocks the entire tick if daily loss or drawdown limits exceeded.
-
-**Per-executor**: Blocks creation if executor count, order size, or exposure limits would be violated.
-
-If any limit is exceeded, the agent receives a clear error message explaining which limit was hit.

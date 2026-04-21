@@ -1,6 +1,6 @@
 ---
-title: "Inventory (Positions)"
-description: "Position tracking and P&L calculation for Trading Agents"
+title: "Inventory"
+description: "Virtual portfolio tracking for Trading Agents"
 ---
 
 **Inventory** (also called Position Hold) is the virtual portfolio that tracks a Trading Agent's cumulative trading impact. It enables accurate P&L attribution when multiple agents share the same exchange accounts.
@@ -39,6 +39,8 @@ flowchart LR
     PH1 & PH2 --> P
 ```
 
+Two agents can trade the same pair on the same exchange, and each maintains their own separate position with their own breakeven price and P&L.
+
 ## Position Types
 
 | Type | Connectors | Description |
@@ -60,9 +62,11 @@ trading_pair = "SOL-USDT"
                      - Amount always in this unit
 ```
 
+**Key principle**: `amount` is always in base asset. All P&L is in quote asset.
+
 ## Position State
 
-Each position tracks:
+Each position tracks cumulative trading activity:
 
 | Field | Description |
 |-------|-------------|
@@ -74,36 +78,31 @@ Each position tracks:
 
 ### Derived Values
 
-**Net Amount**:
-```
-net = buy_amount_base - sell_amount_base
-```
+**Net Amount**: `buy_amount_base - sell_amount_base`
 
 **Side**:
-- `net > 0` → Long (BUY)
-- `net < 0` → Short (SELL)
-- `net = 0` → Closed
+- Positive net → Long (BUY)
+- Negative net → Short (SELL)
+- Zero net → Closed
 
-**Breakeven Price**:
-```
-breakeven = buy_amount_quote / buy_amount_base  (if long)
-breakeven = sell_amount_quote / sell_amount_base  (if short)
-```
+**Breakeven Price**: Volume-weighted average entry price
 
 ## P&L Calculation
+
+All P&L values are in **quote asset**.
 
 ### Unrealized P&L
 
 Mark-to-market value at current price:
 
 ```
-Long:  unrealized_pnl = (current_price - breakeven) × amount
-Short: unrealized_pnl = (breakeven - current_price) × amount
+Long:  (current_price - breakeven) × amount
+Short: (breakeven - current_price) × amount
 ```
 
 ### Realized P&L
 
-When positions are reduced:
+When positions are reduced (buys matched against sells):
 
 ```
 matched = min(buy_amount_base, sell_amount_base)
@@ -116,54 +115,32 @@ realized_pnl = (avg_sell_price - avg_buy_price) × matched
 global_pnl = unrealized_pnl + realized_pnl - fees
 ```
 
-## Executor → Position Flow
-
-When an executor terminates:
-
-**keep_position: true**
-- Position added to Inventory
-- Aggregates with existing position if same key
-- No P&L attributed yet
-
-**keep_position: false**
-- Position fully closed
-- Realized P&L calculated and reported
-- Nothing added to Inventory
-
-```mermaid
-flowchart TB
-    E[Executor Terminates] --> KP{keep_position?}
-    KP -->|true| Hold[Add to Inventory]
-    KP -->|false| Close[Report P&L]
-    Hold --> Accumulate[Accumulate with existing]
-```
-
 ## Example
 
 **Trade 1**: Buy 100 SOL at $150
 ```
-Inventory: buy_amount_base=100, buy_amount_quote=15000
-Position: Long 100 SOL, breakeven=$150
+Position: Long 100 SOL, breakeven = $150
 ```
 
 **Trade 2**: Buy 50 SOL at $145
 ```
-Inventory: buy_amount_base=150, buy_amount_quote=22250
-Position: Long 150 SOL, breakeven=$148.33
+Position: Long 150 SOL, breakeven = $148.33 (weighted average)
 ```
 
 **Trade 3**: Sell 100 SOL at $155
 ```
-Inventory: sell_amount_base=100, sell_amount_quote=15500
-Matched: 100 SOL
 Realized P&L: ($155 - $148.33) × 100 = +$667
-Remaining: Long 50 SOL, breakeven=$148.33
+Remaining: Long 50 SOL, breakeven = $148.33
 ```
 
 ## Via API
 
-List positions for an agent:
-
 ```bash
+# List positions for an agent
 curl -u admin:admin http://localhost:8000/executors/positions?controller_id=my-agent
 ```
+
+## Related
+
+- [Position Handover](/executors/position-handover) - How executors add to inventory
+- [Executors](/executors/overview) - Trading operations that create positions

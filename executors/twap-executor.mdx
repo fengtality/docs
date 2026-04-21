@@ -1,0 +1,108 @@
+---
+title: "TWAP Executor"
+description: "Time-weighted average price execution over a duration"
+---
+
+The **TWAP Executor** executes trades over a specified time horizon by splitting a large order into smaller orders at regular intervals, minimizing market impact.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| Position Type | Spot or Perp |
+| keep_position | Configurable |
+| Use Cases | Large order execution, reducing slippage, systematic entry |
+
+## Configuration
+
+```python
+from hummingbot.strategy_v2.executors.twap_executor.data_types import TWAPExecutorConfig
+
+config = TWAPExecutorConfig(
+    controller_id="my-agent",
+    connector_name="binance",
+    trading_pair="BTC-USDT",
+    side=TradeType.BUY,
+    leverage=1,
+    total_amount_quote=Decimal("10000"),
+    total_duration=3600,        # 1 hour total
+    order_interval=60,          # Order every minute
+    mode="MAKER",               # MAKER or TAKER
+)
+```
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `total_amount_quote` | Total amount to execute in quote currency |
+| `total_duration` | Total time to spread execution (seconds) |
+| `order_interval` | Time between orders (seconds) |
+| `mode` | `MAKER` (limit orders) or `TAKER` (market orders) |
+
+## How It Works
+
+1. **Order Plan**: Creates schedule of orders based on duration and interval
+2. **Execution**: Places orders at scheduled times
+3. **Monitoring**: Tracks fill rates and adjusts if needed
+4. **Completion**: Reports average price and total filled
+
+## Calculated Values
+
+The executor automatically calculates:
+
+- **Number of orders**: `total_duration / order_interval`
+- **Amount per order**: `total_amount_quote / number_of_orders`
+- **Average executed price**: Volume-weighted average of all fills
+
+## Example: Execute $50k Over 2 Hours
+
+```python
+large_order = TWAPExecutorConfig(
+    controller_id="whale-entry",
+    connector_name="binance",
+    trading_pair="ETH-USDT",
+    side=TradeType.BUY,
+    total_amount_quote=Decimal("50000"),
+    total_duration=7200,     # 2 hours
+    order_interval=120,      # Every 2 minutes
+    mode="MAKER",            # Use limit orders
+)
+# Creates 60 orders of ~$833 each
+```
+
+## Example: Quick TWAP with Market Orders
+
+```python
+quick_twap = TWAPExecutorConfig(
+    controller_id="quick-fill",
+    connector_name="binance_perpetual",
+    trading_pair="SOL-USDT",
+    side=TradeType.BUY,
+    leverage=5,
+    total_amount_quote=Decimal("5000"),
+    total_duration=300,      # 5 minutes
+    order_interval=30,       # Every 30 seconds
+    mode="TAKER",            # Market orders for guaranteed fills
+)
+# Creates 10 orders of $500 each
+```
+
+## Performance Metrics
+
+The executor reports:
+
+| Metric | Description |
+|--------|-------------|
+| `filled_amount` | Total amount executed |
+| `average_price` | Volume-weighted average price |
+| `cumulative_fees` | Total fees paid |
+| `trade_pnl` | P&L vs if executed at start price |
+| `net_pnl` | P&L minus fees |
+
+## When to Use TWAP
+
+- Executing orders larger than 1% of daily volume
+- Avoiding front-running or detection
+- Systematic rebalancing
+- Reducing timing risk

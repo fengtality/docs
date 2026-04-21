@@ -1,0 +1,122 @@
+---
+title: "XEMM Executor"
+description: "Cross-exchange market making with arbitrage capture"
+---
+
+The **XEMM Executor** (Cross-Exchange Market Making) captures arbitrage by simultaneously placing orders on different exchanges, exploiting price discrepancies.
+
+## Overview
+
+| Property | Value |
+|----------|-------|
+| Position Type | Spot |
+| keep_position | Configurable |
+| Use Cases | Cross-exchange arbitrage, market making, spread capture |
+
+## Configuration
+
+```python
+from hummingbot.strategy_v2.executors.xemm_executor.data_types import XEMMExecutorConfig
+
+config = XEMMExecutorConfig(
+    controller_id="my-agent",
+    buying_market=ExchangePair(
+        exchange="binance",
+        trading_pair="ETH-USDT",
+    ),
+    selling_market=ExchangePair(
+        exchange="kucoin",
+        trading_pair="ETH-USDT",
+    ),
+    maker_side="buy",              # Which side to make
+    order_amount=Decimal("0.5"),   # Amount in base asset
+    min_profitability=Decimal("0.002"),  # 0.2% minimum
+)
+```
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `buying_market` | Exchange and pair for buy side |
+| `selling_market` | Exchange and pair for sell side |
+| `maker_side` | Which side places maker orders (`buy` or `sell`) |
+| `order_amount` | Order size in base asset |
+| `min_profitability` | Minimum profit threshold after fees |
+
+## How It Works
+
+1. **Price Monitoring**: Watches prices on both exchanges
+2. **Spread Calculation**: Computes potential profit including fees
+3. **Maker Order**: Places limit order on maker side
+4. **Taker Order**: When maker fills, immediately takes on other side
+5. **Profit Capture**: Locks in spread as profit
+
+## Arbitrage Validation
+
+The executor validates that:
+
+- Trading pairs are interchangeable (same tokens)
+- Sufficient balance on both exchanges
+- Spread exceeds minimum profitability threshold
+- Transaction costs are accounted for
+
+## Example: ETH Arbitrage
+
+```python
+eth_xemm = XEMMExecutorConfig(
+    controller_id="eth-arb",
+    buying_market=ExchangePair(
+        exchange="binance",
+        trading_pair="ETH-USDT",
+    ),
+    selling_market=ExchangePair(
+        exchange="okx",
+        trading_pair="ETH-USDT",
+    ),
+    maker_side="buy",
+    order_amount=Decimal("1.0"),
+    min_profitability=Decimal("0.003"),  # 0.3% min profit
+)
+```
+
+## Example: Stablecoin Spread
+
+```python
+stable_xemm = XEMMExecutorConfig(
+    controller_id="stable-spread",
+    buying_market=ExchangePair(
+        exchange="kraken",
+        trading_pair="USDC-USD",
+    ),
+    selling_market=ExchangePair(
+        exchange="coinbase",
+        trading_pair="USDC-USD",
+    ),
+    maker_side="sell",
+    order_amount=Decimal("10000"),
+    min_profitability=Decimal("0.0005"),  # 0.05% min
+)
+```
+
+## Profitability Calculation
+
+```
+Gross Spread = Sell Price - Buy Price
+Net Profit = Gross Spread - Buy Fee - Sell Fee - Transfer Costs
+
+Execute if: Net Profit / Trade Value > min_profitability
+```
+
+## Inventory Management
+
+The executor creates positions on both exchanges:
+
+| Exchange | Position |
+|----------|----------|
+| Buying Exchange | Long base asset |
+| Selling Exchange | Short base asset (or sold) |
+
+Total inventory risk depends on `keep_position` setting:
+- `true`: Positions remain for future management
+- `false`: Inventory rebalanced or hedged
