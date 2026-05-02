@@ -1,0 +1,80 @@
+---
+title: "Episode 1: Trading Agents in Condor"
+description: "Introducing Condor, the open source harness for building autonomous trading agents"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/O93R_ddB-8o"
+  title="The Bot Pod Episode 1: Trading Agents in Condor"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** April 4, 2026
+
+We're excited to launch **The Bot Pod**, a new weekly podcast from Hummingbot where maintainers Mike and Fede dive deep into the intersection of AI and crypto trading. Each episode features live demos, technical walkthroughs, and insights into what we're building at Hummingbot.
+
+In this debut episode, we unveil **Condor**—our new open source harness for building autonomous trading agents. Watch us build and deploy a live trading agent from scratch, and see it place its first trade on air.
+
+---
+
+## Episode Highlights
+
+### What is Condor?
+[0:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=0s) — Mike introduces The Bot Pod and explains why we're building Condor: an agent harness similar to OpenClaw, but specifically designed for trading tasks. While OpenClaw focuses on general productivity, Condor is built for collecting market data, executing trades, and managing risk—all while talking to LLMs like Claude.
+
+### The Trading Agent Framework
+[9:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=540s) — Fede breaks down how trading agents work, introducing the concept of a "tick" (one turn of the agent loop) and explaining the three possible outcomes: do nothing, stop an execution, or create a new position. He covers:
+
+- **Executors**: Isolated trading units that standardize execution across 50+ exchange connectors
+- **The Prompt Structure**: System prompt, Agent.md, Journal, Learnings, Routines, Tools, and Active Executors
+- **Three Run Modes**: Dry run (no execution), Run once (single tick), and Loop (live trading)
+
+### Why Routines Matter
+[24:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=1440s) — Fede explains how routines (deterministic Python files) reduced agent reasoning time from 2 minutes to under 60 seconds by pre-processing market data instead of letting the LLM write code on the fly.
+
+### Python vs Rust for Trading
+[25:30](https://www.youtube.com/watch?v=O93R_ddB-8o&t=1530s) — Mike and Fede address the common question about performance. The real bottleneck isn't Python—it's network latency (200ms) and LLM response times. Fede also shares a sneak peek at Hermes, a Rust-based system achieving sub-0.1ms processing times.
+
+### Live Condor Demo
+[33:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=1980s) — Fede demonstrates Condor in action via Telegram:
+- Checking balances across exchanges
+- Running technical analysis routines
+- Deploying a grid executor with a single chat message
+- Using the new React-based web dashboard
+
+### Building an Agent Live with Agent Builder
+[49:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=2940s) — The highlight of the episode: Fede walks through the Agent Builder to create a perps scalping strategy from scratch:
+1. **Phase 1**: Define strategy (scalping perps with tight stops on AIOT-USDT)
+2. **Phase 2**: Create analysis routine (support/resistance + EMAs)
+3. **Phase 3**: Generate Agent.md with decision logic
+4. **Phase 4**: Test with dry runs
+5. **Phase 5**: Deploy live
+
+### First Agent Trade on The Bot Pod
+[1:10:30](https://www.youtube.com/watch?v=O93R_ddB-8o&t=4230s) — The agent places its first live trade! We watch it identify a bullish trend flip, open a long position with take profit, and (spoiler) hit its stop loss. This leads to a discussion about agent learning and how the Learnings.md file allows agents to improve over time.
+
+### Agent Isolation & Scaling
+[1:12:00](https://www.youtube.com/watch?v=O93R_ddB-8o&t=4320s) — Fede explains how executor ownership enables complete isolation between agents. Each agent has its own virtual portfolio and executors, allowing you to run 10+ agents in parallel without conflicts.
+
+---
+
+## Key Takeaways
+
+1. **Condor is free and open source** — Clone it from [github.com/hummingbot/condor](https://github.com/hummingbot/condor) and start building today
+
+2. **Structure beats flexibility** — Executors and routines provide guardrails that prevent agents from doing "random things on your account"
+
+3. **Observability is critical** — Every agent tick is captured in snapshots showing the full prompt, reasoning, and actions taken
+
+4. **Learning is built in** — The Journal tracks session-specific memory while Learnings.md persists insights across all trading sessions
+
+5. **Multiple LLMs supported** — Works with Claude, Codex, Gemini, OpenAI, and soon Ollama for local models
+
+---
+
+## Resources
+
+- **Condor Repository**: [github.com/hummingbot/condor](https://github.com/hummingbot/condor)
+- **Discord**: [discord.gg/hummingbot](https://discord.gg/hummingbot)

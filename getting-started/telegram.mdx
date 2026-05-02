@@ -153,6 +153,42 @@ Condor sends notifications for:
 
 Configure notification preferences in `/config`.
 
+## Voice Commands
+
+Send voice messages to Condor for hands-free trading. Condor uses Whisper for local transcription—no audio leaves your server.
+
+### How It Works
+
+1. Hold the microphone button in Telegram
+2. Speak your command
+3. Release to send
+4. Condor transcribes and processes your request
+
+### Examples
+
+**Check prices:**
+```
+"Hey Condor, what's the price of ORCA USDT on Binance Perpetual?"
+→ ORCA $1.96
+```
+
+**Create executors:**
+```
+"Create a grid executor on ORCA to go long between 1.9 and 2.02,
+invest $300 with take profit of 0.15%"
+→ Grid executor created: ORCA-USDT long grid, 1.90-2.02, $300
+```
+
+**Check status:**
+```
+"Can you tell me the state of that grid?"
+→ Your grid is cooking. 3 levels filled, $45 invested, +$0.82 unrealized
+```
+
+<Note>
+The first voice message may take longer as Condor downloads the Whisper model (~1GB). Subsequent messages are faster.
+</Note>
+
 ## Security
 
 - **User Whitelist**: Only authorized Telegram user IDs can interact with the bot

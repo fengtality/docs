@@ -1,0 +1,193 @@
+---
+title: "Reports"
+description: "Generate HTML reports with interactive charts from routines"
+---
+
+Routines can generate HTML reports with interactive Plotly charts and markdown content. Reports are viewable in the Condor web dashboard, providing a richer experience than Telegram messages for data visualization.
+
+## Why Reports?
+
+| Channel | Best For |
+|---------|----------|
+| **Telegram** | Quick notifications, mobile alerts, simple text |
+| **Reports** | Interactive charts, detailed analysis, scheduled outputs |
+
+When you schedule a routine to run every hour, you may not want 24 Telegram messages per day. Instead, generate reports and check them in the dashboard when convenient.
+
+## Viewing Reports
+
+Reports appear in the Condor web dashboard under **Routines** → **Reports**.
+
+Each report includes:
+- Timestamp
+- Source routine name
+- Interactive HTML content (zoomable charts, expandable sections)
+
+<Note>
+Condor maintains a buffer of the last 30 reports. Older reports are automatically cleaned up.
+</Note>
+
+## Creating Reports
+
+### 1. Import ReportBuilder
+
+```python
+from routines.report_builder import ReportBuilder
+```
+
+### 2. Generate Your Data
+
+Create figures and tables as you normally would:
+
+```python
+import plotly.graph_objects as go
+
+# Create a Plotly figure
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=dates, y=prices, name="Price"))
+fig.update_layout(title="Market Analysis")
+```
+
+### 3. Build the Report
+
+At the end of your routine, use ReportBuilder:
+
+```python
+report = ReportBuilder(source="my_routine")
+report.add_markdown("## Analysis Summary\n\nKey findings from today's scan.")
+report.add_figure(fig)
+report.add_table(df)  # Pandas DataFrame
+report.save()
+```
+
+## Complete Example
+
+```python
+# routines/top_movers.py
+from pydantic import BaseModel, Field
+from telegram.ext import ContextTypes
+import plotly.graph_objects as go
+
+from routines.report_builder import ReportBuilder
+from config_manager import get_client
+
+
+class Config(BaseModel):
+    """Analyze top movers and generate a report."""
+
+    exchange: str = Field(default="binance_perpetual", description="Exchange to scan")
+    top_n: int = Field(default=10, description="Number of top movers")
+
+
+async def run(config: Config, context: ContextTypes.DEFAULT_TYPE) -> str:
+    chat_id = context._chat_id if hasattr(context, "_chat_id") else None
+    client = await get_client(chat_id, context=context)
+
+    if not client:
+        return "No server available"
+
+    # Fetch top movers data
+    movers = await client.market_data.get_top_movers(
+        connector_name=config.exchange,
+        limit=config.top_n
+    )
+
+    gainers = movers["gainers"]
+    losers = movers["losers"]
+
+    # Create visualization
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=[g["symbol"] for g in gainers],
+        y=[g["change_pct"] for g in gainers],
+        name="Gainers",
+        marker_color="green"
+    ))
+    fig.add_trace(go.Bar(
+        x=[l["symbol"] for l in losers],
+        y=[l["change_pct"] for l in losers],
+        name="Losers",
+        marker_color="red"
+    ))
+    fig.update_layout(title="Top Movers", barmode="group")
+
+    # Generate report
+    report = ReportBuilder(source="top_movers")
+    report.add_markdown(f"## Top Movers on {config.exchange}\n")
+    report.add_markdown(f"**Top Gainer:** {gainers[0]['symbol']} (+{gainers[0]['change_pct']:.2f}%)\n")
+    report.add_markdown(f"**Top Loser:** {losers[0]['symbol']} ({losers[0]['change_pct']:.2f}%)\n")
+    report.add_figure(fig)
+    report.save()
+
+    # Return text for Telegram
+    return f"Top mover: {gainers[0]['symbol']} +{gainers[0]['change_pct']:.2f}%"
+```
+
+## ReportBuilder Methods
+
+| Method | Description |
+|--------|-------------|
+| `add_markdown(text)` | Add markdown-formatted text |
+| `add_figure(fig)` | Add a Plotly figure (interactive in HTML) |
+| `add_table(df)` | Add a Pandas DataFrame as an HTML table |
+| `save()` | Write the report to disk |
+
+## Use Cases
+
+### Scheduled Market Analysis
+
+Run a routine every hour to analyze market conditions:
+
+```
+/routines → technical_analysis → Schedule → Every 1 hour
+```
+
+Instead of 24 Telegram messages, check the reports dashboard for the latest analysis with interactive charts.
+
+### Agent Decision Logging
+
+When an agent runs a routine for analysis, the report captures what the agent "saw" when making decisions:
+
+```python
+# In agent's analysis routine
+report = ReportBuilder(source="bb_trader_analysis")
+report.add_markdown("## Agent Analysis\n")
+report.add_markdown(f"Current price: ${price}\n")
+report.add_markdown(f"Signal: {signal}\n")
+report.add_figure(indicator_chart)
+report.save()
+```
+
+This helps you understand and debug agent behavior by reviewing the data it analyzed.
+
+### Comparing Tokens
+
+Build research routines that compare multiple assets:
+
+```python
+# Compare DEX tokens: market cap, fees, price
+report = ReportBuilder(source="dex_comparison")
+report.add_markdown("## Solana DEX Token Comparison")
+report.add_figure(market_cap_chart)
+report.add_figure(fee_revenue_chart)
+report.add_table(comparison_df)
+report.save()
+```
+
+## Report Storage
+
+Reports are stored in `~/condor/reports/` as HTML files. The web dashboard reads from this directory.
+
+```bash
+ls ~/condor/reports/
+# top_movers_2024-01-15_14-30-00.html
+# technical_analysis_2024-01-15_15-00-00.html
+```
+
+To clean up reports manually:
+
+```bash
+rm ~/condor/reports/*.html
+```
+
+Or use the dashboard's cleanup function under **Routines** → **Reports** → **Clean**.

@@ -1,0 +1,72 @@
+---
+title: "Episode 5: Using Routines in Agents"
+description: "Reports feature, voice commands, and the Condor Agents Hackathon announcement"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/5OCAAGz9XWg"
+  title="The Bot Pod Episode 5: Using Routines in Agents"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** May 1, 2026
+
+We're back with Episode 5 of **The Bot Pod**! This week, Mike and Fede announce the **Condor Trading Agents Hackathon**, demo the new **reports feature**, and build a research routine comparing Solana DEX tokens live on stream. Plus: voice-controlled trading via Telegram that feels like magic.
+
+---
+
+## Episode Highlights
+
+### Trading Agents Hackathon Announced
+[1:30](https://youtu.be/5OCAAGz9XWg?t=90) — The big news: Hummingbot Foundation is launching its first-ever **agentic trading hackathon**, and registration is open now.
+
+Here's what makes it different—winners don't just get prizes. They compete in a 48-hour live trading competition with real capital provided by sponsors including Ripple, Gate, ORCA, and Berkeley Street Capital.
+
+> "This is the first time someone has tried to put together an agentic trading hackathon plus competition, and I think Condor and Hummingbot is the right place to do it because with Hummingbot, it gives you a really big surface area to build upon." — Mike
+
+The hackathon kicks off in three weeks with workshops on building on XRPL and working with quant hedge funds. Submissions close about a month later, and then the real competition begins.
+
+### Condor UI Improvements
+[8:00](https://youtu.be/5OCAAGz9XWg?t=480) — Fede walks through several quality-of-life updates in Condor:
+- **Market tab merged into Trade tab** — Everything in one place now
+- **New Editor page** — Manage controllers and configs like an IDE, upload files, create from templates
+- **Improved Bots page** — See realized P&L, unrealized P&L, volume, age, and logs at a glance
+- **Open Router integration** — Cheaper API calls and access to more models, including free options
+
+### New Reports Feature
+[9:30](https://youtu.be/5OCAAGz9XWg?t=570) — One of the most practical additions: routines can now generate **HTML reports** with interactive charts instead of just sending images to Telegram.
+
+> "The thing is that I have this picture, but I cannot zoom in. I can see it, but it's not as good as an HTML. So now if I go to reports, the HTML was generated, and I can zoom in and understand what is actually happening." — Fede
+
+Reports are stored automatically (up to 30) and can be scheduled alongside your routines. When an agent runs a routine, you can see exactly what data it was looking at when making decisions.
+
+### Live Coding: Token Research Routine
+[28:00](https://youtu.be/5OCAAGz9XWg?t=1680) — Mike and Fede build a research routine from scratch comparing three Solana DeFi tokens: ORCA, MET, and RAY.
+
+The goal: pull market cap data from GeckoTerminal, fee revenue from DeFi Llama, and generate comparison charts—all in about 15 minutes of conversation with Condor.
+
+> "Before, this would be like going to a Jupyter notebook, trying to make it manually. And now it's just talking there and receiving a picture with the output." — Fede
+
+The analysis revealed something interesting: Meteora is generating more fees than ORCA but trading at a lower market cap. A potential long MET / short ORCA opportunity may be lucrative.
+
+### Code Mode Explained
+[43:00](https://youtu.be/5OCAAGz9XWg?t=2580) — Fede mentions **code mode**—an approach where instead of calling MCP tools directly, the agent writes code that uses those tools and executes it all at once. This dramatically reduces token usage compared to multiple tool calls.
+
+### Voice Trading Demo
+[53:00](https://youtu.be/5OCAAGz9XWg?t=3180) — Fede sends a voice message to Condor via Telegram:
+
+*"Create a grid executor on ORCA to go long between 1.9 and 2.02 with $300 and a take profit of 0.15%"*
+
+Condor transcribes the audio using Whisper (auto-downloads on first use), understands the intent, and creates the grid—all in seconds.
+
+> "I really like the experience of just talking because for me, it's like I much rather prefer to talk rather than write. And it's like now I can say, 'Can you tell me the state of that grid?' and it will just tell me." — Fede
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Hackathon Registration](https://hummingbot.org/hackathon) — Sign up for the Condor Agents Hackathon
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

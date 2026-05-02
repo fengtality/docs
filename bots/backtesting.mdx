@@ -1,0 +1,151 @@
+---
+title: "Backtesting"
+description: "Use historical data to research strategy parameters and validate behavior"
+---
+
+Backtesting simulates your strategy against historical exchange data. Use it to understand parameter sensitivity and validate that your strategy behaves as expected—not to predict exact live results.
+
+## Philosophy
+
+Backtesting market making strategies cannot perfectly simulate reality:
+
+1. **Queue Position** — Order books are FIFO (First In, First Out). You never know your position in the queue because exchanges don't reveal participant order positions.
+
+2. **Path Dependency** — If one fill differs between backtest and live, all subsequent behavior diverges. The correlation breaks with a single mismatched order.
+
+3. **Order Book Opacity** — Thick order books (like USDT/BRL with $600K at the first level) mean your orders may never fill even if price touches your level.
+
+<Warning>
+Don't trust absolute P&L numbers from backtests. Use backtesting as a **parameter research tool**, not a prediction engine.
+</Warning>
+
+## What Backtesting Is Good For
+
+| Use Case | Example |
+|----------|---------|
+| Parameter sensitivity | "What happens if I change portfolio allocation from 2% to 10%?" |
+| Behavior validation | "Is my strategy placing sell orders only after reaching 30% inventory?" |
+| Relative comparison | "Does configuration A generate more volume than B?" |
+| Strategy debugging | "Why did the bot stop trading in this scenario?" |
+
+## Supported Executors
+
+The backtesting engine works with controllers using these executors:
+
+| Executor | Supported | Notes |
+|----------|-----------|-------|
+| Position Executor | Yes | Full support including position hold |
+| DCA Executor | Yes | Dollar-cost averaging strategies |
+| Grid Executor | Yes | Grid trading strategies |
+| Order Executor | Coming | Not yet supported |
+| Arbitrage Executor | No | Requires order book data |
+| XEMM Executor | No | Requires cross-exchange order books |
+
+## Candle Resolution
+
+**One-second candles are crucial for market making backtests.**
+
+With one-minute candles, the engine can only simulate one fill per minute. Real market making often has 30+ fills per minute. One-second resolution captures the granularity needed.
+
+<Note>
+Currently, only Binance Spot provides one-second candles. You may need a server in a region where Binance is accessible, or use Tailscale to route requests through an allowed region.
+</Note>
+
+## Running Backtests
+
+### Via Hummingbot Scripts
+
+Hummingbot 2.14+ includes backtesting scripts in the `scripts/` folder:
+
+```bash
+cd ~/hummingbot
+python scripts/backtest_pmm_mister.py 0.5  # Backtest 0.5 days
+```
+
+The script outputs:
+- Processing time (e.g., "34 seconds for 0.5 days")
+- Interactive Plotly chart in browser
+
+### Via Condor Web Dashboard
+
+1. Navigate to **Bots** → **Backtest**
+2. Select a controller config
+3. Set the time range
+4. Run and view results
+
+## Interpreting Results
+
+### Chart Panes
+
+The Plotly output has three panes:
+
+| Pane | Content |
+|------|---------|
+| **Top** | Candles with executor markers |
+| **Middle** | P&L lines and volume |
+| **Bottom** | Position size over time |
+
+### P&L Lines
+
+| Line | Meaning |
+|------|---------|
+| **Yellow** | Total P&L (realized + unrealized) |
+| **Purple** | Position unrealized P&L |
+| **Gap between yellow and purple** | Executor realized P&L |
+
+### Executor Colors
+
+| Color | Meaning |
+|-------|---------|
+| **White** | Orders placed but not filled (early stop/refresh) |
+| **Green** | Filled orders that hit take profit |
+| **Blue** | Filled orders moved to position hold (market went against you) |
+| **Purple** | Executors reducing position (selling accumulated inventory) |
+
+## Example Analysis
+
+### Portfolio Allocation: 2% vs 10%
+
+**2% allocation:**
+- Inventory builds gradually
+- Trading continues through drawdowns
+- More consistent activity
+
+**10% allocation:**
+- Inventory builds quickly
+- May hit max position during drawdowns
+- Trading stops if position is underwater and at max (profit protection enabled)
+
+```
+# With profit_protection=true and 10% allocation:
+# If market drops while at max position → bot stops trading
+# Bot resumes only when position becomes profitable again
+```
+
+## PMM Mister Parameters
+
+Key parameters that affect backtesting behavior:
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `portfolio_allocation` | % of capital placed around mid price | 0.02 (2%) |
+| `min_base_percentage` | Minimum inventory before selling | 0.30 (30%) |
+| `max_base_percentage` | Maximum inventory before buying stops | 0.70 (70%) |
+| `max_active_executors_by_level` | How many times to replace a level | 20 |
+| `cooldown_time` | Seconds between level replacements | 30 |
+| `price_distance_tolerance` | Minimum price move before replacement | 0.0002 |
+| `activization_time` | Seconds before inventory is "permanent" | 1660 |
+| `profit_protection` | Only sell if position is profitable | true |
+
+## Trading Bots vs Trading Agents
+
+| Aspect | Trading Bots | Trading Agents |
+|--------|--------------|----------------|
+| Logic | Deterministic, coded | LLM-driven decisions |
+| Tick speed | 1 second or faster | 60+ seconds |
+| Backtesting | Fully supported | Not applicable |
+| Use case | HFT market making | Oversight, strategy selection |
+
+<Tip>
+Agents can oversee and modify bot parameters, but they operate at a higher level (every minute+) rather than every tick. This separation keeps HFT performance while adding intelligent oversight.
+</Tip>

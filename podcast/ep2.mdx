@@ -1,0 +1,71 @@
+---
+title: "Episode 2: Building a Grid Scalping Agent"
+description: "Deep dive into session management, grid executor parameters, and agent deployment on Hyperliquid"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/IolYm0zomJM"
+  title="The Bot Pod Episode 2: Building a Grid Scalping Agent"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** April 11, 2026
+
+We're back with Episode 2 of **The Bot Pod**! This week, Mike and Fede take a deep dive into Condor's session management, review the results of the agent they built live on Episode 1, and demonstrate the full workflow from manual grid trading to autonomous agent deployment.
+
+---
+
+## Episode Highlights
+
+### Episode 1 Agent Results: $25 Profit
+[5:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=300s) — Fede reveals the results: the scalping agent from Episode 1 made $25 profit with $9K in volume across 91 trades. They walk through:
+
+- **Session snapshots**: Full inspection of every tick, system prompt, and agent reasoning
+- **New chart visualization**: 30-minute windows around each executor for analysis
+- **Trailing stop improvement**: When no upper resistance exists, use trailing stop instead
+
+### Agent Learning in Action
+[10:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=600s) — The agent has been evolving through its learnings file. Example learning: "Price below EMA 7 and EMA 25 while EMA 7 is higher than EMA 25 indicates weakness—avoid entries into declining moves." These learnings persist across sessions, creating a self-improving system.
+
+### What is Condor?
+[11:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=660s) — Mike explains for newcomers: Condor is the next-generation interface for Hummingbot. It's open source (MIT licensed), similar in architecture to OpenClaw, but focused on trading tasks. It runs on top of your LLM and connects directly to exchange infrastructure.
+
+### Live Grid Trading on Binance
+[16:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=960s) — A live demonstration of deploying a $500 long grid on a volatile market:
+- Orders placing and filling so fast Binance UI can't keep up
+- Real-time P&L tracking in Condor
+- All orders as post-only (maker orders) for better fees
+
+### Hyperliquid RWA Markets
+[23:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=1380s) — Mike explores Hyperliquid's new HIP-3 markets—real-world assets like WTI crude oil trading 24/7 as perpetuals. These are now the third most active markets on Hyperliquid behind BTC and ETH. Important gotcha: the ticker format requires the issuer prefix (e.g., `XYZ:CL-USD`).
+
+### Grid Executor Deep Dive
+[34:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=2040s) — Fede walks through every grid parameter in the web UI:
+- **Start/End Price**: The grid boundaries
+- **Limit Price**: Stop-loss level for the grid
+- **Keep Position**: True = hold inventory after grid ends; False = liquidate and start fresh
+- **Leverage**: Configure directly in advanced settings
+- **Coerce TP to Step**: Automatically adjust take profit to match grid step size
+
+### Building a Grid Scalper Agent
+[49:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=2940s) — Mike creates a new agent from scratch using Agent Builder:
+1. Strategy: Grid trading, both long and short
+2. Risk tolerance: High (scalping)
+3. Budget: $300 with 10x leverage
+4. Tick frequency: 60 seconds
+
+### Live Trading Session
+[1:02:00](https://www.youtube.com/watch?v=IolYm0zomJM&t=3720s) — The new grid scalper agent goes live on Hyperliquid's oil market. They watch it:
+- Analyze spreads and market conditions
+- Deploy a long grid when conditions align
+- Monitor through the web dashboard's real-time snapshots
+
+---
+
+## Resources
+
+- **Condor Repository**: [github.com/hummingbot/condor](https://github.com/hummingbot/condor)
+- **Condor Documentation**: [condor.hummingbot.org](https://condor.hummingbot.org)
+- **Discord**: [discord.gg/hummingbot](https://discord.gg/hummingbot)

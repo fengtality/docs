@@ -74,7 +74,8 @@
             "pages": [
               "routines/overview",
               "routines/global-routines",
-              "routines/creating-routines"
+              "routines/creating-routines",
+              "routines/reports"
             ]
           },
           {
@@ -82,7 +83,8 @@
             "pages": [
               "bots/overview",
               "bots/controllers",
-              "bots/scripts"
+              "bots/scripts",
+              "bots/backtesting"
             ]
           },
           {
@@ -112,6 +114,22 @@
           }
         ],
         "openapi": "api-reference/openapi.json"
+      },
+      {
+        "tab": "🎙️ Podcast",
+        "groups": [
+          {
+            "group": "Podcast",
+            "pages": [
+              "podcast/overview",
+              "podcast/ep5",
+              "podcast/ep4",
+              "podcast/ep3",
+              "podcast/ep2",
+              "podcast/ep1"
+            ]
+          }
+        ]
       }
     ]
   },

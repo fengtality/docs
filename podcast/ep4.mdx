@@ -1,0 +1,66 @@
+---
+title: "Episode 4: Backtesting"
+description: "Backtesting philosophy, PMM Mister parameters, and why backtesting should be used for parameter research"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/xWJ8-s6njXY"
+  title="The Bot Pod Episode 4: Backtesting"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** April 24, 2026
+
+We're back with Episode 4 of **The Bot Pod**! This week, Mike and Fede tackle one of the most requested features in Hummingbot: **backtesting**. They explain why backtesting should be used as a parameter research tool rather than a prediction engine, demo the new backtesting capabilities in Hummingbot 2.14, and show how PMM Mister's position hold feature prevents selling at a loss.
+
+The episode also includes a candid discussion about this week's DeFi hacks (Drift, KelpDAO) and why the foundation moved all assets to a wallet earning 0% yield. Sometimes the best trade is no trade.
+
+---
+
+## Episode Highlights
+
+### Backtesting Philosophy
+[17:00](https://youtu.be/xWJ8-s6njXY?t=1020) — Fede doesn't hold back on this one:
+
+> "You will never be able to have a backtesting that in real life works exactly as the backtest."
+
+Why? A few reasons. First, there's the queue problem—you never know where your order sits relative to everyone else's. Second, there's path dependency: if just one fill happens differently in real trading versus your backtest, everything after that diverges completely. And exchanges don't tell you who placed orders when, so you're always guessing.
+
+So what's backtesting actually good for? **Parameter research.** You want to understand how changing a setting affects your bot's behavior—not predict exactly how much money you'll make.
+
+### PMM Mister Deep Dive
+[24:00](https://youtu.be/xWJ8-s6njXY?t=1440s) — Mike and Fede walk through the PMM Mister strategy parameters, and there are a lot of them. The key insight is how they all work together.
+
+Portfolio allocation controls how much you place around the mid price—set it to 2% and you're putting $20 in orders on a $1,000 portfolio. The min base percentage determines when you start selling—if it's 30%, your bot will only buy until it accumulates that much inventory. Max active executors by level caps how many times you can replace a filled order, which effectively limits your exposure. And profit protection ensures you only sell when your position is in the green.
+
+Mike works through the math live to make sure he understands:
+> "So if I'm placing 1% buy orders and max executors is 20, the most I'll ever have on the book is 20%?"
+
+### Running the Backtest
+[35:00](https://youtu.be/xWJ8-s6njXY?t=2100s) — The actual demo is quick—half a day of backtesting runs in about 34 seconds. But there's a crucial detail: you need one-second candles for market making strategies. Fede explains that he often gets 30+ fills in a single minute, so one-minute candles would completely miss that activity.
+
+### 2% vs 10% Portfolio Allocation
+[54:00](https://youtu.be/xWJ8-s6njXY?t=3240s) — To show why backtesting matters, Fede changes just one parameter: portfolio allocation from 2% to 10%. The difference is dramatic.
+
+With 10% allocation, position builds way faster—the bot hits $300 in inventory almost immediately instead of gradually. But then something interesting happens: trading stops completely. The bot hit its max position while underwater, and because profit protection is on, it won't sell at a loss. So it just... waits.
+
+> "If the market never recovers from this point," Fede says, "this bot will be stopped forever."
+
+That's exactly what backtesting is for. You can see how a single parameter change completely alters your trading continuity before you risk real money on it.
+
+### Trading Bots vs Trading Agents
+[76:00](https://youtu.be/xWJ8-s6njXY?t=4560s) — A viewer asks about AI latency, which leads to an important clarification. In Condor, trading bots and trading agents are different things.
+
+Bots are deterministic—pure code, no LLM involved. They run on one-second ticks or faster, and backtesting works perfectly for them. Agents, on the other hand, use LLMs to make decisions. They're slower by design, running every minute or so.
+
+> "When you're doing HFT, you probably don't want the LLM involved in every single tick. That'll slow things down."
+
+---
+
+## Resources
+
+- [Condor Repository](https://github.com/hummingbot/condor) — Clone and start building
+- [Condor Documentation](https://condor.hummingbot.org) — Setup guides and API reference
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

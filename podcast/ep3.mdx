@@ -1,0 +1,91 @@
+---
+title: "Episode 3: Creating Routines"
+description: "Building custom routines for market data, news sentiment, and scheduled automation"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/OGaQJmrjWqA"
+  title="The Bot Pod Episode 3: Creating Routines"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** April 17, 2026
+
+We're back with Episode 3 of **The Bot Pod**! This week, Mike and Fede introduce one of Condor's most powerful features: **routines**. These lightweight Python files let you automate tasks, fetch external data, and run scheduled reports—all without burning tokens on LLM reasoning.
+
+---
+
+## Episode Highlights
+
+### What Are Routines?
+[6:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=360s) — Fede breaks down the three key concepts in Condor's architecture:
+
+- **MCP Tools**: Standardized way to present tools for agents
+- **Skills**: Markdown folders with instructions that load into context when needed
+- **Routines**: Lightweight Python files that execute deterministically without loading into memory
+
+The key insight: routines are simple, reliable, and don't waste tokens. They're just Python code with a config class and an async `run()` method.
+
+### Types of Routines
+[11:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=660s) — Two types of routines exist in Condor:
+- **One-shot**: Execute once or on a schedule (every 30 seconds, hourly, daily)
+- **Continuous**: Run forever with a while loop until manually stopped
+
+### New Condor Features Demo
+[14:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=840s) — Before diving into routines, Fede shows off recent improvements:
+- **Self-update feature**: Update Condor directly from the interface
+- **New trade page**: Deploy any executor type from the web UI
+  - Order executor (simple buy/sell)
+  - Position executor (with take profit/stop loss)
+  - Grid executor
+  - DCA executor
+
+### Hello World Routine
+[27:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=1620s) — The simplest routine demonstration:
+- Configure parameters in the config class
+- Run it once, run it in background, or schedule it
+- Output appears directly in Telegram
+
+### Top Movers Routine
+[32:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=1920s) — A practical routine that scans Binance for volatile markets:
+- Fetches ticker data directly from exchange API
+- Returns top gainers, losers, and high-volume movers
+- Written entirely by Condor—zero manual coding required
+
+### Technical Analysis Routine
+[35:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=2100s) — A more sophisticated routine that:
+- Fetches candles via Hummingbot API
+- Calculates trend, volatility, support/resistance
+- Sends charts as images to Telegram
+- Suggests grid parameters based on analysis
+
+### Live: Building a News Sentiment Routine
+[40:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=2400s) — Mike and Fede build a CoinTelegraph scraper live on stream:
+1. Tell Condor: "Create a routine to parse news from CoinTelegraph"
+2. Condor writes the Beautiful Soup scraping code
+3. Debug and fix dependency issues in real-time
+4. Run the routine to fetch 15 latest crypto news articles
+
+### News-Driven Trading Demo
+[47:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=2820s) — The complete workflow from news to trade:
+1. Run the news routine to fetch articles
+2. Ask Condor to identify tradeable tokens from the news
+3. Condor identifies NEO based on treasury restructuring news
+4. Run technical analysis routine on NEO
+5. Deploy a long grid based on the analysis
+
+### Preview: Routines Inside Agents
+[53:00](https://www.youtube.com/watch?v=OGaQJmrjWqA&t=3180s) — Next week's episode will cover:
+- **Global routines**: Available to all agents
+- **Agent-level routines**: Scoped to specific trading agents
+- How agents can call routines every tick for data processing
+
+---
+
+## Resources
+
+- [Condor Repository](https://github.com/hummingbot/condor) — Clone and start building
+- [Condor Documentation](https://condor.hummingbot.org) — Setup guides and API reference
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

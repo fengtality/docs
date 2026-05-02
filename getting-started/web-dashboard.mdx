@@ -38,19 +38,31 @@ View your unified portfolio across all connected exchanges:
 
 ### Trade
 
-Place orders and monitor markets:
-- TradingView charts
-- Order book depth
-- Recent trades
-- Multiple exchanges
+Unified trading interface combining market data and order execution:
+- **Charts**: OHLC candles with executor overlays
+- **Depth**: Order book visualization and live trades
+- **Positions**: Active positions with P&L
+- **Config**: Create and manage executor configurations
+
+<Note>
+The Market tab has been merged into Trade for a streamlined experience.
+</Note>
 
 ### Bots
 
 Deploy and manage bot instances:
-- Start/stop bots
-- Configure controllers
-- Monitor performance
-- View logs and metrics
+- **Status**: Realized P&L, unrealized P&L, total P&L, volume traded, uptime
+- **Config Viewer**: View controller configuration inline
+- **Logs**: Full logs with error filtering
+- **Start/Stop**: Control bot lifecycle
+
+### Editor
+
+Manage controllers and configurations in an IDE-like interface:
+- **Controllers**: View and edit controller Python code
+- **Configs**: Create, clone, and modify YAML configurations
+- **Upload**: Import controller files or config YAMLs
+- **Templates**: Create new configs from controller templates
 
 ### Executors
 
@@ -71,18 +83,17 @@ Track open positions across all exchanges:
 ### Agents
 
 Monitor your autonomous Trading Agent sessions:
-- View conversation history
-- Track agent learnings and memory
-- Review snapshots and decisions
+- **Overview**: Strategy summary and current state
+- **Sessions**: Trade history with chart overlays
+- **Strategy & Learnings**: View and edit agent configuration inline
 - Switch between multiple agent sessions
 
-### Market
+### Routines
 
-Access real-time market information:
-- Price charts and indicators
-- Order book visualization
-- Trade history
-- Cross-exchange comparison
+Run and monitor routines:
+- **Run**: Execute routines with custom parameters
+- **Schedule**: Set up recurring routine execution
+- **Reports**: View HTML reports with interactive Plotly charts
 
 ## Web + Telegram Sync
 
