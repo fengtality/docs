@@ -7,19 +7,40 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
 
 ## Quick Install
 
-Clone the repository and run the install script:
+<Tabs>
+  <Tab title="Quick Start">
+    From an empty directory:
 
-```bash
-git clone https://github.com/hummingbot/condor.git
-cd condor
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash
+    ```
+  </Tab>
+  <Tab title="Hummingbot API only">
+    Use this **only** if you still need the API and database stack **by itself**—for example the Quick Start script **did not** install Hummingbot API (you skipped it or something failed), or you are deploying the API on a **separate** machine (VPS, etc.). **Docker** must be running on that host before you run the command.
 
-make install     # Interactive setup + dependencies + AI CLI tools
-make run         # Start the bot
-```
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash -s -- --hummingbot-api
+    ```
+  </Tab>
+  <Tab title="Manual install">
+    **Note:** Prefer **Quick Start** above. Use manual install **only** if the deploy script fails or you are intentionally setting up from source (for example development).
 
-The install script will prompt for:
+    Clone the Condor repo and use the Makefile. You still need a running **Hummingbot API** (for example [Docker with hummingbot-api](https://github.com/hummingbot/hummingbot-api)) unless you already have one.
+
+    ```bash
+    git clone https://github.com/hummingbot/condor.git
+    cd condor
+
+    make install     # Interactive setup + dependencies + AI CLI tools
+    make run         # Start the bot
+    ```
+  </Tab>
+</Tabs>
+
+Interactive setup will prompt for:
 - **Telegram Bot Token**: Create one via [@BotFather](https://t.me/botfather)
 - **Telegram User ID**: Get yours via [@userinfobot](https://t.me/userinfobot)
+- Whether to **configure and launch Hummingbot API** with Docker—answer **yes** if you are deploying **Condor and the API on the same machine** locally. Have **[Docker](https://docs.docker.com/get-docker/)** installed and running first. If the API runs on another server, you can skip this step and add that API URL later in Telegram under **`/servers`**.
 
 ## Create a Telegram Bot
 
@@ -37,6 +58,8 @@ The install script will prompt for:
 1. Open your Telegram bot and send `/start`
 2. You should see the main menu with commands like `/portfolio`, `/trade`, `/agent`
 
+> **Note:** After Condor starts successfully, **admins** should receive a Telegram message: **"Condor is online and ready."** If that does not appear within a minute or two, check the troubleshooting section below (for example attach to the `condor` tmux session after Quick Start).
+
 ```
 Welcome to Condor! 🦅
 
@@ -45,7 +68,7 @@ Commands:
 /trade - Place orders
 /agent - Trading Agents
 /keys - Manage credentials
-/config - Settings
+/servers - API servers
 ```
 
 ## Access Points
@@ -59,29 +82,67 @@ Commands:
 
 ## Managing Services
 
+How you manage Condor depends on how you installed it.
+
+**After Quick Start (deploy installer):** Condor runs in a **tmux** session named `condor`.
+
 ```bash
-# Start Condor
-make run
+tmux attach -t condor    # live logs and tracebacks (detach: Ctrl+B, then D)
+tmux kill-session -t condor   # stop Condor completely
+```
 
-# Stop Condor
-make stop
+From the directory that contains the `condor` folder, you can also upgrade with:
 
-# View logs
-make logs
+```bash
+curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash -s -- --upgrade
+```
+
+**After Manual install:** Condor runs in the foreground of the terminal where you ran `make run` (stop with **Ctrl+C**). Watch that terminal, or run under `tmux` yourself if you want a detachable session.
+
+**Hummingbot API (Docker):** From the `hummingbot-api` directory (sibling of `condor` when installed by the deploy script):
+
+```bash
+docker compose ps
+docker compose logs -f   # or your compose plugin equivalent
 ```
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Bot not responding">
-    1. Check that Condor is running: `make logs`
-    2. Verify your bot token is correct
-    3. Ensure your user ID is in the allowed list
+  <Accordion title="Bot not responding in Telegram">
+    1. **Confirm the process is running**
+       - *Quick Start / deploy:* `tmux attach -t condor` and look for tracebacks or exit messages.
+       - *Manual install:* Check the terminal where `make run` is running.
+    2. **Check `condor/.env`** on the machine that runs Condor: `TELEGRAM_TOKEN` must match [@BotFather](https://t.me/botfather), and `ADMIN_USER_ID` must be your numeric Telegram user id (from [@userinfobot](https://t.me/userinfobot)).
+    3. **Access still pending:** New users must be approved. An admin should use **`/admin`** (or the admin flow from **`/start`**) to approve you.
+    4. **Deploy installer hint:** If admins never see *"Condor is online and ready."*, attach to tmux (above) and fix errors shown there; the installer also reminds you to verify `.env` when that message is missing.
   </Accordion>
-  <Accordion title="API connection failed">
-    1. Check Hummingbot API is running: `docker ps`
-    2. Verify port 8000 is accessible
-    3. Check credentials in config
+
+  <Accordion title="Active server is offline / Cannot reach server / API errors in commands">
+    Condor talks to the **Hummingbot API** over HTTP using the **host**, **port**, **username**, and **password** stored for each server (see **`/servers`** in Telegram or `condor/config.yml`). Status checks call `http://{host}:{port}` and list accounts; failures surface as **Offline** (*Cannot reach server*, *Connection timeout*) or **Auth Error** (*Invalid credentials*).
+
+    1. **Is the API stack up?** On the machine where Docker runs the API: `docker compose ps` (from the `hummingbot-api` repo directory). You want the API container healthy and port **8000** (default) listening.
+    2. **Smoke test from the Condor host:** `curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/docs` (or your configured host/port). You should get **200**. If this fails, Condor will show offline until the API is reachable.
+    3. **Wrong host for your layout**
+       - API and Condor on the **same** machine: `host` is usually `localhost` or `127.0.0.1`.
+       - API on a **different** host or VPS: use that server’s **LAN/public IP or DNS name**, not `localhost` (localhost would point at the Condor machine itself).
+       - **Docker Desktop / WSL:** If Condor runs in one environment and the API in another, `localhost` may not cross namespaces; use the host gateway IP or publish ports and use the reachable address from Condor’s network namespace.
+    4. **Firewall / security groups:** Allow inbound **8000** (or your API port) from the Condor host if they are not the same machine.
+    5. **Credentials:** **Auth Error** means HTTP **401**—username/password in **`/servers`** must match the API’s HTTP basic auth (the deploy flow syncs `config.yml` with `hummingbot-api/.env` when both are installed together; if you changed one side, align the other or re-save in **`/servers`**).
+  </Accordion>
+
+  <Accordion title="No servers configured / Server not found / No servers available">
+    - **`/servers`** shows *No servers configured* until at least one entry exists in **`condor/config.yml`** under `servers:` (and users need **access** to a server—admins own new entries; others must be **shared**).
+    - **Server not found** in the UI usually means the configured server name does not exist anymore (typo after edit, or deleted entry)—open **`/servers`**, pick a valid server, or add one again.
+    - **No servers available** (errors when running commands) often means your user has no server shared with them—ask an **owner** admin to share a server with your Telegram user id.
+    - After **Manual install**, you must add the real API URL (and auth) via **`/servers`** if `config.yml` was not pre-filled.
+  </Accordion>
+
+  <Accordion title="Docker or installer problems (API did not start)">
+    1. **Docker daemon:** The deploy script checks that Docker is running before bringing up the API. On Linux: `docker info`. On Mac/Windows: open **Docker Desktop** and wait until it is fully started.
+    2. **Compose:** You need either `docker compose` (plugin) or legacy `docker-compose` (the installer checks this).
+    3. **API-only recovery:** If Quick Start skipped or failed the API step, use the **Hummingbot API only** tab command, or from `hummingbot-api`: `make setup`, `docker compose pull`, `make deploy` (see [hummingbot-api](https://github.com/hummingbot/hummingbot-api) README).
+    4. **Sibling layout:** Condor’s setup wizard expects **`hummingbot-api`** next to **`condor`** (`../hummingbot-api` from the Condor directory) when both are installed by the same flow—keep that layout unless you know how to point `config.yml` at a custom URL.
   </Accordion>
 </AccordionGroup>
 
