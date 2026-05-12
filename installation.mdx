@@ -27,23 +27,25 @@ description: "Deploy Condor and Hummingbot API"
 
 ## Install Condor
 
-Clone the repository and run the install script:
+From an **empty directory** on the machine where you want Condor (and optionally the Hummingbot API on the same host), run:
 
 ```bash
-git clone https://github.com/hummingbot/condor.git
-cd condor
-
-make install     # Interactive setup + dependencies + AI CLI tools
-make run         # Start the bot
+curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash
 ```
 
-The install script will prompt for:
-- Your Telegram bot token (see [Quickstart](/quickstart#2-connect-telegram) to create one)
-- Your authorized Telegram user IDs
+For API-only installs, manual `git clone` setup, and more detail, see [Installing Condor](/getting-started/installing).
+
+The installer will prompt for:
+
+- Your **Telegram bot token** (see [Create a Telegram Bot](/getting-started/installing#create-a-telegram-bot) or [@BotFather](https://t.me/botfather))
+- Your **authorized Telegram user ID(s)**
+- Whether to **configure and launch Hummingbot API** with Docker—answer **yes** if you are deploying **Condor and the API on the same machine** locally. Have **[Docker](https://docs.docker.com/get-docker/)** installed and running first. If the API runs on another server, you can skip this step and add that API URL later in Telegram under **`/servers`**.
 
 ## Verify Installation
 
 Open your Telegram bot and send `/start`. You should see the main menu.
+
+> **Note:** After a successful start, **admins** should receive **"Condor is online and ready."** in Telegram. If not, see [Installing Condor — Troubleshooting](/getting-started/installing#troubleshooting).
 
 ## Access Points
 
@@ -54,16 +56,22 @@ Open your Telegram bot and send `/start`. You should see the main menu.
 
 ## Managing Services
 
+**After the deploy installer:** Condor runs in a **tmux** session named `condor`.
+
 ```bash
-# Start Condor
-make run
-
-# Stop Condor (Ctrl+C or from another terminal)
-make stop
-
-# View logs
-make logs
+tmux attach -t condor
+tmux kill-session -t condor   # stop Condor
 ```
+
+Upgrade later from the directory that contains `condor`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash -s -- --upgrade
+```
+
+**Hummingbot API:** From the `hummingbot-api` directory: `docker compose ps` and `docker compose logs -f`.
+
+**Manual / dev run** (`make run` from a git clone): stop with **Ctrl+C** in that terminal.
 
 ## Next Steps
 
