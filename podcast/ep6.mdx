@@ -1,0 +1,78 @@
+---
+title: "Episode 6: The New Condor UI"
+description: "A major UI overhaul turning Condor into 'open source Bloomberg for the AI age,' plus bots vs. routines vs. agents explained"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/mXhxMeWOFWM"
+  title="The Bot Pod Episode 6: The New Condor UI"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** May 8, 2026
+
+We're back with Episode 6 of **The Bot Pod**! This week, Mike and Fede unveil a major UI revamp for Condor, turning it into what they call "open source Bloomberg for the AI age." The episode covers market picks (Jito, MET, OmniPair), an update on the renamed **Condor Builders Cup** hackathon, and a complete walkthrough of the new trading terminal interface.
+
+---
+
+## Episode Highlights
+
+### Market Discussion: Jito, Orca & OmniPair
+[1:30](https://youtu.be/mXhxMeWOFWM?t=90) — The hosts share their recent trades and market outlook. The big news: Jito announced JTX, their new perp DEX. With 80% of revenue going to JITO holders, this could be "the Lighter of Solana."
+
+> "The derivative of the price that was going down very strongly the last months is like getting flat, and now seems like it's slightly going up. I'm feeling more like in a positive recovery across most of the assets." — Fede
+
+### Condor Builders Cup Update
+[8:00](https://youtu.be/mXhxMeWOFWM?t=480) — The hackathon has been renamed from "Condor Agents Hackathon" to **Condor Builders Cup**, styled after F1 racing with sponsored teams:
+
+- Teams sponsored by Orca, Gate, Ripple, and Derive
+- One slot reserved for the MVP of Botcamp Cohort 13
+- Winners compete in a 48-hour live trading competition with real capital
+
+### Complete UI Walkthrough
+[11:00](https://youtu.be/mXhxMeWOFWM?t=660) — Fede demos the redesigned Condor interface:
+
+- **Portfolio view** — See evolution over day/week/month, asset distribution by exchange
+- **Trade tab** — Merged market view with executors (Order, Position, DCA, Grid)
+- **Command+K chat** — Opens an inline chat panel that knows what you're looking at
+
+> "With Command+K you can hide it, and with Command+K you get it again. This experience is like good." — Fede
+
+### Backtesting with Plotly
+[25:00](https://youtu.be/mXhxMeWOFWM?t=1500) — The backtesting page now uses Plotly for interactive charts. You can run backtests from the UI or create routines that generate backtest reports—Fede prefers the routine approach for better visualization.
+
+### Executors Page: Isolated Performance
+[29:00](https://youtu.be/mXhxMeWOFWM?t=1740) — You can run multiple grids on the same market and see exactly how each one performs in isolation. Fede walks through a live grid on TON that's generating ~1.9% daily yield from matching buys and sells. He then creates a second grid on the same pair, and you can see the P&L tracked separately for each.
+
+> "You can do something pretty complicated, and then still evaluate whether that worked or not." — Mike
+
+### Bots vs. Routines vs. Agents Explained
+[35:00](https://youtu.be/mXhxMeWOFWM?t=2100) — Fede breaks down the architecture:
+
+- **Bots** — Hummingbot instances running controllers in isolated containers
+- **Executors** — Single order types (Grid, DCA, Position) running in the API
+- **Routines** — Python programs that generate HTML reports with data analysis
+- **Agents** — LLM-powered decision makers that create routines and launch executors
+
+The key insight: agents use routines to see data deterministically (same structure every time) instead of burning tokens on repeated tool calls.
+
+### Routines: Full-Screen Reports
+[39:00](https://youtu.be/mXhxMeWOFWM?t=2340) — The routines page got a major upgrade with full-screen visualization. Navigate through reports with arrow keys, schedule them to run hourly or daily, and filter by agent. The chat panel knows which routine you're viewing—ask "Can you give me the code of the routine I'm looking at?" and it will.
+
+### Agent Sessions & Decision Tracking
+[49:00](https://youtu.be/mXhxMeWOFWM?t=2940) — When viewing an agent's sessions, you can see exactly when and why it made decisions. Coming soon: bubbles on the chart showing when the agent was reasoning, with click-through to see the full system prompt and response.
+
+### "Open Source Bloomberg for the AI Age"
+[56:00](https://youtu.be/mXhxMeWOFWM?t=3360) — Mike crystallizes the vision:
+
+> "To me, what this is—this is like Bloomberg for the AI age. It's like now that you have AI involved, you want an application that really takes advantage of LLMs, but still does the things that a trader needs... you wanna look at charts, you wanna visualize data, but you also wanna talk to the agent to help you do things, automate tasks, get a better understanding of the data." — Mike
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Condor Builders Cup](https://www.botcamp.xyz/hackathons/condor-builders-cup-1) — Register for the hackathon
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

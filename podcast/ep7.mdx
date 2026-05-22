@@ -1,0 +1,74 @@
+---
+title: "Episode 7: Routines Deep Dive"
+description: "Routines as Condor's most powerful primitive—a live memecoin LP yield agent, order book depth across exchanges, and crypto as a TradFi oracle"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/BIksOezjPvw"
+  title="The Bot Pod Episode 7: Routines Deep Dive"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** May 15, 2026
+
+We're back with Episode 7 of **The Bot Pod**! This week, Mike and Fede take a deep dive into **routines**—what they're calling the most powerful and immediately useful primitive in Condor. The episode covers a wide-ranging market discussion (perps on Cerebras, prediction markets, the prop-firm "funding test" model), a live demo of Mike's memecoin LP yield routine and agent, and a tour of the latest Condor UI improvements.
+
+---
+
+## Episode Highlights
+
+### Market Discussion: Crypto as an Oracle for TradFi
+[2:00](https://youtu.be/BIksOezjPvw?t=120) — Mike is on the East Coast for his 25-year college reunion and stopped in New York to meet crypto-adjacent friends in traditional finance—who are increasingly excited about Hyperliquid. The standout story: a Citrini tweet about funds watching **CBRS** (Cerebras, the AI inference chip company) trade on a Hyperliquid HIP-3 market for price discovery before the company has even IPO'd.
+
+> "Crypto markets are becoming almost true oracles for what might happen in traditional finance. When this thing actually IPOs, guess what those initial market makers are going to use for the reference price?" — Mike
+
+### The Risks of "Perps on Anything"
+[5:00](https://youtu.be/BIksOezjPvw?t=300) — The hosts talk through the counterparty risk in these new market types. Fede points out that every big crypto crash he's seen came from a broken trust between counterparties—and a thin perp market on a niche index could leave traders unable to exit positions.
+
+> "Having lived through FTX, there's always something unknown about any type of leveraged perp DEX." — Mike
+
+### Spot vs. Derivatives: Two Different Animals
+[8:00](https://youtu.be/BIksOezjPvw?t=480) — Mike draws on his finance background to separate market types: L1s like Solana and Base are where new tokens are *born* and experiments are run (spot), while a perp DEX is a *pure derivatives market* for anything you can leverage. They also touch on proof.trade's conditional-value markets and MetaDAO's decision markets.
+
+### The Prop-Firm "Funding Test" Model
+[11:00](https://youtu.be/BIksOezjPvw?t=660) — Fede and Mike dissect how FX brokerages and prop firms really work—identifying winners *and* losers, and the "funding test" model where traders pay for an account, trade on paper, and most of them fail, generating free money for the issuer.
+
+### Why Routines?
+[16:00](https://youtu.be/BIksOezjPvw?t=960) — Mike frames the core idea of the episode: turning data into something usable used to take a long time—collect, clean, parse, visualize. Routines collapse that. Combined with Hummingbot's connectivity to every exchange, "anything you can dream of can be built on top of routines."
+
+### Does Hummingbot Actually Make Money?
+[18:00](https://youtu.be/BIksOezjPvw?t=1080) — Answering an audience question, the hosts are clear: Hummingbot is a **framework**, not a magic money box. Fede shares a concrete example—a client market-making fiat pairs on Binance, ~$1.5M/day volume, earning ~9% monthly on rebates alone before trading PnL.
+
+> "If you're expecting to click a bot and make money, you will fail. It's a framework—it has all the primitives you need." — Fede
+
+### Demo: Memecoin LP Yield Hunter
+[21:00](https://youtu.be/BIksOezjPvw?t=1260) — Mike demos a routine he built that uses the GeckoTerminal API to fetch the top Solana pools, ranks them by yield (fees ÷ TVL), and filters to concentrated-liquidity pools so he can set single-sided SOL ranges instead of buying memecoins outright. He then pairs it with an agent—**Memecoin LP Yield Hunter**—that fills three LP slots, monitors them, and redeploys capital as positions auto-close.
+
+> "Although it needs some iteration, it basically did what it was supposed to do. So far I'm pretty much in the black in all the pools." — Mike
+
+### Routines Are the "New Reporting Era"
+[30:00](https://youtu.be/BIksOezjPvw?t=1800) — Mike shows a second routine that visualizes his live LP positions against each pool's liquidity distribution—and how he iterated on it, asking the agent to add more detail with each run.
+
+> "This is a revolution. Routines and reports are the new reporting era—dynamic visualization. You have an idea, you plot it, then you reproduce it over and over again." — Fede
+
+### Architecture: Agents, Routines, and learnings.md
+[33:00](https://youtu.be/BIksOezjPvw?t=1980) — Fede explains how it fits together: an agent (powered by an LLM) helps you build routines that surface exactly the data you need. Once built, that data is automatically available to your trading agent, which has tools to create and stop executors—and maintains a `learnings.md` file so it improves over time.
+
+### Condor UI Tour
+[36:00](https://youtu.be/BIksOezjPvw?t=2160) — Fede walks through the latest UI: multi-currency portfolio conversion via the rate oracle, the trade interface for running grids across any CEX, the executors view, and a pairs-trading agent built live in Botcamp that creates grids based on deviations.
+
+### Order Book Depth Across Exchanges
+[42:00](https://youtu.be/BIksOezjPvw?t=2520) — A standout routine: built with agent mode in minutes, it pulls order books from four exchanges and compares depth and spread in BPS around the price. Fede uses it to spot a real cross-exchange opportunity on AAVE and a 90 BPS spread on a memecoin—leading Mike to plan a CEX/DEX cross-chain market-making routine on the TROLL token for next week.
+
+### Accessibility: Color-Blind Mode
+[48:00](https://youtu.be/BIksOezjPvw?t=2880) — A small but meaningful touch—Fede added a color-blind theme alongside dark and light modes after a friend who uses Condor asked for it.
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Condor Repository](https://github.com/hummingbot/condor) — Clone and start building
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

@@ -1,0 +1,83 @@
+---
+title: "Episode 8: Demo Day and Real-Time Bot Monitoring"
+description: "Botcamp Cohort 13's winning strategies, the revised Condor Builders Cup schedule, and real-time controller snapshots in Condor"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/fdlt23C5yJ4"
+  title="The Bot Pod Episode 8: Demo Day and Real-Time Bot Monitoring"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** May 22, 2026
+
+We're back with Episode 8 of **The Bot Pod**! This week, Mike and Fede recap **Botcamp Cohort 13's demo day**—digging into the two standout strategies built on Condor—share an updated schedule for the **Condor Builders Cup**, and demo a big new Condor capability: watching your live bots in real time, with controller snapshots saved every five minutes so you can finally see how P&L evolves over time.
+
+---
+
+## Episode Highlights
+
+### Cohort 13 Wrap-Up
+[0:00](https://youtu.be/fdlt23C5yJ4?t=0) — The hosts open with Botcamp's 13th cohort, just wrapped: eight strategies demoed, and—both agree—noticeably higher quality than prior cohorts. The reason is AI. Students used Condor to analyze their strategies and build their controllers, iterating far faster than before.
+
+> "We're finally seeing the power of using AI in quant trading." — Mike
+
+### Market Discussion: HYPE FOMO & Pre-IPO Stock Perps
+[2:00](https://youtu.be/fdlt23C5yJ4?t=120) — A bit of self-deprecating honesty: last week they talked up Hyperliquid moving into TradFi via pre-IPO names like Cerebras—but never actually bought HYPE at $42. It's now ~$58, having touched $62. They also dig into the new stock perp markets, where thin liquidity creates fat-finger arbitrage opportunities (Fede spotted a ~2% deviation on Microsoft), but where depth is still too shallow for institutions to size up.
+
+> "We talked about it, but we didn't actually put anything into action." — Mike
+
+### Equities Connectors & Binance Prediction Markets
+[5:00](https://youtu.be/fdlt23C5yJ4?t=300) — Because equities market makers can easily quote a stock perp and hedge in the spot market, Mike floats adding an **equities connector** (Alpaca or Interactive Brokers) to Hummingbot so users can do the same. Meanwhile Binance has launched prediction markets and SpaceX trading—catching up to Hyperliquid, which does it all with **11 employees vs. Binance's ~10,000**.
+
+### Q&A: Agent Backtesting & Shorts
+[7:00](https://youtu.be/fdlt23C5yJ4?t=420) — Answering MJ Lee, the hosts say agent backtesting is coming, but for now you can already backtest V2 controllers in Condor's Bots tab. On a request for TikTok-style shorts: Carlito is already chopping these Friday sessions into clips for YouTube, Twitter, LinkedIn, and Reddit.
+
+> "We're a lot better at building stuff than we are at talking about it." — Mike
+
+### Condor Builders Cup: Revised Schedule
+[10:00](https://youtu.be/fdlt23C5yJ4?t=600) — The hackathon is being **pushed back about a month** so Fede can extend the agent framework first—soon agents won't just launch executors, they'll manage and reconfigure sets of controllers. New timeline: the build period runs **June 19 – July 10** with workshops along the way, followed by judging with sponsors, and a **48-hour live competition the week of August 3rd**. Registration is already open.
+
+### Demo Day: Wei Hong's Cross-Exchange Perp Market Making (2nd Place)
+[13:00](https://youtu.be/fdlt23C5yJ4?t=780) — Wei Hong rebuilt core Hummingbot components to do **cross-exchange market making on perpetual connectors**—traditionally a spot-only strategy. His version scans perp markets for opportunities to go long on one venue and short on another, capturing both the price spread and the **funding-rate difference**. He ran it live: long the stable USDT pair on Binance, short on Hyperliquid.
+
+> "Conceptually, you'd be in a position where you're getting paid to enter, and you earn the funding rate along the way." — Mike
+
+### Demo Day: Raj's "Market Making at the Touch" (Winner)
+[18:00](https://youtu.be/fdlt23C5yJ4?t=1080) — The winning strategy turned market making into a **stochastic optimization problem** (drawing on an academic paper Mike attributes to Cartea & Penalva). It precomputes a policy, then runs 300-second cycles of placing and liquidating orders rather than recomputing every tick. Raj ran it live on Hyperliquid: **120K+ in volume on a few thousand dollars of capital, with basically flat P&L**.
+
+> "This strategy is very close to what professional market-making firms—even the algorithmic ones—are running." — Mike
+
+### Why Condor vs. General-Purpose Agents
+[23:00](https://youtu.be/fdlt23C5yJ4?t=1380) — Responding to a question about adding Hermes support, Mike explains the thesis: general-purpose harnesses are great, but trading is quantitative, not qualitative. A trader needs the agent to **not hallucinate, not make mistakes, and run fast**. That's why Condor offloads core logic to deterministic **routines** (Python files) and uses the LLM sparingly—both for reliability and token efficiency.
+
+> "Condor is structured to minimize the tokens used for decision-making, and offload the core logic to routines, which are deterministic Python files." — Mike
+
+### Demo: PMM with Take Profit, Stop Loss & Position Hold
+[27:00](https://youtu.be/fdlt23C5yJ4?t=1620) — Fede demos his work-in-progress PMM controller with **global take-profit / stop-loss** and a **limit chaser**. The key concept is **position hold**: when a position executor fills but the market doesn't reverse, instead of dumping it, the position is moved into an "effective position"—a long-run inventory bag the bot manages as a whole. Take-profit only triggers once inventory passes a minimum threshold, and stop-loss only once it hits the target—so the market maker has room to improve its entry price before ever taking a loss.
+
+### New Runs Tab & Real-Time Bot Monitoring
+[35:00](https://youtu.be/fdlt23C5yJ4?t=2100) — Condor gets a new **Runs tab** (likely to replace the older Archive tab) and, more importantly, real-time bot monitoring. Until now you could only see a snapshot of a bot's current state. Now every running controller is **dumped to the database every five minutes**, giving you the full progression of realized/unrealized P&L and volume over time.
+
+> "Can we make something that actually lets you see the bot in real time while it's running? That was the goal." — Fede
+
+### Five-Minute Snapshots & Custom Controller Info
+[37:00](https://youtu.be/fdlt23C5yJ4?t=2220) — The data flows over **MQTT** (keeping the bot lightweight) and is collected by the Hummingbot API—the same mechanism already used for portfolio history. Beyond the standard metrics, a new `get_custom_info` method lets you push **any custom field** from your controller into the snapshot stream.
+
+### Live Deployment & On-the-Fly Config Updates
+[42:00](https://youtu.be/fdlt23C5yJ4?t=2520) — Fede deploys a single bot (Docker container) running **three controllers across three markets** in seconds, then shows off live updates: you can change a controller's config and push it to the **running bot without restarting**. Controllers define which parameters are updatable—change the connector name and it'll safely refuse.
+
+### Combined P&L Across Controllers
+[45:00](https://youtu.be/fdlt23C5yJ4?t=2700) — Once there are enough snapshots, Condor charts the **combined P&L of every controller you're running**—and lets you toggle individual lines. Run five algorithms and see them as one portfolio, or drill into any single one.
+
+> "I'm running five different algorithms, and this is the combined performance. This will be a game-changer for the agents." — Fede
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Condor Builders Cup](https://www.botcamp.xyz) — Register for the hackathon
+- [Discord](https://discord.gg/hummingbot) — Get help from the community
