@@ -54,20 +54,17 @@ Create a bot via Telegram or API:
 
 **Telegram**:
 ```
-/bots → Create New Bot → Select Script/Controller
+/bots → Create New Bot → Select one or more controller configs
 ```
 
-**API**:
+**API**: Deploy a bot from existing controller config files (without `.yml`). Pass several configs to run multiple controllers in one bot:
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy \
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy-v2-controllers \
   -H "Content-Type: application/json" \
   -d '{
-    "bot_name": "my-market-maker",
-    "controller_name": "directional_trading",
-    "config": {
-      "exchange": "binance_perpetual",
-      "trading_pair": "SOL-USDT"
-    }
+    "instance_name": "my-market-maker",
+    "credentials_profile": "master_account",
+    "controllers_config": ["conf_market_making.pmm_simple_1"]
   }'
 ```
 
@@ -78,13 +75,18 @@ curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy \
 /bots → Select bot → Start/Stop
 ```
 
-**API**:
+**API**: Start and stop take the bot name in the request body.
 ```bash
 # Start
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/{bot_id}/start
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/start-bot \
+  -H "Content-Type: application/json" -d '{"bot_name": "my-market-maker"}'
 
 # Stop
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/{bot_id}/stop
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/stop-bot \
+  -H "Content-Type: application/json" -d '{"bot_name": "my-market-maker"}'
+
+# Stop and archive
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/stop-and-archive-bot/my-market-maker
 ```
 
 ### Monitoring
@@ -97,8 +99,14 @@ curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/{bot_id}/sto
 
 **API**:
 ```bash
+# Status of all bots
 curl -u admin:admin http://localhost:8000/bot-orchestration/status
+
+# Status of a single bot
+curl -u admin:admin http://localhost:8000/bot-orchestration/my-market-maker/status
 ```
+
+The Hummingbot API also records a snapshot of every running controller every 5 minutes, so you get a time series of P&L and volume rather than a single point. Query it with `/bot-orchestration/controller-performance-history` (see [Monitoring Controllers](/bots/controllers#monitoring-controllers)), or view it in Condor under **Bots → Runs**. When a bot runs multiple controllers, **Bots → Active** charts their combined P&L with toggles to isolate each one.
 
 ### Logs
 
@@ -107,9 +115,9 @@ curl -u admin:admin http://localhost:8000/bot-orchestration/status
 /bots → Select bot → View Logs
 ```
 
-**API**:
+Each bot runs in its own Docker container, so you can also read logs directly:
 ```bash
-curl -u admin:admin http://localhost:8000/bot-orchestration/{bot_id}/logs
+docker logs hummingbot-my-market-maker
 ```
 
 ## Container Isolation
@@ -133,18 +141,16 @@ docker logs hummingbot-my-market-maker
 
 Agents can deploy and manage bots programmatically:
 
+The `manage_bots` MCP tool handles the full lifecycle through a single `action` parameter (`deploy`, `status`, `logs`, `stop_bot`, `start_controllers`, `stop_controllers`, `get_config`, `update_config`):
+
 ```python
-# Agent deploys a bot
+# Agent deploys a bot from one or more controller configs
 result = await mcp_tools.manage_bots(
-    action="create",
-    bot_type="controller",
-    controller_name="directional_trading",
-    config={
-        "exchange": "binance_perpetual",
-        "trading_pair": "ETH-USDT",
-    }
+    action="deploy",
+    bot_name="eth-mm",
+    controllers_config=["conf_market_making.pmm_simple_1"],
 )
 
-# Agent monitors bot
-status = await mcp_tools.get_bot_status(bot_id=result["bot_id"])
+# Agent checks bot status
+status = await mcp_tools.manage_bots(action="status", bot_name="eth-mm")
 ```

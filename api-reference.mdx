@@ -71,7 +71,6 @@ Exchange connector information and trading rules.
 | `/connectors` | GET | List available connectors |
 | `/connectors/{connector_name}/config-map` | GET | Get required credential fields |
 | `/connectors/{connector_name}/trading-rules` | GET | Get trading rules for pairs |
-| `/connectors/{connector_name}/trading-pairs` | GET | List available trading pairs |
 
 ### Market Data
 
@@ -159,10 +158,11 @@ Concentrated liquidity positions.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/gateway/clmm/pools` | POST | Get pool information |
-| `/gateway/clmm/positions` | POST | Get LP positions |
-| `/gateway/clmm/add-liquidity` | POST | Add liquidity to a pool |
-| `/gateway/clmm/remove-liquidity` | POST | Remove liquidity from a pool |
+| `/gateway/clmm/pools` | GET | List available pools |
+| `/gateway/clmm/positions_owned` | POST | Get LP positions owned in a pool |
+| `/gateway/clmm/open` | POST | Open a new position |
+| `/gateway/clmm/add` | POST | Add liquidity to a position |
+| `/gateway/clmm/remove` | POST | Remove liquidity from a position |
 | `/gateway/clmm/collect-fees` | POST | Collect accumulated fees |
 
 ### Backtesting

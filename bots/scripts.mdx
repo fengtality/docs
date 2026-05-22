@@ -73,16 +73,13 @@ class SimpleStrategy(ScriptStrategyBase):
 ### Via API
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy \
+curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy-v2-script \
   -H "Content-Type: application/json" \
   -d '{
-    "bot_name": "my-script-bot",
-    "script_name": "simple_pmm",
-    "config": {
-      "exchange": "binance",
-      "trading_pair": "BTC-USDT",
-      "order_amount": 0.001
-    }
+    "instance_name": "my-script-bot",
+    "credentials_profile": "master_account",
+    "script": "simple_pmm",
+    "script_config": "simple_pmm"
   }'
 ```
 

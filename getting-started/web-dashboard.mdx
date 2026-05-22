@@ -26,6 +26,17 @@ The link is tied to your Telegram session. You can access the dashboard from any
 
 ![Web Dashboard](/images/web-dashboard.png)
 
+## Agent Chat (⌘K)
+
+Press **⌘K** (Mac) or **Ctrl+K** (Windows/Linux) anywhere in the dashboard to open the **Agent** chat panel — the same conversational agent you use in Telegram, docked beside whatever you're working on. Press the shortcut again to hide it.
+
+From the panel you can:
+- Chat with any of your agents, and run multiple sessions on different agents
+- Trigger actions — create or stop executors, deploy bots, place orders (sensitive actions ask for confirmation first)
+- Ask about what you're viewing: when a report is open, the chat knows which report it is, so you can ask things like "explain this report" or "give me the code of this routine"
+
+You can also start a voice message with **⌘+Shift+M** (**Ctrl+Shift+M**).
+
 ## Features
 
 ### Portfolio
@@ -44,17 +55,16 @@ Unified trading interface combining market data and order execution:
 - **Positions**: Active positions with P&L
 - **Config**: Create and manage executor configurations
 
-<Note>
-The Market tab has been merged into Trade for a streamlined experience.
-</Note>
-
 ### Bots
 
-Deploy and manage bot instances:
-- **Status**: Realized P&L, unrealized P&L, total P&L, volume traded, uptime
-- **Config Viewer**: View controller configuration inline
-- **Logs**: Full logs with error filtering
-- **Start/Stop**: Control bot lifecycle
+Deploy and manage bot instances. A bot is one container that can run **multiple controllers** across different markets at once. The Bots page is organized into tabs:
+- **Active**: Running bots with realized, unrealized, and total P&L, volume traded, and uptime. When a bot runs more than one controller, a combined P&L chart aggregates them, with toggle chips to isolate any single controller. You can edit a running bot's controller config and push it live without restarting — only fields the controller marks as updatable are applied.
+- **Runs**: Performance history over time for the bots you've run, built from the controller snapshots the Hummingbot API records every 5 minutes (realized/unrealized P&L and volume).
+- **Editor**: IDE-like editor for controllers and configs (see [Editor](#editor)).
+- **Backtest**: Backtest a V2 controller config against historical data.
+- **Archived**: Stopped bots, kept for later review.
+
+Each bot also exposes full logs with error filtering and start/stop controls.
 
 ### Editor
 
@@ -92,8 +102,18 @@ Monitor your autonomous Trading Agent sessions:
 
 Run and monitor routines:
 - **Run**: Execute routines with custom parameters
-- **Schedule**: Set up recurring routine execution
-- **Reports**: View HTML reports with interactive Plotly charts
+- **Schedule**: Set up recurring runs (every minute up to every 6 hours)
+- **Reports**: Browse generated HTML reports with interactive Plotly charts in a full-screen viewer; use the left/right arrow keys to step through a routine's report history
+
+## Settings
+
+- **Servers**: Register multiple Hummingbot API servers (one per client or environment) and switch the active server from the top bar. Add, edit, set a default, or remove servers.
+- **API Keys**: Add exchange credentials directly in the dashboard — pick the exchange, fill in the required fields, and the credential is saved (secret fields are masked).
+- **Gateway**: Check Gateway status, start/stop/restart it, pull a Gateway Docker image (`latest`, `development`, or a custom tag), and view Gateway logs.
+
+## Themes
+
+A theme toggle in the top bar cycles through three modes: **dark**, **light**, and a **color-blind** mode that uses a color-blind-friendly palette for charts and indicators. Your choice is remembered in the browser.
 
 ## Web + Telegram Sync
 
@@ -143,6 +163,6 @@ Login tokens expire after 5 minutes but your session remains active once authent
 
 ## Next Step
 
-<Card title="Seeing Your Portfolio" icon="arrow-right" href="/getting-started/portfolio">
+<Card title="Seeing Your Portfolio" icon="arrow-right" href="/other-features/portfolio">
   View your balances and positions across all exchanges
 </Card>

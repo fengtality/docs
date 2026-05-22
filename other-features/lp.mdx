@@ -61,35 +61,41 @@ Collects accumulated trading fees without closing the position.
 ### List Positions
 
 ```bash
-curl -u admin:admin http://localhost:8000/gateway/clmm/positions
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/positions_owned \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector": "orca",
+    "network": "solana-mainnet-beta",
+    "pool_address": "5Q544fK..."
+  }'
 ```
 
 ### Add Liquidity
 
+Add to an existing position (open a new one with `POST /gateway/clmm/open`):
+
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add-liquidity \
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
     "connector": "orca",
-    "pool_address": "5Q544fK...",
-    "lower_price": 140.0,
-    "upper_price": 160.0,
-    "base_amount": 1.0,
-    "quote_amount": 150.0
+    "network": "solana-mainnet-beta",
+    "position_address": "5Q544fK...",
+    "base_token_amount": 1.0,
+    "quote_token_amount": 150.0
   }'
 ```
 
 ### Remove Liquidity
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove-liquidity \
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
     "connector": "orca",
-    "position_id": "position_123",
-    "percent": 100
+    "network": "solana-mainnet-beta",
+    "position_address": "5Q544fK...",
+    "percentage": 100
   }'
 ```
 
@@ -99,9 +105,9 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove-liquidity 
 curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/collect-fees \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
     "connector": "orca",
-    "position_id": "position_123"
+    "network": "solana-mainnet-beta",
+    "position_address": "5Q544fK..."
   }'
 ```
 
@@ -128,10 +134,5 @@ pools = await mcp_tools.explore_dex_pools(
 Or via API:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
-  -H "Content-Type: application/json" \
-  -d '{
-    "chain": "solana",
-    "connector": "orca"
-  }'
+curl -u admin:admin "http://localhost:8000/gateway/clmm/pools?connector=orca&search_term=SOL"
 ```

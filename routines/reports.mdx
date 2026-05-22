@@ -16,15 +16,15 @@ When you schedule a routine to run every hour, you may not want 24 Telegram mess
 
 ## Viewing Reports
 
-Reports appear in the Condor web dashboard under **Routines** → **Reports**.
+Reports appear in the Condor web dashboard under **Routines** → **Reports**. Open one in the full-screen viewer and use the **left/right arrow keys** to step through a routine's report history.
 
 Each report includes:
-- Timestamp
-- Source routine name
+- Title and creation time
+- Source routine name and tags
 - Interactive HTML content (zoomable charts, expandable sections)
 
 <Note>
-Condor maintains a buffer of the last 30 reports. Older reports are automatically cleaned up.
+Condor keeps a rolling buffer of the most recent reports (default 100, set by the `CONDOR_MAX_REPORTS` environment variable). Older reports are cleaned up automatically.
 </Note>
 
 ## Creating Reports
@@ -32,7 +32,7 @@ Condor maintains a buffer of the last 30 reports. Older reports are automaticall
 ### 1. Import ReportBuilder
 
 ```python
-from routines.report_builder import ReportBuilder
+from condor.reports import ReportBuilder
 ```
 
 ### 2. Generate Your Data
@@ -42,7 +42,6 @@ Create figures and tables as you normally would:
 ```python
 import plotly.graph_objects as go
 
-# Create a Plotly figure
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=dates, y=prices, name="Price"))
 fig.update_layout(title="Market Analysis")
@@ -50,33 +49,37 @@ fig.update_layout(title="Market Analysis")
 
 ### 3. Build the Report
 
-At the end of your routine, use ReportBuilder:
+`ReportBuilder` takes a title, and its methods are chainable. Tag the report with its source, add sections, then `await save()`:
 
 ```python
-report = ReportBuilder(source="my_routine")
-report.add_markdown("## Analysis Summary\n\nKey findings from today's scan.")
-report.add_figure(fig)
-report.add_table(df)  # Pandas DataFrame
-report.save()
+builder = ReportBuilder("Analysis Summary")
+builder.source("routine", "my_routine").tags(["analysis"])
+builder.markdown("## Analysis Summary\n\nKey findings from today's scan.")
+builder.plotly(fig)
+builder.table([{"symbol": "SOL", "change": "+4.2%"}])
+await builder.save()
 ```
 
 ## Complete Example
 
 ```python
-# routines/top_movers.py
+# routines/price_snapshot.py
 from pydantic import BaseModel, Field
 from telegram.ext import ContextTypes
 import plotly.graph_objects as go
 
-from routines.report_builder import ReportBuilder
 from config_manager import get_client
+from condor.reports import ReportBuilder
 
 
 class Config(BaseModel):
-    """Analyze top movers and generate a report."""
+    """Snapshot prices for a set of pairs and save a report."""
 
-    exchange: str = Field(default="binance_perpetual", description="Exchange to scan")
-    top_n: int = Field(default=10, description="Number of top movers")
+    exchange: str = Field(default="binance_perpetual", description="Exchange to query")
+    pairs: list[str] = Field(
+        default=["BTC-USDT", "ETH-USDT", "SOL-USDT"],
+        description="Trading pairs to snapshot",
+    )
 
 
 async def run(config: Config, context: ContextTypes.DEFAULT_TYPE) -> str:
@@ -86,51 +89,36 @@ async def run(config: Config, context: ContextTypes.DEFAULT_TYPE) -> str:
     if not client:
         return "No server available"
 
-    # Fetch top movers data
-    movers = await client.market_data.get_top_movers(
-        connector_name=config.exchange,
-        limit=config.top_n
-    )
+    prices = await client.market_data.get_prices(config.exchange, config.pairs)
+    rows = [{"pair": pair, "price": price} for pair, price in prices.items()]
 
-    gainers = movers["gainers"]
-    losers = movers["losers"]
+    fig = go.Figure(go.Bar(x=[r["pair"] for r in rows], y=[r["price"] for r in rows]))
+    fig.update_layout(title=f"Prices on {config.exchange}")
 
-    # Create visualization
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=[g["symbol"] for g in gainers],
-        y=[g["change_pct"] for g in gainers],
-        name="Gainers",
-        marker_color="green"
-    ))
-    fig.add_trace(go.Bar(
-        x=[l["symbol"] for l in losers],
-        y=[l["change_pct"] for l in losers],
-        name="Losers",
-        marker_color="red"
-    ))
-    fig.update_layout(title="Top Movers", barmode="group")
-
-    # Generate report
-    report = ReportBuilder(source="top_movers")
-    report.add_markdown(f"## Top Movers on {config.exchange}\n")
-    report.add_markdown(f"**Top Gainer:** {gainers[0]['symbol']} (+{gainers[0]['change_pct']:.2f}%)\n")
-    report.add_markdown(f"**Top Loser:** {losers[0]['symbol']} ({losers[0]['change_pct']:.2f}%)\n")
-    report.add_figure(fig)
-    report.save()
+    builder = ReportBuilder(f"Price Snapshot — {config.exchange}")
+    builder.source("routine", "price_snapshot").tags(["prices"])
+    builder.markdown(f"## Prices on {config.exchange}")
+    builder.plotly(fig)
+    builder.table(rows)
+    await builder.save()
 
     # Return text for Telegram
-    return f"Top mover: {gainers[0]['symbol']} +{gainers[0]['change_pct']:.2f}%"
+    return f"Saved price snapshot for {len(rows)} pairs"
 ```
 
 ## ReportBuilder Methods
 
+All methods return the builder, so they can be chained.
+
 | Method | Description |
 |--------|-------------|
-| `add_markdown(text)` | Add markdown-formatted text |
-| `add_figure(fig)` | Add a Plotly figure (interactive in HTML) |
-| `add_table(df)` | Add a Pandas DataFrame as an HTML table |
-| `save()` | Write the report to disk |
+| `source(source_type, source_name)` | Tag where the report came from (e.g. `"routine", "price_snapshot"`) |
+| `tags(tags)` | Attach a list of string tags |
+| `kpi(label, value, delta=None, trend="neutral")` | Add a KPI tile |
+| `markdown(text)` | Add markdown-formatted text |
+| `plotly(fig)` | Add a Plotly figure (interactive in HTML) |
+| `table(rows, columns=None)` | Add a table from a list of dicts |
+| `await save(report_id=None)` | Write the report to disk; pass an existing id to update in place |
 
 ## Use Cases
 
@@ -149,13 +137,11 @@ Instead of 24 Telegram messages, check the reports dashboard for the latest anal
 When an agent runs a routine for analysis, the report captures what the agent "saw" when making decisions:
 
 ```python
-# In agent's analysis routine
-report = ReportBuilder(source="bb_trader_analysis")
-report.add_markdown("## Agent Analysis\n")
-report.add_markdown(f"Current price: ${price}\n")
-report.add_markdown(f"Signal: {signal}\n")
-report.add_figure(indicator_chart)
-report.save()
+builder = ReportBuilder("Agent Analysis")
+builder.source("routine", "bb_trader_analysis").tags(["agent"])
+builder.markdown(f"## Agent Analysis\n\nCurrent price: ${price}\n\nSignal: {signal}")
+builder.plotly(indicator_chart)
+await builder.save()
 ```
 
 This helps you understand and debug agent behavior by reviewing the data it analyzed.
@@ -165,23 +151,23 @@ This helps you understand and debug agent behavior by reviewing the data it anal
 Build research routines that compare multiple assets:
 
 ```python
-# Compare DEX tokens: market cap, fees, price
-report = ReportBuilder(source="dex_comparison")
-report.add_markdown("## Solana DEX Token Comparison")
-report.add_figure(market_cap_chart)
-report.add_figure(fee_revenue_chart)
-report.add_table(comparison_df)
-report.save()
+builder = ReportBuilder("Solana DEX Token Comparison")
+builder.source("routine", "dex_comparison").tags(["solana", "dex"])
+builder.markdown("## Solana DEX Token Comparison")
+builder.plotly(market_cap_chart)
+builder.plotly(fee_revenue_chart)
+builder.table(comparison_rows)
+await builder.save()
 ```
 
 ## Report Storage
 
-Reports are stored in `~/condor/reports/` as HTML files. The web dashboard reads from this directory.
+Reports are written as HTML files to the `reports/` directory in your Condor install (`~/condor/reports/`), with an index in `reports_index.json`. The web dashboard reads from this directory.
 
 ```bash
 ls ~/condor/reports/
-# top_movers_2024-01-15_14-30-00.html
-# technical_analysis_2024-01-15_15-00-00.html
+# 20260115_143000_price-snapshot_a1b2c3.html
+# 20260115_150000_market-scanner_d4e5f6.html
 ```
 
 To clean up reports manually:

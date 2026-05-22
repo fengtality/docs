@@ -37,16 +37,21 @@ Condor: Running technical analysis routine...
 
 | Command | Description |
 |---------|-------------|
-| `/start` | Main menu with access to all features |
-| `/help` | Interactive help system |
-| `/portfolio` | Portfolio dashboard with P&L tracking |
-| `/bots` | Monitor and manage trading bots |
-| `/trade` | CEX/CLOB trading interface |
+| `/start` | Welcome message and setup |
+| `/portfolio` | View balances across exchanges |
+| `/agent` | Trading Agent management and LLM connection |
+| `/executors` | Deploy and manage trading executors |
+| `/bots` | Deploy and manage trading bots |
+| `/new_bot` | Create bot configurations |
+| `/routines` | Run configurable Python routines |
+| `/trade` | Place CEX and DEX orders |
 | `/swap` | DEX token swaps via Gateway |
 | `/lp` | Liquidity pool management |
-| `/agent` | Trading Agent management and LLM connection |
-| `/keys` | Manage exchange API credentials |
-| `/config` | System configuration |
+| `/servers` | Manage Hummingbot API servers |
+| `/keys` | Configure exchange API credentials |
+| `/gateway` | Gateway for DEX trading |
+| `/web` | Open the web dashboard |
+| `/update` | Check for updates and restart (admin) |
 
 ## /start - Main Menu
 
@@ -79,7 +84,7 @@ Create and manage autonomous Trading Agents.
 
 **Features:**
 - **Create Agent**: Guided setup for new Trading Agents
-- **Select LLM**: Connect to Claude, Gemini, or GPT via ACP
+- **Select LLM**: Connect Claude, Gemini, Copilot, Codex, OpenRouter, or a local model — see [Integrating your LLM](/llm-integration)
 - **Run Modes**: dry_run, run_once, or loop
 - **Monitor**: View active sessions and tick status
 - **Inject Directives**: Send real-time instructions to running agents

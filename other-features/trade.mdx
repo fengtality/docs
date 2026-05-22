@@ -45,21 +45,22 @@ For perpetual markets:
 
 ## Via API
 
-### Get Markets
+### Get Trading Rules
 
 ```bash
-curl -u admin:admin http://localhost:8000/connectors/binance/trading-pairs
+curl -u admin:admin http://localhost:8000/connectors/binance/trading-rules
 ```
 
 ### Place Market Order
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
+curl -u admin:admin -X POST http://localhost:8000/trading/orders \
   -H "Content-Type: application/json" \
   -d '{
+    "account_name": "master_account",
     "connector_name": "binance",
     "trading_pair": "BTC-USDT",
-    "side": "BUY",
+    "trade_type": "BUY",
     "amount": 0.001,
     "order_type": "MARKET"
   }'
@@ -68,12 +69,13 @@ curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
 ### Place Limit Order
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
+curl -u admin:admin -X POST http://localhost:8000/trading/orders \
   -H "Content-Type: application/json" \
   -d '{
+    "account_name": "master_account",
     "connector_name": "binance",
     "trading_pair": "BTC-USDT",
-    "side": "BUY",
+    "trade_type": "BUY",
     "amount": 0.001,
     "order_type": "LIMIT",
     "price": 60000.0
@@ -82,23 +84,20 @@ curl -u admin:admin -X POST http://localhost:8000/trading/place-order \
 
 ### Cancel Order
 
+The account, connector, and client order ID go in the path:
+
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/cancel-order \
-  -H "Content-Type: application/json" \
-  -d '{
-    "connector_name": "binance",
-    "trading_pair": "BTC-USDT",
-    "order_id": "12345"
-  }'
+curl -u admin:admin -X POST \
+  http://localhost:8000/trading/master_account/binance/orders/{client_order_id}/cancel
 ```
 
 ### Set Leverage (Perpetual)
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/set-leverage \
+curl -u admin:admin -X POST \
+  http://localhost:8000/trading/master_account/binance_perpetual/leverage \
   -H "Content-Type: application/json" \
   -d '{
-    "connector_name": "binance_perpetual",
     "trading_pair": "BTC-USDT",
     "leverage": 5
   }'

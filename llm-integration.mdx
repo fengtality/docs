@@ -5,7 +5,7 @@ description: "Configure cloud and local LLM providers for Trading Agents"
 
 Condor supports multiple LLM providers through two integration methods:
 - **ACP Protocol**: Native integration with Claude Code, Gemini, GitHub Copilot, and Codex
-- **PydanticAI**: Support for local models via Ollama and LM Studio
+- **PydanticAI**: Direct API access to OpenRouter and to local models via Ollama and LM Studio
 
 See [ACP documentation](https://agentclientprotocol.com/get-started/introduction) for the full protocol specification.
 
@@ -35,6 +35,12 @@ A typical first-time flow is: install and authenticate your provider in the CLI,
 | **Gemini** | `gemini` | `npm install -g @google/gemini-cli` |
 | **GitHub Copilot** | `copilot` | `npm install -g @github/copilot-cli` |
 | **Codex** | `codex` | `npx @zed-industries/codex-acp` |
+
+### API Key Providers (PydanticAI)
+
+| Provider | Agent Key | Setup |
+|----------|-----------|-------|
+| **OpenRouter** | `openrouter` | Set `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter) |
 
 ### Local Providers
 
@@ -162,6 +168,32 @@ codex  # Run Codex and see if it starts up without issues
 **5. Configure in Telegram:**
 
 Follow the [Configure in Telegram](#configure-in-telegram) steps and select the `ChatGPT Codex` label.
+
+### OpenRouter
+
+OpenRouter routes requests to many models — including some free ones — through a single API key, often at lower cost than going to a provider directly. Condor connects to it through PydanticAI's OpenAI-compatible client, so no CLI install is required.
+
+**1. Get an API key:**
+
+Create a key at [openrouter.ai/keys](https://openrouter.ai/keys).
+
+**2. Set the environment variable:**
+
+Add your key to Condor's `.env`:
+
+```bash
+OPENROUTER_API_KEY=sk-or-...
+```
+
+**3. Configure in Telegram:**
+
+Run `/agent` → **Change LLM** → **OpenRouter — Pick Model**. Condor fetches the live OpenRouter catalog and lists only models that advertise tool-call support (Condor's agents depend on tool calling, so models without it are filtered out). Pick one from the list, or choose **Enter model manually** to provide a model slug.
+
+Your selection is stored as `openrouter:<model>` — for example `openrouter:anthropic/claude-sonnet-4-5`. To run at no cost, choose one of the `openrouter/free` models.
+
+<Note>
+If a request fails with an insufficient-credits error, add credits to your OpenRouter account or switch to a `openrouter/free` model.
+</Note>
 
 ### Ollama (Local)
 
@@ -297,6 +329,7 @@ You can now send a message to the agent and start chatting.
 | Gemini | `Gemini CLI` |
 | GitHub Copilot | `Github Copilot CLI` |
 | Codex | `ChatGPT Codex` |
+| OpenRouter | `OpenRouter — Pick Model` |
 | Ollama | `Ollama - Default Model` |
 | LM Studio | `LM Studio - Default Model` |
 

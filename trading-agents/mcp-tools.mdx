@@ -11,15 +11,15 @@ Condor runs two MCP servers:
 
 | Server | Purpose |
 |--------|---------|
-| **hummingbot-mcp** | Trading operations via Hummingbot API (27 tools) |
-| **condor-mcp** | Local operations: notifications, routines, journals (9 tools) |
+| **hummingbot-mcp** | Trading operations via Hummingbot API (13 tools) |
+| **condor-mcp** | Local operations: notifications, routines, journals (8 tools) |
 
 ```mermaid
 flowchart LR
     Agent[Trading Agent] --> |JSON-RPC| HMCP[hummingbot-mcp]
     Agent --> |JSON-RPC| CMCP[condor-mcp]
     HMCP --> API[Hummingbot API]
-    API --> Exchanges[50+ Exchanges]
+    API --> Exchanges[CEXs & DEXs]
     CMCP --> Local[Local Files]
     CMCP --> TG[Telegram]
 ```
@@ -73,20 +73,23 @@ For advanced multi-strategy deployments:
 | `manage_bots()` | Deploy and control controller-based bots |
 | `manage_controllers()` | CRUD operations on controller templates |
 
-### Gateway (DEX Trading)
+### Market Data & Discovery
 
 | Tool | Description |
 |------|-------------|
-| `explore_dex_pools()` | Discover CLMM pools with filtering |
-| `manage_gateway_swaps()` | Execute DEX swaps |
-| `manage_gateway_clmm()` | Manage CLMM liquidity positions |
-| `manage_gateway_container()` | Control Gateway Docker container |
-
-### Market Intelligence
-
-| Tool | Description |
-|------|-------------|
+| `explore_dex_pools()` | Discover DEX/CLMM pools with filtering |
 | `explore_geckoterminal()` | Free market data: networks, pools, OHLCV |
+
+### Backtesting
+
+| Tool | Description |
+|------|-------------|
+| `run_backtest()` | Backtest a V2 controller config over historical data |
+| `manage_backtest_tasks()` | Track and manage backtest tasks |
+
+<Note>
+DEX liquidity positions are created through `manage_executors()` (the `lp_executor` type), and Gateway itself is managed from the Condor dashboard (**Settings → Gateway**) rather than through a dedicated MCP tool.
+</Note>
 
 ## Condor MCP Tools
 

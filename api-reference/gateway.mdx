@@ -114,19 +114,15 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
     "token_b": "USDC"
   }'
 
-# Add liquidity
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add-liquidity \
+# Add liquidity to an existing position (open a new one with /gateway/clmm/open)
+curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
-    "network": "mainnet",
     "connector": "raydium",
-    "pool_id": "pool-address",
-    "wallet_address": "your-wallet",
-    "amount_a": "1.0",
-    "amount_b": "150.0",
-    "lower_price": "140.0",
-    "upper_price": "160.0"
+    "network": "solana-mainnet-beta",
+    "position_address": "position-address",
+    "base_token_amount": 1.0,
+    "quote_token_amount": 150.0
   }'
 ```
 
