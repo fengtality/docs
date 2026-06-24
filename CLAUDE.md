@@ -52,7 +52,8 @@ Telegram User
 ├── docs.json                    # Mintlify config (navigation, theme, OpenAPI)
 ├── introduction.mdx             # Homepage
 ├── quickstart.mdx               # Quickstart guide
-├── installation.mdx             # Installation guide
+├── getting-started/
+│   ├── installing.mdx           # Installation guide (Condor + Hummingbot API)
 ├── developer-guide.mdx          # Developer guide (API usage)
 ├── api-reference.mdx            # API Reference overview
 ├── api-reference/openapi.json   # Hummingbot API spec
