@@ -1,0 +1,60 @@
+---
+title: "Episode 10: Sending Regular Reports with Condor"
+description: "Condor Builders Cup F1 format and Token 2049 finals, Hummingbot data reporting, GRVT competition, tokenized stocks, Jupiter RFQ security, Telegram reports, and AI routine builder demos"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/ZdoHxwxVuMM"
+  title="The Bot Pod Episode 10: Sending Regular Reports with Condor"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** June 12, 2026
+
+We're back with Episode 10 of **The Bot Pod**! This week, Mike and Fede expand on the **Condor Builders Cup**—now a three-month F1-style competition culminating at **Token 2049** in Singapore—introduce Hummingbot's new **data reporting site** and a **GRVT** trading competition team, and discuss tokenized stocks on Backpack and macro trends. Fede walks through a whitehat exploit of a Jupiter RFQ market maker, Mike demos scheduled **Telegram report delivery** in Condor, and Fede closes with the **AI routine builder** for rapid technical analysis research.
+
+---
+
+## Episode Highlights
+
+*Timestamps are estimated based on the flow of the transcript.*
+
+### Condor Builders Cup: Hackathon Expansion & Token 2049
+[0:00](https://youtu.be/ZdoHxwxVuMM?t=0) — The episode kicks off with major updates to the upcoming Condor Builders Cup hackathon, which has been extended to a three-month event structured like an F1 trading competition. Mike details the new phases: a Qualifying phase running through August to design agents, a Trials phase where sponsors and peers rank the strategies, and a live Finals competition right before the Token 2049 conference in Singapore.
+
+> "What we're hoping for is because we're making the hackathon longer we'll be doing the competition right before token 49 hopefully it'll draw a lot more attention to this" — Mike
+
+### New Reporting Site & GRVT Team Competition
+[10:00](https://youtu.be/ZdoHxwxVuMM?t=600) — Mike introduces Hummingbot's newly launched data reporting site, which tracks aggregated, anonymized bot metrics. He highlights that over 683 instances generated roughly $249 million in volume across 80 different exchange connectors in a 24-hour period. Following this, they announce the formation of a Hummingbot team for a trading competition on GRVT, a new perpetual DEX with attractive fee levels, to both test the exchange and showcase bot performance.
+
+> "Because we've now taken over the data reporting in thanks to models like cloud fable it's pretty easy for us to spin up and create this types of applications" — Mike
+
+### Tokenized Stocks, Backpack Exchange & Macro Economics
+[20:00](https://youtu.be/ZdoHxwxVuMM?t=1200) — The conversation shifts to Traditional Finance (TradFi) integration, specifically highlighting Backpack Securities' launch of tokenized shares for assets like SpaceX, which can now be moved to Solana or traditional brokerages. Mike notes this is an exciting step toward making all assets natively fungible across both traditional and decentralized exchanges. They also briefly touch on the broader macroeconomic trend of the US dollar depreciating relative to risk assets.
+
+> "It's not just about trading crypto tokens like bitcoin it's not just trading memecoins but it's like any asset anywhere should be fungeable across both traditional exchanges... to the blockchain based places" — Mike
+
+### Security Deep-Dive: Whitehat Draining a Jupiter RFQ Market Maker
+[30:00](https://youtu.be/ZdoHxwxVuMM?t=1800) — Fede details a vulnerability he discovered while building a Request for Quote (RFQ) market maker on Jupiter. He explains that by intercepting and modifying the transaction details—specifically changing the price and quantity of the quote before signing it—he was able to exploit a market maker that was failing to validate the final price. He successfully drained $45k USD as a whitehat to demonstrate the flaw, which was subsequently patched by the Jupiter team.
+
+> "I change the price and sign with another price so was like I will give you $1 and you give me $2 worth of soul and then what happens is that transaction was sent to the market maker maker was not checking that price discrepancy" — Fede
+
+### Demo: Scheduling & Sending Condor Reports to Telegram
+[40:00](https://youtu.be/ZdoHxwxVuMM?t=2400) — Mike provides a live demonstration of a new Condor "notify" feature that allows users to schedule custom HTML performance reports and automatically deliver them to a specified Telegram chat or user ID. He notes this is incredibly useful for market makers who need to keep clients informed about their trading operations on a daily or hourly basis.
+
+> "What we like about html is that... you can actually modify this report you can basically drill down and this is exactly what you'll see i also think this renders pretty well on mobile" — Mike
+
+### Demo: AI Routine Builder for TA Research
+[50:00](https://youtu.be/ZdoHxwxVuMM?t=3000) — To wrap up, Fede walks through how to use Condor's AI "routine builder" to rapidly develop trading research tools. They prompt the AI to fetch 15-minute Binance perpetual candles and plot Bollinger bands and EMAs. Fede explains that the AI agent contextually reads the HTML report the user is actively viewing to refine and update the strategy iterations on the fly.
+
+> "The point here is more like you can use it as a research tool where you are thinking about you have a thesis and you want to have a fast test okay how this looks like and now condor can do the full end to end thing" — Fede
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Condor Builders Cup](https://www.botcamp.xyz) — Register for the hackathon
+- [Discord](https://discord.gg/hummingbot) — Get help from the community

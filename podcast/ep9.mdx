@@ -1,0 +1,65 @@
+---
+title: "Episode 9: Tracking Bot Performance in Condor"
+description: "Crypto market sentiment, Condor snapshots and config levels, securing bots with Tailscale, PMM Mister demos, Hyperliquid HLP routines, and the Condor Builders Cup"
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/HUVPhGsrJrA"
+  title="The Bot Pod Episode 9: Tracking Bot Performance in Condor"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+**Air Date:** June 4, 2026
+
+We're back with Episode 9 of **The Bot Pod**! This week, Mike and Fede navigate a rough crypto week—HYPE's resilience, Worldcoin regrets, and the classic "is crypto dead?" buy signal—then walk through the latest Condor improvements: five-minute performance snapshots, the new Runs tab, and on-the-fly config updates. They stress securing trading servers with **Tailscale**, demo **PMM Mister** with global take-profit and stop-loss, showcase a custom routine analyzing Hyperliquid's HLP vault, cover **XRP Liquid** rewards on XRPL, and share updates on the upcoming **Condor Builders Cup** hackathon.
+
+---
+
+## Episode Highlights
+
+*Timestamps are estimated based on the flow of the transcript.*
+
+### Market Discussion: Crypto Downturn, HYPE & Worldcoin
+[0:00](https://youtu.be/HUVPhGsrJrA?t=0) — The episode opens with Mike and Fede discussing the rough week in the crypto markets, with Fede noting that when retail traders start asking "is crypto dead?", it is usually the best signal to buy. They highlight the impressive performance of the HYPE token, which hit $72 despite the broader market downturn. Fede also laments selling his Worldcoin (WLD) right before it jumped from $0.36 to $0.51, leading to a debate on WLD's future utility for identity verification in apps like Tinder.
+
+> "When all the people is asking is crypto dead is probably the best signal to buy." — Fede
+
+### Condor Updates: Snapshots, Combined Views, & Config Levels
+[15:00](https://youtu.be/HUVPhGsrJrA?t=900) — Fede details recent improvements to Condor, highlighting the new 5-minute controller performance snapshots that capture realized and unrealized P&L, volume, held positions, and custom info. He introduces the new **Runs tab**, which allows users to permanently delete bot archives and database records to save space. Additionally, he explains the two levels of configurations—general configs versus instance configs—which allow users to update parameters on running live bots on-the-fly without altering their original templates.
+
+> "We are just getting a snapshot so once you deploy a bot you will have a snapshot of every five minutes what was the performance of it." — Fede
+
+### Security First: Defending Bots with Tailscale
+[25:00](https://youtu.be/HUVPhGsrJrA?t=1500) — With AI-based bots constantly scanning newly deployed servers for vulnerabilities, the hosts stress the absolute necessity of securing trading operations. Hummingbot's installation scripts will now recommend and integrate **Tailscale** to automatically close exposed web ports, creating a secure local network exclusively for your devices. They also mention Cloudflare tunnels as a viable community-suggested alternative to protect servers from supply chain attacks and exploits.
+
+> "As soon as you create a server... there's like AI based bots trying to infiltrate that server... so we will strongly recommend to go to that path to avoid having any bots scanning your servers." — Mike / Fede
+
+### Demo: PMM Mister with Global Take-Profit & Stop-Loss
+[35:00](https://youtu.be/HUVPhGsrJrA?t=2100) — Fede demos deploying two `PMM_mister` controllers on the Binance BTC/FDUSD market with different portfolio allocations (3% vs 7%). Mike explains that this advanced strategy manages risk by moving filled orders into a **position hold** bucket, utilizing global take-profit and stop-loss limits rather than selling immediately at a loss. The live demo illustrates how higher capital exposure (7%) drives significantly more volume, but also proportionately increases unrealized P&L risk when the market drops.
+
+> "The ability to hold inventory and not sell at a lower price and instead wait for the market to rise again... is actually very helpful from a market making perspective." — Mike
+
+### Routines Demo: Analyzing Hyperliquid's HLP Vault
+[45:00](https://youtu.be/HUVPhGsrJrA?t=2700) — Fede showcases a custom Condor routine he built to analyze the Hyperliquid HLP vault, which holds roughly $349 million in TVL. Because Hyperliquid does not natively support hedge mode, the generated HTML report reveals how the vault runs two inversely correlated strategies (Strategy A and B) to maintain long and short positions simultaneously. Mike highlights routines as Condor's most flexible and portable feature, allowing users to easily generate and share custom HTML performance reports via email or Telegram.
+
+> "I think honestly routines are the best most useful feature that we've added to Condor so far." — Mike
+
+### XRP Liquid Rewards & XRPL Market Making
+[55:00](https://youtu.be/HUVPhGsrJrA?t=3300) — Responding to a viewer, Mike discusses the XRP Liquid program, which distributes **1,000 XRP per week** in rewards to users providing liquidity on key XRPL pairs like XRP/USD and BTC/USD. He highlights XRPL's low transaction fees (less than one cent) and lack of minimum order amounts, making it an ideal, low-risk environment for testing new market-making strategies with just a few dollars of capital.
+
+> "It's basically rewards that you can get for market making for very high major pairs... and I think it's a good way to if you're especially if you're new to Humingbot." — Mike
+
+### Condor Builders Cup: Hackathon Registration Open
+[65:00](https://youtu.be/HUVPhGsrJrA?t=3900) — Mike shares updates on the upcoming Condor Builders Cup hackathon, which adopts an F1-style trading competition format starting in about two weeks. The top strategies from Botcamp Cohort 13 (including Raj's stochastic optimization and Hong's cross-exchange perp market making) will represent the Botcamp team. Winning agents from various sponsor teams will each receive **$1,000 in capital** to trade live in a 48-hour race to see who can generate the most P&L and volume.
+
+> "It'll be really interesting to see which of these quantitative strategies are actually going to generate P&L and volume over that span period." — Mike
+
+---
+
+## Resources
+
+- [Condor](https://condor.hummingbot.org) — Try it now
+- [Condor Builders Cup](https://www.botcamp.xyz) — Register for the hackathon
+- [Discord](https://discord.gg/hummingbot) — Get help from the community
