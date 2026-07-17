@@ -34,7 +34,7 @@ A typical first-time flow is: install and authenticate your provider in the CLI,
 | **Claude Code** | `claude-code` | `curl -fsSL https://claude.ai/install.sh \| sh` |
 | **Gemini** | `gemini` | `npm install -g @google/gemini-cli` |
 | **GitHub Copilot** | `copilot` | `npm install -g @github/copilot-cli` |
-| **Codex** | `codex` | `npx @zed-industries/codex-acp` |
+| **Codex** | `codex` | `npx @agentclientprotocol/codex-acp` |
 
 ### API Key Providers (PydanticAI)
 
@@ -140,7 +140,7 @@ Follow the [Configure in Telegram](#configure-in-telegram) steps and select the 
 
 ### Codex
 
-Condor connects to Codex through Zed's ACP bridge (`@zed-industries/codex-acp`). You'll need the Codex CLI installed and authenticated, plus the ACP bridge available for Condor to invoke.
+Condor connects to Codex through the Agent Client Protocol bridge (`@agentclientprotocol/codex-acp`). You'll need the Codex CLI installed and authenticated, plus the ACP bridge available for Condor to invoke.
 
 **1. Install the Codex CLI:**
 
@@ -153,10 +153,10 @@ Open Codex and sign in with your ChatGPT account or an OpenAI API key.
 **3. Install the ACP bridge:**
 
 ```bash
-npx @zed-industries/codex-acp
+npx @agentclientprotocol/codex-acp
 ```
 
-Running this once fetches the package so Condor can invoke it via `npx`. You can also install it globally with `npm install -g @zed-industries/codex-acp`.
+Running this once fetches the package so Condor can invoke it via `npx`. You can also install it globally with `npm install -g @agentclientprotocol/codex-acp`.
 
 **4. Verify installation:**
 
