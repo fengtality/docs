@@ -16,6 +16,11 @@
       "proxy": false
     }
   },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-HRGS63NV4C"
+    }
+  },
   "navigation": {
     "tabs": [
       {
