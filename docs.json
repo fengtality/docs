@@ -30,7 +30,8 @@
             "group": "Condor",
             "pages": [
               "introduction",
-              "motivation"
+              "motivation",
+              "feedback"
             ]
           },
           {
@@ -147,8 +148,17 @@
     "light": "/logo/condor-light.png",
     "dark": "/logo/condor-dark.png"
   },
+  "banner": {
+    "content": "**Help shape Condor.** What's working? What's missing? The survey takes 2 minutes and directly shapes what we build next. [Take the survey →](https://forms.gle/7NpG3RtgfLrmpUNY8)",
+    "dismissible": true
+  },
   "navbar": {
     "links": [
+      {
+        "label": "Give Feedback",
+        "href": "https://forms.gle/7NpG3RtgfLrmpUNY8",
+        "icon": "clipboard-list"
+      },
       {
         "label": "About us",
         "href": "https://hummingbot.org/about/"
@@ -166,6 +176,21 @@
       "discord": "https://discord.gg/hummingbot",
       "youtube": "https://youtube.com/@hummingbot",
       "github": "https://github.com/hummingbot/condor"
-    }
+    },
+    "links": [
+      {
+        "header": "Community",
+        "items": [
+          {
+            "label": "Give Feedback",
+            "href": "https://forms.gle/7NpG3RtgfLrmpUNY8"
+          },
+          {
+            "label": "Discord",
+            "href": "https://discord.gg/hummingbot"
+          }
+        ]
+      }
+    ]
   }
 }
