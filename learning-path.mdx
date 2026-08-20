@@ -1,0 +1,83 @@
+---
+title: "Learning Paths"
+description: "Find the setup and reading order that matches your experience level and use case."
+---
+
+import FeedbackSurvey from "/snippets/feedback-survey.mdx";
+
+New to Condor, or picking up where you left off? Use the tables below to find the fastest route to what you actually want to do—no need to read every page in order.
+
+## By experience level
+
+| Level | Goal | Reading path | Time |
+|-------|------|--------------|------|
+| **Beginner** | Get Condor and Hummingbot API running locally, send your first Telegram command, and build one Trading Agent | [Installing](/getting-started/installing) → [Telegram](/getting-started/telegram) → [Credentials](/getting-started/credentials) → [First Agent](/getting-started/first-agent) | ~30–45 min |
+| **Intermediate** | Add real exchange keys, use the web dashboard, understand Bots/Executors/Routines, and manage running sessions | [Web Dashboard](/getting-started/web-dashboard) → [Bots](/bots/overview) → [Executors](/executors/overview) → [Routines](/routines/overview) → [Sessions](/getting-started/sessions) | ~1–2 hrs |
+| **Advanced** | Deploy remotely with Tailscale, understand the multi-agent architecture, and build custom agents | [Installing (remote/Tailscale)](/getting-started/installing#secure-remote-access-with-tailscale) → [Trading Agents Architecture](/trading-agents/architecture) → [Agent Builder](/trading-agents/agent-builder) → [Managing Servers](/other-features/server) | ~2–4 hrs |
+
+## What do you want Condor to do?
+
+Condor gives you four ways to execute a trade, from fully autonomous to fully manual. Most users end up combining more than one.
+
+| | Trading Agent | Bot | Executor | Routine |
+|---|---|---|---|---|
+| **Decision maker** | LLM, reasons every tick | Script/Controller, fixed logic | You, or an Agent (one-shot) | Deterministic Python |
+| **Lifecycle** | Long-running, adaptive | Long-running, fixed | Short-lived, single operation | Scheduled or triggered |
+| **Best for** | AI-assisted strategy that adapts to conditions | Always-on market making or grid trading without AI in the loop | A single trade, or a stop-loss/take-profit | Reports, alerts, and indicators without LLM cost |
+| **Learn more** | [Trading Agents](/trading-agents/overview) | [Bots](/bots/overview) | [Executors](/executors/overview) | [Routines](/routines/overview) |
+
+## By use case
+
+<AccordionGroup>
+  <Accordion title="Let AI manage a strategy for me">
+    [Trading Agents Overview](/trading-agents/overview) → [LLM Integration](/llm-integration) → [Build Your First Agent](/getting-started/first-agent) → [Managing Sessions](/getting-started/sessions) → [Agent Builder](/trading-agents/agent-builder)
+  </Accordion>
+  <Accordion title="Run an always-on bot without AI micromanagement">
+    [Bots Overview](/bots/overview) → [Controllers](/bots/controllers) or [Scripts](/bots/scripts) → [Backtesting](/bots/backtesting)
+  </Accordion>
+  <Accordion title="Place a single trade, or set a stop-loss/take-profit">
+    [Executors Overview](/executors/overview) → [Order Executor](/executors/order-executor) → [Position Executor](/executors/position-executor)
+  </Accordion>
+  <Accordion title="Automate reports or alerts on a schedule">
+    [Routines Overview](/routines/overview) → [Creating Routines](/routines/creating-routines) → [Reports](/routines/reports)
+  </Accordion>
+  <Accordion title="Test everything locally before risking capital">
+    [Installing](/getting-started/installing) (local install—**Tailscale not required**) → [Credentials](/getting-started/credentials) → dry-run an agent in [Build Your First Agent](/getting-started/first-agent)
+  </Accordion>
+  <Accordion title="Deploy for 24/7 production on a server">
+    [Installing](/getting-started/installing#secure-remote-access-with-tailscale) (remote install—**Tailscale required**) → [Managing Servers](/other-features/server) → [Managing Sessions](/getting-started/sessions)
+  </Accordion>
+  <Accordion title="Manage many agents or bots as a team or fund">
+    [Trading Agents Architecture](/trading-agents/architecture) (multi-agent via `controller_id`) → [Global Routines](/routines/global-routines) → [Managing Servers](/other-features/server)
+  </Accordion>
+</AccordionGroup>
+
+## Do I need Tailscale?
+
+| Situation | Tailscale needed? |
+|-----------|--------------------|
+| Testing locally—Condor and Hummingbot API on one machine | No |
+| Same VPS, both services together | Optional, still recommended |
+| Different machines (for example, laptop + VPS) | **Yes** |
+| A team or multiple devices need access | **Yes** |
+
+See [Installing](/getting-started/installing#secure-remote-access-with-tailscale) for the full setup, or the [Tailscale security walkthrough](https://hummingbot.org/blog/posts/securing-condor-and-hummingbot-api-with-tailscale/) for a deeper guide.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Introduction" icon="circle-info" href="/introduction">
+    What Condor is and who it's for
+  </Card>
+  <Card title="Motivation" icon="lightbulb" href="/motivation">
+    Why Condor is architected this way
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/hummingbot/condor">
+    Source code and issues
+  </Card>
+  <Card title="Give Feedback" icon="clipboard-list" href="/feedback">
+    2-minute survey that shapes the roadmap
+  </Card>
+</CardGroup>
+
+<FeedbackSurvey />

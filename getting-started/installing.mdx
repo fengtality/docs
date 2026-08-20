@@ -46,6 +46,17 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
   </Accordion>
 </AccordionGroup>
 
+## Do I Need Tailscale?
+
+| Situation | Tailscale needed? |
+|-----------|--------------------|
+| Testing locally—Condor and Hummingbot API on one machine | No |
+| Same VPS, both services together | Optional, still recommended |
+| Different machines (for example, laptop + VPS) | **Yes** |
+| A team or multiple devices need access | **Yes** |
+
+If you're just testing locally, skip ahead—the Quick Install below works without Tailscale. See [Learning Path](/learning-path#do-i-need-tailscale) for more use-case-based routing.
+
 ## Quick Install
 
 <Tabs>
