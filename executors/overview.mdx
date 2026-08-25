@@ -101,13 +101,13 @@ result = await mcp_tools.manage_executors(
 
 ```bash
 # List executors
-curl -u admin:admin http://localhost:8000/executors
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/executors
 
 # Filter by agent
-curl -u admin:admin "http://localhost:8000/executors?controller_id=my-agent"
+curl -u YOUR_USERNAME:YOUR_PASSWORD "http://localhost:8000/executors?controller_id=my-agent"
 
 # Stop executor
-curl -u admin:admin -X DELETE http://localhost:8000/executors/{id}
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X DELETE http://localhost:8000/executors/{id}
 ```
 
 ## Standardized Metrics

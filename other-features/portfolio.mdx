@@ -10,7 +10,7 @@ The Portfolio provides a unified view of balances and performance across all con
 Fetch current balances:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/portfolio/state \
   -H "Content-Type: application/json" \
   -d '{}'
 ```
@@ -48,7 +48,7 @@ Response:
 Request specific accounts:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/portfolio/state \
   -H "Content-Type: application/json" \
   -d '{"account_names": ["master_account"]}'
 ```
@@ -58,7 +58,7 @@ curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
 Request specific connectors:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/portfolio/state \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/portfolio/state \
   -H "Content-Type: application/json" \
   -d '{"connector_names": ["binance", "binance_perpetual"]}'
 ```

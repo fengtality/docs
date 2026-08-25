@@ -59,7 +59,7 @@ Create a bot via Telegram or API:
 
 **API**: Deploy a bot from existing controller config files (without `.yml`). Pass several configs to run multiple controllers in one bot:
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy-v2-controllers \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/bot-orchestration/deploy-v2-controllers \
   -H "Content-Type: application/json" \
   -d '{
     "instance_name": "my-market-maker",
@@ -78,15 +78,15 @@ curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy-v2-co
 **API**: Start and stop take the bot name in the request body.
 ```bash
 # Start
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/start-bot \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/bot-orchestration/start-bot \
   -H "Content-Type: application/json" -d '{"bot_name": "my-market-maker"}'
 
 # Stop
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/stop-bot \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/bot-orchestration/stop-bot \
   -H "Content-Type: application/json" -d '{"bot_name": "my-market-maker"}'
 
 # Stop and archive
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/stop-and-archive-bot/my-market-maker
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/bot-orchestration/stop-and-archive-bot/my-market-maker
 ```
 
 ### Monitoring
@@ -100,10 +100,10 @@ curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/stop-and-arc
 **API**:
 ```bash
 # Status of all bots
-curl -u admin:admin http://localhost:8000/bot-orchestration/status
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/bot-orchestration/status
 
 # Status of a single bot
-curl -u admin:admin http://localhost:8000/bot-orchestration/my-market-maker/status
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/bot-orchestration/my-market-maker/status
 ```
 
 The Hummingbot API also records a snapshot of every running controller every 5 minutes, so you get a time series of P&L and volume rather than a single point. Query it with `/bot-orchestration/controller-performance-history` (see [Monitoring Controllers](/bots/controllers#monitoring-controllers)), or view it in Condor under **Bots → Runs**. When a bot runs multiple controllers, **Bots → Active** charts their combined P&L with toggles to isolate each one.

@@ -25,8 +25,13 @@ For remote deployments, replace `localhost` with your server's address.
 All endpoints require HTTP Basic Authentication:
 
 ```bash
-curl -u admin:admin http://localhost:8000/accounts
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/accounts
 ```
+
+The username and password are the `USERNAME` and `PASSWORD` you set when you
+installed Hummingbot API — they are stored in that install's `.env`, and in
+Condor's `config.yml` under `servers:`. There are **no default credentials**:
+setup requires you to choose them, and an API left without them answers `401`.
 
 ## API Routers
 

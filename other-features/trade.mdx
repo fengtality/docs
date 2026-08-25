@@ -48,13 +48,13 @@ For perpetual markets:
 ### Get Trading Rules
 
 ```bash
-curl -u admin:admin http://localhost:8000/connectors/binance/trading-rules
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/connectors/binance/trading-rules
 ```
 
 ### Place Market Order
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/orders \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/trading/orders \
   -H "Content-Type: application/json" \
   -d '{
     "account_name": "master_account",
@@ -69,7 +69,7 @@ curl -u admin:admin -X POST http://localhost:8000/trading/orders \
 ### Place Limit Order
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/trading/orders \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/trading/orders \
   -H "Content-Type: application/json" \
   -d '{
     "account_name": "master_account",
@@ -87,14 +87,14 @@ curl -u admin:admin -X POST http://localhost:8000/trading/orders \
 The account, connector, and client order ID go in the path:
 
 ```bash
-curl -u admin:admin -X POST \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST \
   http://localhost:8000/trading/master_account/binance/orders/{client_order_id}/cancel
 ```
 
 ### Set Leverage (Perpetual)
 
 ```bash
-curl -u admin:admin -X POST \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST \
   http://localhost:8000/trading/master_account/binance_perpetual/leverage \
   -H "Content-Type: application/json" \
   -d '{

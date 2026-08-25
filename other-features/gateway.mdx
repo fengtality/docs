@@ -26,7 +26,7 @@ Deploy Gateway via Telegram:
 Or via API:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/deploy
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/deploy
 ```
 
 ## Swaps
@@ -40,7 +40,7 @@ Execute token swaps via `/swap` in Telegram or the API.
 
 **API**:
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/swap/execute \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swap/execute \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
@@ -76,7 +76,7 @@ Manage CLMM positions via `/lp` in Telegram.
 Explore available pools:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/pools \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",

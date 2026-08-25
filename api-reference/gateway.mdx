@@ -71,7 +71,7 @@ Execute token swaps via the `/gateway/swaps` endpoints:
 
 ```bash
 # Get a swap quote
-curl -u admin:admin -X POST http://localhost:8000/gateway/swaps/quote \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swaps/quote \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
@@ -84,7 +84,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/swaps/quote \
   }'
 
 # Execute the swap
-curl -u admin:admin -X POST http://localhost:8000/gateway/swaps/execute \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swaps/execute \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
@@ -104,7 +104,7 @@ Manage CLMM positions via `/gateway/clmm` endpoints:
 
 ```bash
 # Get pool information
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/pools \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
@@ -115,7 +115,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/pools \
   }'
 
 # Add liquidity to an existing position (open a new one with /gateway/clmm/open)
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/add \
   -H "Content-Type: application/json" \
   -d '{
     "connector": "raydium",
@@ -155,7 +155,7 @@ Add wallet credentials via Condor or API:
 
 **API:**
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/wallets/add \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/wallets/add \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
@@ -168,7 +168,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/wallets/add \
 Check Gateway status:
 
 ```bash
-curl -u admin:admin http://localhost:8000/gateway/status
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/gateway/status
 ```
 
 ## Gateway vs CEX Connectors

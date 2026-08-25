@@ -34,7 +34,7 @@ For security, only enable **read + trade** permissions on your API keys. Never e
 ### List Credentials
 
 ```bash
-curl -u admin:admin http://localhost:8000/accounts/master_account/credentials
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/accounts/master_account/credentials
 ```
 
 Response:
@@ -46,7 +46,7 @@ Response:
 
 ```bash
 curl -X POST http://localhost:8000/accounts/add-credential/master_account/binance \
-  -u admin:admin \
+  -u YOUR_USERNAME:YOUR_PASSWORD \
   -H "Content-Type: application/json" \
   -d '{
     "binance_api_key": "your-api-key",
@@ -62,7 +62,7 @@ Wait 2-3 seconds after adding credentials before making API calls. The system ne
 
 ```bash
 curl -X POST http://localhost:8000/accounts/delete-credential/master_account/binance \
-  -u admin:admin
+  -u YOUR_USERNAME:YOUR_PASSWORD
 ```
 
 ## Multiple Accounts
@@ -72,11 +72,11 @@ You can create multiple accounts to separate credentials:
 ```bash
 # Create account
 curl -X POST "http://localhost:8000/accounts/add-account?account_name=trading_account" \
-  -u admin:admin
+  -u YOUR_USERNAME:YOUR_PASSWORD
 
 # Add credentials to new account
 curl -X POST http://localhost:8000/accounts/add-credential/trading_account/okx \
-  -u admin:admin \
+  -u YOUR_USERNAME:YOUR_PASSWORD \
   -H "Content-Type: application/json" \
   -d '{
     "okx_api_key": "your-api-key",

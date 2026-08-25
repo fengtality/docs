@@ -34,22 +34,27 @@ The active server is used for all trading operations.
 
 ### Health Check
 
+The API's root endpoint answers with its name, version and status. Use the
+username and password from that API's `.env` — there are no default
+credentials.
+
 ```bash
-curl -u admin:admin http://localhost:8000/health
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/
 ```
 
 Response:
 ```json
 {
-  "status": "ok",
-  "version": "1.0.0"
+  "name": "Hummingbot API",
+  "version": "2.x.x",
+  "status": "running"
 }
 ```
 
 ### Server Status
 
 ```bash
-curl -u admin:admin http://localhost:8000/bot-orchestration/status
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/bot-orchestration/status
 ```
 
 ## Via MCP Tools

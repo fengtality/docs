@@ -61,7 +61,7 @@ Collects accumulated trading fees without closing the position.
 ### List Positions
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/positions_owned \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/positions_owned \
   -H "Content-Type: application/json" \
   -d '{
     "connector": "orca",
@@ -75,7 +75,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/positions_owned \
 Add to an existing position (open a new one with `POST /gateway/clmm/open`):
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/add \
   -H "Content-Type: application/json" \
   -d '{
     "connector": "orca",
@@ -89,7 +89,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/add \
 ### Remove Liquidity
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/remove \
   -H "Content-Type: application/json" \
   -d '{
     "connector": "orca",
@@ -102,7 +102,7 @@ curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/remove \
 ### Collect Fees
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/gateway/clmm/collect-fees \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/collect-fees \
   -H "Content-Type: application/json" \
   -d '{
     "connector": "orca",
@@ -134,5 +134,5 @@ pools = await mcp_tools.explore_dex_pools(
 Or via API:
 
 ```bash
-curl -u admin:admin "http://localhost:8000/gateway/clmm/pools?connector=orca&search_term=SOL"
+curl -u YOUR_USERNAME:YOUR_PASSWORD "http://localhost:8000/gateway/clmm/pools?connector=orca&search_term=SOL"
 ```
