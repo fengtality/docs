@@ -91,13 +91,55 @@ If you're just testing locally, skip ahead—the Quick Install below works witho
   </Tab>
 </Tabs>
 
-Interactive setup will prompt for:
-- **Telegram Bot Token**: Create one via [@BotFather](https://t.me/botfather)
-- **Telegram User ID**: Get yours via [@userinfobot](https://t.me/userinfobot)
-- Whether to **configure and launch Hummingbot API** with Docker—answer **yes** if you are deploying **Condor and the API on the same machine** locally. Have **[Docker](https://docs.docker.com/get-docker/)** installed and running first. If the API runs on another server, you can skip this step and add that API URL later in Telegram under **`/servers`**.
-- **Tailscale** (when installing Hummingbot API): answer **`y`** for production or any remote setup; paste your `tskey-auth-...` key when prompted
+Interactive setup will prompt for, in order:
+
+1. **How you will use Condor** — **Telegram** or **Local**. See [Choosing Telegram or Local mode](#choosing-telegram-or-local-mode) below.
+2. **Telegram Bot Token** and **Telegram User ID** (Telegram mode only): create the bot via [@BotFather](https://t.me/botfather), get your id via [@userinfobot](https://t.me/userinfobot).
+3. **Tailscale, yes or no** — whether to secure the connection to Hummingbot API (and the dashboard) with Tailscale. Answer **`y`** for production or any remote setup. You paste the `tskey-auth-...` key later, at the point it is actually needed.
+4. **Public IP or hostname** (Telegram mode without Tailscale only) — press Enter if Condor runs on your own machine, or give the server's public address so the `/web` dashboard link works from your phone.
+5. **AI model** — the wizard offers to pick the model your Trading Agents think with, and installs its CLI bridge for you. You can skip it and run `make pick-model` later. See [Integrating your LLM](/llm-integration).
+6. Whether to **configure and launch Hummingbot API** with Docker — answer **yes** if you are deploying **Condor and the API on the same machine**. Have **[Docker](https://docs.docker.com/get-docker/)** installed and running first. If the API runs on another server, skip this and enter that API's URL instead. If an API is already running on port 8000, the wizard offers to keep it and asks for its credentials rather than replacing it.
+7. **Tailscale auth key** (if you said yes at step 3) — paste your `tskey-auth-...` key from the [Tailscale admin console](https://login.tailscale.com/admin/settings/keys). When Condor is deploying Hummingbot API on this same machine, it also asks whether that API should get its **own** tailnet node. Answer **no** unless another device needs to reach the API directly — Condor itself reaches it over `localhost` either way.
+8. **Hummingbot API credentials** — an admin **username**, **password**, and a **config password**. These are required and have no defaults: whatever you enter is written to the API's `.env` and to Condor's `config.yml` so the two sides match. Passwords are not echoed as you type.
+
+<Tip>
+  When setup finishes, run **`make doctor`**. It re-checks everything the wizard only confirms once—dependencies, `.env`/`config.yml`, the AI model, the dashboard's network binding, Tailscale, and whether each configured Hummingbot API server is reachable and authenticating. It is read-only, so it is safe to run at any time.
+</Tip>
+
+## Choosing Telegram or Local mode
+
+Both modes run the same agents, bots, routines, and web dashboard. What differs is what drives them.
+
+<Tabs>
+  <Tab title="Telegram (recommended)">
+    Condor runs as a Telegram bot. You control it with commands (`/portfolio`, `/trade`, `/agent`), agents push alerts and approval requests to your phone, and `/web` hands you a time-limited link to the browser dashboard.
+
+    Needs a bot token from [@BotFather](https://t.me/botfather) and your numeric Telegram user id from [@userinfobot](https://t.me/userinfobot).
+  </Tab>
+  <Tab title="Local (no Telegram)">
+    No bot, no token, no Telegram account. The web dashboard runs on the machine you installed on and you are already logged in when you open it:
+
+    ```
+    http://localhost:8088
+    ```
+
+    <Warning>
+      **Local mode has no login.** Anyone who can reach the port has full trading control.
+
+      - It binds **`127.0.0.1`** only: reachable from that machine, nowhere else.
+      - Exposing it takes an explicit **`WEB_HOST=0.0.0.0`** in `.env`. Only do that behind something that authenticates—[Tailscale](#secure-remote-access-with-tailscale), an SSH tunnel, or an authenticating reverse proxy.
+      - Alerts and approval requests are only visible while the dashboard is open; there is nothing to push them to.
+    </Warning>
+
+    Local mode logs in as `ADMIN_USER_ID`—the same id your servers, chat defaults, preferences and agent memory are already keyed to. An existing Telegram install that switches to local keeps all of it.
+  </Tab>
+</Tabs>
+
+The choice is recorded as `CONDOR_MODE` in `.env` (`telegram` or `local`) and is never inferred from whether a token happens to be present. To switch later, re-run `make setup` and pick the other mode—your `TELEGRAM_TOKEN` is left in place, so switching back costs nothing.
 
 ## Create a Telegram Bot
+
+<Info>Telegram mode only—skip this and the next section if you chose Local mode.</Info>
 
 1. Open [@BotFather](https://t.me/botfather) in Telegram
 2. Send `/newbot` and follow the prompts to name your bot
@@ -135,7 +177,7 @@ make tailscale-status   # confirm hummingbot-api appears on your tailnet
 Test from the Condor host:
 
 ```bash
-curl -u YOUR_USERNAME:YOUR_PASSWORD http://hummingbot-api:8000/health
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://hummingbot-api:8000/
 ```
 
 <Tip>
@@ -144,8 +186,17 @@ curl -u YOUR_USERNAME:YOUR_PASSWORD http://hummingbot-api:8000/health
 
 ## Verify Installation
 
+Run `make doctor` first—it reports dependencies, config, the AI model, the dashboard binding, Tailscale, and Hummingbot API connectivity in one pass, and exits non-zero if anything is actually broken.
+
+**Telegram mode**
+
 1. Open your Telegram bot and send `/start`
 2. You should see the main menu with commands like `/portfolio`, `/trade`, `/agent`
+
+**Local mode**
+
+1. Open `http://localhost:8088` in a browser on the machine running Condor
+2. You are logged in already—no token, no login screen
 
 > **Note:** After Condor starts successfully, **admins** should receive a Telegram message: **"Condor is online and ready."** If that does not appear within a minute or two, check the troubleshooting section below (for example attach to the `condor` tmux session after Quick Start).
 
@@ -164,10 +215,11 @@ Commands:
 
 | Service | Local URL | Tailnet URL (when Tailscale enabled) | Description |
 |---------|-----------|--------------------------------------|-------------|
-| Telegram | Your bot | — | Primary interface |
+| Telegram | Your bot | — | Primary interface (Telegram mode) |
 | API | `http://localhost:8000` | `http://hummingbot-api:8000` | REST API |
 | Swagger | `http://localhost:8000/docs` | `http://hummingbot-api:8000/docs` | API documentation |
-| Web Dashboard | Run `/web` in Telegram | — | Browser interface |
+| Web Dashboard (Telegram mode) | Run `/web` in Telegram for a link | — | Browser interface, time-limited login link |
+| Web Dashboard (Local mode) | `http://localhost:8088` | — | Browser interface, no login, loopback only |
 
 ## Managing Services
 
@@ -186,7 +238,17 @@ From the directory that contains the `condor` folder, you can also upgrade with:
 curl -fsSL https://raw.githubusercontent.com/hummingbot/deploy/main/setup.sh | bash -s -- --upgrade
 ```
 
-**After Manual install:** Condor runs in the foreground of the terminal where you ran `make run` (stop with **Ctrl+C**). Watch that terminal, or run under `tmux` yourself if you want a detachable session.
+**After Manual install:** `make run` also starts Condor in a **tmux** session named `condor`, and the Makefile wraps the same operations:
+
+```bash
+make run       # start (fails fast and prints the error if startup dies)
+make logs      # attach to the session (detach: Ctrl+B, then D)
+make status    # is Condor running?
+make restart   # stop and start again
+make stop      # stop Condor
+make run-fg    # run in the foreground instead, for debugging a startup error
+make doctor    # re-check dependencies, config, and API access
+```
 
 **Hummingbot API (Docker):** From the `hummingbot-api` directory (sibling of `condor` when installed by the deploy script):
 
@@ -198,7 +260,25 @@ make tailscale-status    # when Tailscale is enabled
 
 ## Troubleshooting
 
+Before working through the cases below, run **`make doctor`** in the Condor directory (and `make doctor` in `hummingbot-api` on the API host). Between them they cover most of what follows and name the fix directly.
+
 <AccordionGroup>
+  <Accordion title="Local mode: dashboard is not reachable from another device">
+    That is intended. Local mode has **no login**, so it binds `127.0.0.1` and is reachable only from the machine running Condor.
+
+    If you need it from elsewhere, put something that authenticates in front of it rather than setting `WEB_HOST=0.0.0.0` on its own:
+
+    - **Tailscale** — re-run `make setup` and enable it. Condor then binds loopback and lets `tailscale serve` expose the dashboard to your tailnet only.
+    - **SSH tunnel** — `ssh -L 8088:localhost:8088 you@host`, then open `http://localhost:8088` locally.
+    - **Switch to Telegram mode** — re-run `make setup`; `/web` then issues time-limited login links that work from any device.
+  </Accordion>
+
+  <Accordion title="Exits at boot with `TELEGRAM_TOKEN is not set`">
+    Telegram mode requires a token, and Condor refuses to start without one rather than quietly falling back to the unauthenticated local dashboard.
+
+    Run `make setup` and either re-enter the bot token, or choose **Local** mode if you do not want a bot at all. `make doctor` reports the same thing before you try to start.
+  </Accordion>
+
   <Accordion title="Bot not responding in Telegram">
     1. **Confirm the process is running**
        - *Quick Start / deploy:* `tmux attach -t condor` and look for tracebacks or exit messages.
@@ -212,13 +292,13 @@ make tailscale-status    # when Tailscale is enabled
     Condor talks to the **Hummingbot API** over HTTP using the **host**, **port**, **username**, and **password** stored for each server (see **`/servers`** in Telegram or `condor/config.yml`). Status checks call `http://{host}:{port}` and list accounts; failures surface as **Offline** (*Cannot reach server*, *Connection timeout*) or **Auth Error** (*Invalid credentials*).
 
     1. **Is the API stack up?** On the machine where Docker runs the API: `docker compose ps` (from the `hummingbot-api` repo directory). You want the API container healthy and port **8000** (default) listening.
-    2. **Smoke test from the Condor host:** `curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/docs` (same machine) or `curl -u USER:PASS http://hummingbot-api:8000/health` (Tailscale). You should get **200**. If this fails, Condor will show offline until the API is reachable.
+    2. **Smoke test from the Condor host:** `curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/docs` (same machine) or `curl -u USER:PASS http://hummingbot-api:8000/` (Tailscale). You should get **200**. If this fails, Condor will show offline until the API is reachable.
     3. **Wrong host for your layout**
        - API and Condor on the **same** machine: `host` is usually `localhost` or `127.0.0.1`.
        - API on a **different** host or VPS: use **`hummingbot-api`** (MagicDNS) when Tailscale is enabled—not a public IP and not `localhost` (localhost would point at the Condor machine itself).
        - **Docker Desktop / WSL:** If Condor runs in one environment and the API in another, `localhost` may not cross namespaces; use the host gateway IP or publish ports and use the reachable address from Condor's network namespace.
     4. **Tailscale / firewall:** Prefer Tailscale over opening port **8000** on a public firewall. If you must use a public IP, allow inbound **8000** only from the Condor host—but [Tailscale is strongly recommended](https://hummingbot.org/hummingbot-api/tailscale/) instead.
-    5. **Credentials:** **Auth Error** means HTTP **401**—username/password in **`/servers`** must match the API's HTTP basic auth (the deploy flow syncs `config.yml` with `hummingbot-api/.env` when both are installed together; if you changed one side, align the other or re-save in **`/servers`**).
+    5. **Credentials:** **Auth Error** means HTTP **401**—username/password in **`/servers`** must match the API's HTTP basic auth (the deploy flow syncs `config.yml` with `hummingbot-api/.env` when both are installed together; if you changed one side, align the other or re-save in **`/servers`**). The setup wizard requires real credentials and no longer seeds `config.yml` with a default pair, so an entry with a blank or placeholder password means it was never filled in—`make doctor` flags that case by name.
   </Accordion>
 
   <Accordion title="No servers configured / Server not found / No servers available">

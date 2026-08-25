@@ -11,9 +11,37 @@ New to Condor, or picking up where you left off? Use the tables below to find th
 
 | Level | Goal | Reading path | Time |
 |-------|------|--------------|------|
-| **Beginner** | Get Condor and Hummingbot API running locally, send your first Telegram command, and build one Trading Agent | [Installing](/getting-started/installing) → [Telegram](/getting-started/telegram) → [Credentials](/getting-started/credentials) → [First Agent](/getting-started/first-agent) | ~30–45 min |
+| **Beginner (Telegram)** | Get Condor and Hummingbot API running, send your first Telegram command, and build one Trading Agent | [Installing](/getting-started/installing) → [Telegram](/getting-started/telegram) → [Credentials](/getting-started/credentials) → [First Agent](/getting-started/first-agent) | ~30–45 min |
+| **Beginner (Local, no Telegram)** | Same, but driven entirely from the browser dashboard on your own machine—no bot token, no Telegram account | [Installing](/getting-started/installing#choosing-telegram-or-local-mode) → [Web Dashboard](/getting-started/web-dashboard) → [Credentials](/getting-started/credentials) → [First Agent](/getting-started/first-agent) | ~30–45 min |
 | **Intermediate** | Add real exchange keys, use the web dashboard, understand Bots/Executors/Routines, and manage running sessions | [Web Dashboard](/getting-started/web-dashboard) → [Bots](/bots/overview) → [Executors](/executors/overview) → [Routines](/routines/overview) → [Sessions](/getting-started/sessions) | ~1–2 hrs |
 | **Advanced** | Deploy remotely with Tailscale, understand the multi-agent architecture, and build custom agents | [Installing (remote/Tailscale)](/getting-started/installing#secure-remote-access-with-tailscale) → [Trading Agents Architecture](/trading-agents/architecture) → [Agent Builder](/trading-agents/agent-builder) → [Managing Servers](/other-features/server) | ~2–4 hrs |
+
+## Telegram or Local?
+
+The very first thing the installer asks is how you will drive Condor. Both
+modes run the same bot, the same agents, and the same web dashboard—the only
+difference is what talks to them.
+
+| | **Telegram** | **Local** |
+|---|---|---|
+| **You need** | A bot token from [@BotFather](https://t.me/botfather) and your Telegram user id | Nothing extra |
+| **How you drive it** | Telegram commands, plus the web dashboard via `/web` | The web dashboard only, at `http://localhost:8088` |
+| **Login** | Telegram authenticates you; the dashboard uses a time-limited `/web` link | **None at all**—whoever reaches the port has full trading control |
+| **Network** | Dashboard reachable from your phone/other devices | Binds `127.0.0.1` only; reachable from that one machine |
+| **Alerts and approvals** | Pushed to your phone | Only visible while the dashboard is open |
+| **Best for** | Almost everyone, especially anything running on a VPS | A laptop you are testing on, or a machine you'd rather not attach a bot to |
+
+<Warning>
+  **Local mode has no login.** It binds `127.0.0.1` so only that machine can
+  reach it. Exposing it (setting `WEB_HOST=0.0.0.0`) puts full trading control
+  in reach of anyone who can hit the port—only do that behind something that
+  authenticates, such as [Tailscale](#do-i-need-tailscale), an SSH tunnel, or
+  an authenticating reverse proxy.
+</Warning>
+
+You are not locked in: re-run `make setup` and pick the other mode. Your
+servers, credentials, preferences and agent history are keyed to the same
+`ADMIN_USER_ID` and carry across.
 
 ## What do you want Condor to do?
 
@@ -42,7 +70,10 @@ Condor gives you four ways to execute a trade, from fully autonomous to fully ma
     [Routines Overview](/routines/overview) → [Creating Routines](/routines/creating-routines) → [Reports](/routines/reports)
   </Accordion>
   <Accordion title="Test everything locally before risking capital">
-    [Installing](/getting-started/installing) (local install—**Tailscale not required**) → [Credentials](/getting-started/credentials) → dry-run an agent in [Build Your First Agent](/getting-started/first-agent)
+    [Installing](/getting-started/installing) (local install—**Tailscale not required**; **Local mode** skips Telegram entirely) → [Credentials](/getting-started/credentials) → dry-run an agent in [Build Your First Agent](/getting-started/first-agent)
+  </Accordion>
+  <Accordion title="Run Condor without a Telegram account">
+    [Installing → Local mode](/getting-started/installing#choosing-telegram-or-local-mode) → [Web Dashboard](/getting-started/web-dashboard) → [Credentials](/getting-started/credentials) → [Build Your First Agent](/getting-started/first-agent)
   </Accordion>
   <Accordion title="Deploy for 24/7 production on a server">
     [Installing](/getting-started/installing#secure-remote-access-with-tailscale) (remote install—**Tailscale required**) → [Managing Servers](/other-features/server) → [Managing Sessions](/getting-started/sessions)
@@ -62,6 +93,18 @@ Condor gives you four ways to execute a trade, from fully autonomous to fully ma
 | A team or multiple devices need access | **Yes** |
 
 See [Installing](/getting-started/installing#secure-remote-access-with-tailscale) for the full setup, or the [Tailscale security walkthrough](https://hummingbot.org/blog/posts/securing-condor-and-hummingbot-api-with-tailscale/) for a deeper guide.
+
+## Something not working?
+
+Run `make doctor` from the Condor directory. It re-checks dependencies, your
+`.env` and `config.yml`, the AI model, whether the dashboard is on a public
+interface, Tailscale, and whether every configured Hummingbot API server is
+actually reachable and authenticating—and names the fix for each thing it
+finds. It is read-only and safe to run at any time.
+
+On the API host, `make doctor` in the `hummingbot-api` directory does the same
+for the execution layer: containers, port exposure, Tailscale serve, and
+whether the API answers an authenticated request.
 
 ## Next steps
 
