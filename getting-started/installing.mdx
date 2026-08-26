@@ -54,6 +54,7 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
 | Same VPS, both services together | **Yes** — unless you set `API_BIND_HOST=127.0.0.1` |
 | Different machines (for example, laptop + VPS) | **Yes** |
 | A team or multiple devices need access | **Yes** |
+| You want the **web dashboard** from another device | **Yes** — it is the supported way; see [The dashboard under Tailscale](#the-dashboard-under-tailscale) |
 
 <Warning>
   **"Same VPS" is not the same as "local".** When you decline Tailscale, Hummingbot API's setup writes `API_BIND_HOST=0.0.0.0`, and Docker publishes port **8000 on every interface** — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
@@ -103,13 +104,15 @@ Interactive setup will prompt for, in order:
 2. **Telegram Bot Token** and **Telegram User ID** (Telegram mode only): create the bot via [@BotFather](https://t.me/botfather), get your id via [@userinfobot](https://t.me/userinfobot).
 3. **Tailscale, yes or no** — whether to secure the connection to Hummingbot API (and the dashboard) with Tailscale. Answer **`y`** for production or any remote setup. You paste the `tskey-auth-...` key later, at the point it is actually needed.
 4. **Public IP or hostname** (Telegram mode without Tailscale only) — press Enter if Condor runs on your own machine, or give the server's public address so the `/web` dashboard link works from your phone.
-5. **AI model** — the wizard offers to pick the model your Trading Agents think with, and installs its CLI bridge for you. You can skip it and run `make pick-model` later. See [Integrating your LLM](/llm-integration).
+5. **AI model** — the wizard offers to pick the model your Trading Agents think with, and installs its CLI bridge for you. It asks **before** it downloads anything and tells you the cost (~250MB on a first run, 1–3 minutes), so declining is instant. You can skip it and run `make pick-model` later. See [Integrating your LLM](/llm-integration).
 6. Whether to **configure and launch Hummingbot API** with Docker — answer **yes** if you are deploying **Condor and the API on the same machine**. Have **[Docker](https://docs.docker.com/get-docker/)** installed and running first. If the API runs on another server, skip this and enter that API's URL instead. If an API is already running on port 8000, the wizard offers to keep it and asks for its credentials rather than replacing it.
 7. **Tailscale auth key** (if you said yes at step 3) — paste your `tskey-auth-...` key from the [Tailscale admin console](https://login.tailscale.com/admin/settings/keys). When Condor is deploying Hummingbot API on this same machine, it also asks whether that API should get its **own** tailnet node. Answer **no** unless another device needs to reach the API directly — Condor itself reaches it over `localhost` either way.
 8. **Hummingbot API credentials** — an admin **username**, **password**, and a **config password**. These are required and have no defaults: whatever you enter is written to the API's `.env` and to Condor's `config.yml` so the two sides match. Passwords are not echoed as you type.
 
 <Tip>
-  When setup finishes, run **`make doctor`**. It re-checks everything the wizard only confirms once—dependencies, `.env`/`config.yml`, the AI model, the dashboard's network binding, Tailscale, and whether each configured Hummingbot API server is reachable and authenticating. It is read-only, so it is safe to run at any time.
+  **`make install` finishes by running `make doctor` for you**, so the first report arrives without asking. It cannot fail the install—a warning there never blocks setup—so read it rather than assuming a clean exit meant a clean report.
+
+  Run it again any time. It re-checks everything the wizard only confirms once: dependencies (`uv`, `tmux`, `node`, `npm`, `tsc`), `.env`/`config.yml` sanity, the AI model, the dashboard's network binding, Tailscale, and whether each Hummingbot API server in `config.yml` is reachable **and** authenticating. It is read-only and safe to run at any time, and exits non-zero only on real failures—warnings do not.
 </Tip>
 
 ## Choosing Telegram or Local mode
@@ -186,6 +189,21 @@ Test from the Condor host:
 curl -u YOUR_USERNAME:YOUR_PASSWORD http://hummingbot-api:8000/
 ```
 
+### The dashboard under Tailscale
+
+Turning Tailscale on changes where the web dashboard listens. With `USE_TAILSCALE=true` in `.env`, Condor binds the dashboard to **`127.0.0.1`** and publishes it to your tailnet through `tailscale serve`, rather than binding `0.0.0.0` and trusting the network. The port is never on a public interface, and only devices signed in to your tailnet can reach it.
+
+If the `tailscale serve` proxy cannot be confirmed, Condor **logs an error and leaves the dashboard on loopback**. It does not fall back to a public bind — a silent fallback is how a trading dashboard ends up on the open internet. So a dashboard you cannot reach from another device means the proxy is not up, not that the bind is wrong:
+
+```bash
+tailscale serve status   # what is actually published to the tailnet
+make doctor              # names the same problem, with the fix
+```
+
+<Warning>
+  Do not set `WEB_HOST=0.0.0.0` to "fix" an unreachable dashboard while Tailscale is on. That publishes a login-free interface in Local mode, and a login-link one in Telegram mode, to every network the machine is attached to. `make doctor` reports it as a failure for exactly this reason.
+</Warning>
+
 <Tip>
   Tailscale also works when Condor and the API run on the **same machine**—you still get a stable hostname and avoid publishing port 8000 publicly.
 </Tip>
@@ -224,8 +242,8 @@ Commands:
 | Telegram | Your bot | — | Primary interface (Telegram mode) |
 | API | `http://localhost:8000` | `http://hummingbot-api:8000` | REST API |
 | Swagger | `http://localhost:8000/docs` | `http://hummingbot-api:8000/docs` | API documentation |
-| Web Dashboard (Telegram mode) | Run `/web` in Telegram for a link | — | Browser interface, time-limited login link |
-| Web Dashboard (Local mode) | `http://localhost:8088` | — | Browser interface, no login, loopback only |
+| Web Dashboard (Telegram mode) | Run `/web` in Telegram for a link | `https://<machine>.<tailnet>.ts.net` | Browser interface, time-limited login link |
+| Web Dashboard (Local mode) | `http://localhost:8088` | `https://<machine>.<tailnet>.ts.net` | Browser interface, no login — loopback only, or tailnet-only via `tailscale serve` |
 
 ## Managing Services
 
@@ -263,6 +281,66 @@ docker compose ps
 docker compose logs -f   # or your compose plugin equivalent
 make tailscale-status    # when Tailscale is enabled
 ```
+
+## Privacy: telemetry and sharing
+
+Two separate things, with separate switches. Neither sends anything about your trading, your keys, or your balances.
+
+### Telemetry — anonymous counts
+
+An admin answers once, for the whole install. Three levels:
+
+| Level | What it sends |
+|---|---|
+| `ping` | **The default and the floor.** Only that this install exists: `install`, `heartbeat`, `version_change`, `shutdown`. |
+| `usage` | The above plus feature, reliability and agent events — which command ran, which connector a bot deployed on, an error's *type* and a hash of its message. Opt-in only. |
+| `off` | Nothing, ever. No install id is created, nothing is buffered, nothing is written. |
+
+The identifier is a random UUID generated once — not derived from your hostname, username, MAC, or any token. Server names, URLs and keys are never sent; a routine you wrote yourself is reported as `custom` rather than by name.
+
+The consent prompt offers `ping` or `usage` and has no "off" button, so ignoring it is not read as a refusal. Turning it off is a deliberate act, in any of three places — highest precedence first:
+
+1. **`.env`** — `CONDOR_TELEMETRY=off`. The full kill switch: it overrides everything and suppresses the prompt.
+2. **Settings → Privacy** in the dashboard — readable by every seat, changeable only by the admin. This is also where an install running **without Telegram** is asked in the first place, since it has no bot to be asked through. Choosing `off` here is the durable form: it is stored, not read from one process's environment.
+3. **`config.yml`** — the `telemetry` section directly: `consent: granted|denied` plus `level`.
+
+To see what your install is actually doing:
+
+```bash
+uv run python -c "from condor.telemetry import consent; print(consent.level())"
+```
+
+<Note>
+  Downgrading from `usage` to `ping`, or turning telemetry off, is a **withdrawal, not a pause** — the in-memory buffer and the outbox file are deleted, so nothing already recorded can be sent afterwards.
+</Note>
+
+### Sharing — whole conversations
+
+Separate from telemetry, and off until you turn it on. Telemetry is anonymous counts an admin consents to once; a share is a **transcript**, and only the person who held the conversation can hand it over. Secrets are redacted before a transcript is built, and again before it leaves.
+
+In Settings → Privacy:
+
+- **Off** — nothing is shared. The share button still works if you want it. **This is where every install starts.**
+- **Ask me** — the button, one conversation at a time, with the redacted transcript in front of you before you confirm.
+- **Always** — conversations are shared on their own, redacted the same way, **without showing you first**.
+
+Always is the only path where nobody reads the payload first, so it is deliberately narrower than the button — any one of these stops a conversation going:
+
+- **Idle** — only after 30 minutes of silence in that chat.
+- **Forward-only** — only conversations *started after* you chose Always. Your archive is never swept, and turning it off and on again starts a fresh window rather than reaching back.
+- **Single-author only** — a Telegram group is never taken automatically. You can consent for yourself, not for the other people in the room.
+- **Excluded chats, forever** — every covered conversation carries an undismissable marker with one click to leave it out, and that exclusion is permanent.
+- **Rate limited** — at most 3 conversations per 15-minute sweep.
+
+The operator-level kill switch:
+
+```bash
+CONDOR_SHARING=off          # in .env — destroys queued transcripts too
+```
+
+<Note>
+  `CONDOR_SHARING=off` reaches transcripts already queued and destroys them — but a queued **unshare** is still delivered, because a revocation is a deletion the install already promised.
+</Note>
 
 ## Troubleshooting
 
