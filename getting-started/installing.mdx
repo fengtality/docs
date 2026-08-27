@@ -51,15 +51,15 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
 | Situation | Tailscale needed? |
 |-----------|--------------------|
 | Testing locally—Condor and Hummingbot API on one machine | No |
-| Same VPS, both services together | **Yes** — unless you set `API_BIND_HOST=127.0.0.1` |
+| Same VPS, both services together | **Yes** — unless you bind the API to `127.0.0.1` (see below) |
 | Different machines (for example, laptop + VPS) | **Yes** |
 | A team or multiple devices need access | **Yes** |
 | You want the **web dashboard** from another device | **Yes** — it is the supported way; see [The dashboard under Tailscale](#the-dashboard-under-tailscale) |
 
 <Warning>
-  **"Same VPS" is not the same as "local".** When you decline Tailscale, Hummingbot API's setup writes `API_BIND_HOST=0.0.0.0`, and Docker publishes port **8000 on every interface** — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
+  **"Same VPS" is not the same as "local".** Hummingbot API's `docker-compose.yml` publishes port **8000 on every interface** (`ports: "8000:8000"`) — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
 
-  If every client really is on that same VPS, you do not need a tailnet — set `API_BIND_HOST=127.0.0.1` in `hummingbot-api/.env` and `make deploy`. Otherwise, use Tailscale. Either way, `make doctor` warns when port 8000 is on a public interface.
+  If every client really is on that same VPS, you do not need a tailnet — edit that line in `hummingbot-api/docker-compose.yml` to `"127.0.0.1:8000:8000"` and `make deploy`. Otherwise, use Tailscale — and close port **8000** in your cloud provider's firewall or security group, which is enforced off-host and so cannot be bypassed the way `ufw` can.
 </Warning>
 
 If you're just testing locally, skip ahead—the Quick Install below works without Tailscale. See [Learning Path](/learning-path#do-i-need-tailscale) for more use-case-based routing.
@@ -171,14 +171,54 @@ Needs a bot token from [@BotFather](https://t.me/botfather) and your numeric Tel
 
 Condor and Hummingbot API on a VPS, running whether or not your laptop is on. Everything from the path above, plus:
 
-- **[Tailscale](#secure-remote-access-with-tailscale) is not optional here.** Declining it publishes port 8000 on the VPS's public IP, and Docker's published ports are not blocked by `ufw`. See [Do I Need Tailscale?](#do-i-need-tailscale) for why.
+- **[Tailscale](#secure-remote-access-with-tailscale) is not optional here.** Docker publishes port 8000 on every interface of the VPS, and its published ports are not blocked by `ufw`. Tailscale gives your devices a private path to the API; closing port **8000** in the cloud provider's firewall shuts the public one. See [Do I Need Tailscale?](#do-i-need-tailscale) for why.
 - The dashboard binds `127.0.0.1` and is published to your tailnet through `tailscale serve` — see [The dashboard under Tailscale](#the-dashboard-under-tailscale).
 - Either mode works. Telegram is the usual choice, since it reaches you off the tailnet; Local mode on a server is only reachable through the tailnet.
 - Run `make doctor` on the VPS after setup. It is the fastest way to catch a public bind before it matters.
 
 <Info>
-  The Telegram/Local distinction is recorded as `CONDOR_MODE` in `.env` (`telegram` or `local`) and is never inferred from whether a token happens to be present. To switch later, re-run `make setup` and pick the other mode — your `TELEGRAM_TOKEN` is left in place, so switching back costs nothing. "Server" is not a mode; it is where you run one of the two.
+  The Telegram/Local distinction is recorded as `CONDOR_MODE` in `.env` (`telegram` or `local`) and is never inferred from whether a token happens to be present. To switch later, re-run `make setup` and pick the other mode — your `TELEGRAM_TOKEN` is left in place, so switching back costs nothing. "Server" is not a mode; it is where you run one of the two. For the usual sequence — Local first, Telegram later, a server after that — see [Start local, grow later](#start-local-grow-later).
 </Info>
+
+## Start local, grow later
+
+The three paths are not a one-time choice. The common route is to start with **Local**, attach **Telegram** once you want alerts reaching your phone, and involve a **server** once real capital is on the line. Each hop keeps what you have built — here is what each one takes.
+
+### Add Telegram to a Local install
+
+1. Create a bot and get your numeric user id — [Create a Telegram Bot](#create-a-telegram-bot) and [Get Your User ID](#get-your-user-id) below.
+2. Run `make setup`. It shows the current mode and asks **Keep local mode?** — answer `n` and pick **Telegram**, then enter the token and your id. Everything else is remembered.
+3. `make restart`. Send `/start` to your bot.
+
+<Note>
+  A Local install that never had Telegram runs as user id **1**. Adding a bot switches your login to your Telegram id: the API **servers** you configured are shared and carry over, but dashboard **preferences and agent conversations** are keyed per user and stay behind under id 1. Make this hop early, before there is much history to leave. (The reverse switch, Telegram → Local, keeps your id — and with it everything.)
+</Note>
+
+### Keep Condor local, put the API on a server
+
+You do not have to move Condor to get 24/7 execution. Bots and executors run on the **Hummingbot API server** — a laptop Condor driving a VPS API keeps strategies running while the laptop sleeps. Only agents, routines and alerts live in Condor itself.
+
+1. On the VPS, run the **Hummingbot API only** installer and answer **`y`** to Tailscale — see [On the API server](#on-the-api-server).
+2. On your machine, install [Tailscale](https://tailscale.com/download) and sign in to the same tailnet.
+3. Add the server — **Settings → Servers** in the dashboard (Local mode) or **`/servers`** in Telegram: host `hummingbot-api`, port `8000`, the credentials you set on the VPS.
+4. `make doctor` — the new server should report **reachable, authenticated**.
+
+### Move Condor itself to the server
+
+When you want agents and routines running around the clock too:
+
+1. Install Condor on the VPS ([Quick Install](#quick-install)), in the same mode you ran locally, and answer **`y`** to Tailscale — on a VPS it [is not optional](#server).
+2. Stop the new install (`make stop`) and copy your state over. From the old Condor directory:
+
+   ```bash
+   scp .env config.yml you@vps:condor/          # mode, servers, users, credentials
+   scp -r data you@vps:condor/                  # preferences, notifications
+   scp -r condor/.runtime you@vps:condor/condor/  # agent conversations
+   ```
+
+   Custom agents in `agents/` and routines in `routines/` are plain files — copy those too if you wrote any.
+3. On the VPS: `make doctor`, then `make run`. If the API now lives on this same VPS, point the server entry at `localhost` in **Settings → Servers** (or **`/servers`**).
+4. Retire the old install (`make stop` on the laptop) so two Condors are not driving the same accounts.
 
 ## Create a Telegram Bot
 
@@ -212,7 +252,7 @@ make tailscale-status   # confirm hummingbot-api appears on your tailnet
 ### On the Condor machine
 
 1. Install [Tailscale](https://tailscale.com/download) and sign in to the **same account**
-2. In Telegram, open **`/servers`** and add the API with:
+2. In Telegram, open **`/servers`** — or in Local mode, **Settings → Servers** in the dashboard — and add the API with:
    - **Host**: `hummingbot-api` (MagicDNS name, not a public IP)
    - **Port**: `8000`
    - **Username / Password**: same as the API `.env`
@@ -378,7 +418,7 @@ CONDOR_SHARING=off          # in .env — destroys queued transcripts too
 
 ## Common failure modes
 
-Before working through the cases below, run **`make doctor`** in the Condor directory (and `make doctor` in `hummingbot-api` on the API host). Between them they cover most of what follows and name the fix directly.
+Before working through the cases below, run **`make doctor`** in the Condor directory — it covers most of what follows and names the fix directly. On the API host, `docker compose ps` and `make tailscale-status` (from the `hummingbot-api` directory) cover the execution side.
 
 <AccordionGroup>
   <Accordion title="Local mode: dashboard is not reachable from another device">
@@ -433,6 +473,17 @@ Before working through the cases below, run **`make doctor`** in the Condor dire
     4. **Sibling layout:** Condor's setup wizard expects **`hummingbot-api`** next to **`condor`** (`../hummingbot-api` from the Condor directory) when both are installed by the same flow—keep that layout unless you know how to point `config.yml` at a custom URL.
   </Accordion>
 
+  <Accordion title="After an update, `make run` or `make restart` fails in the frontend build">
+    `make run` rebuilds the dashboard before starting, but it only installs frontend packages when `frontend/node_modules` is missing **entirely**. After a `git pull` or `/update` that added a new frontend dependency, the stale `node_modules` fails the build with an error naming the missing package.
+
+    ```bash
+    cd frontend && npm install
+    cd .. && make run
+    ```
+
+    `make doctor` warns when `node_modules` is absent, but cannot tell a stale one from a fresh one — a build error naming a package you never heard of is this case.
+  </Accordion>
+
   <Accordion title="Tailscale not connecting">
     | Problem | Try this |
     |---------|----------|
@@ -453,7 +504,7 @@ The commands worth reaching for before reading anything above. All are safe to r
 | Command | Where | What it tells you |
 |---|---|---|
 | `make doctor` | Condor dir | Dependencies, `.env`/`config.yml`, AI model, dashboard bind, Tailscale, and whether each API server is reachable **and** authenticating |
-| `make doctor` | `hummingbot-api` dir | The same for the API host, including whether port 8000 is on a public interface |
+| `curl -s -o /dev/null -w "%{http_code}" localhost:8000/docs` | API host | Whether the API answers at all — **200** means up |
 | `make status` | Condor dir | Whether Condor is running, and under which tmux session |
 | `make logs` | Condor dir | Attach to the running session (detach with <kbd>Ctrl+B</kbd> then <kbd>D</kbd>) |
 | `make restart` | Condor dir | Rebuild the frontend and restart — the fix for a stale dashboard |

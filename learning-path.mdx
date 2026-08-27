@@ -38,10 +38,14 @@ The installer asks how you will drive Condor, and where it runs. Three paths, al
   an authenticating reverse proxy.
 </Warning>
 
-You are not locked in: re-run `make setup` and pick the other mode. Your
-servers, credentials, preferences and agent history are keyed to the same
-`ADMIN_USER_ID` and carry across. Moving to a server later is the same install
-on a different host.
+You are not locked in: the usual route is Local first, Telegram alerts when
+you want your phone in the loop, and a server once real capital is involved —
+re-running `make setup` switches mode any time. Configured servers are shared
+and carry across; switching Telegram → Local keeps your id and with it your
+preferences and agent history, while a Local-only install that adds Telegram
+moves from id `1` to your Telegram id, so per-user history stays behind — make
+that hop early. Steps for each hop:
+[Start local, grow later](/getting-started/installing#start-local-grow-later).
 
 ## What do you want Condor to do?
 
@@ -110,14 +114,14 @@ What Condor actually does, and where each is documented. Most people arrive want
 | Situation | Tailscale needed? |
 |-----------|--------------------|
 | Testing locally—Condor and Hummingbot API on one machine | No |
-| Same VPS, both services together | **Yes** — unless you set `API_BIND_HOST=127.0.0.1` |
+| Same VPS, both services together | **Yes** — unless you bind the API to `127.0.0.1` (see below) |
 | Different machines (for example, laptop + VPS) | **Yes** |
 | A team or multiple devices need access | **Yes** |
 
 <Warning>
-  **"Same VPS" is not the same as "local".** When you decline Tailscale, Hummingbot API's setup writes `API_BIND_HOST=0.0.0.0`, and Docker publishes port **8000 on every interface** — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
+  **"Same VPS" is not the same as "local".** Hummingbot API's `docker-compose.yml` publishes port **8000 on every interface** (`ports: "8000:8000"`) — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
 
-  If every client really is on that same VPS, you do not need a tailnet — set `API_BIND_HOST=127.0.0.1` in `hummingbot-api/.env` and `make deploy`. Otherwise, use Tailscale. Either way, `make doctor` warns when port 8000 is on a public interface.
+  If every client really is on that same VPS, you do not need a tailnet — edit that line in `hummingbot-api/docker-compose.yml` to `"127.0.0.1:8000:8000"` and `make deploy`. Otherwise, use Tailscale — and close port **8000** in your cloud provider's firewall or security group, which is enforced off-host and so cannot be bypassed the way `ufw` can.
 </Warning>
 
 See [Installing](/getting-started/installing#secure-remote-access-with-tailscale) for the full setup, or the [Tailscale security walkthrough](https://hummingbot.org/blog/posts/securing-condor-and-hummingbot-api-with-tailscale/) for a deeper guide.
@@ -130,9 +134,11 @@ interface, Tailscale, and whether every configured Hummingbot API server is
 actually reachable and authenticating—and names the fix for each thing it
 finds. It is read-only and safe to run at any time.
 
-On the API host, `make doctor` in the `hummingbot-api` directory does the same
-for the execution layer: containers, port exposure, Tailscale serve, and
-whether the API answers an authenticated request.
+On the API host, `docker compose ps` (are the containers up) and
+`make tailscale-status` (is the tailnet node connected) from the
+`hummingbot-api` directory cover the execution layer, and
+`curl -u USER:PASS http://localhost:8000/` confirms the API answers an
+authenticated request.
 
 ## Next steps
 
