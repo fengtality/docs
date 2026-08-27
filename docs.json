@@ -5,7 +5,7 @@
   "colors": {
     "primary": "#b8860b",
     "light": "#fcc603",
-    "dark": "#ed6c24"
+    "dark": "#fcc603"
   },
   "favicon": "/logo/condor-logo-square.png",
   "metadata": {
@@ -168,10 +168,6 @@
   "logo": {
     "light": "/logo/condor-light.png",
     "dark": "/logo/condor-dark.png"
-  },
-  "banner": {
-    "content": "**Help shape Condor.** What's working? What's missing? The survey takes 2 minutes and directly shapes what we build next. [Take the survey →](https://forms.gle/7NpG3RtgfLrmpUNY8)",
-    "dismissible": true
   },
   "navbar": {
     "links": [
