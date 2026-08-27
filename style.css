@@ -1,0 +1,6 @@
+/* Light mode: the topbar GitHub button wears the heading font color (#1c1a17)
+   instead of the yellow accent — white-on-yellow was the one low-contrast
+   element in the light navbar. Dark mode keeps the accent (colors.dark). */
+html:not(.dark) nav .bg-primary-dark {
+  background-color: #1c1a17;
+}
