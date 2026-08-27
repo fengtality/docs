@@ -38,7 +38,52 @@ The right panel's **Execute** tab has four builders, one per executor type:
 
 Below the chart, two tables scoped to the current pair: **Executors** (live and recent, with entry, PNL, and volume) and **Positions**. This is where what you just created reports in.
 
+## Supported exchanges
+
+| Exchange | Spot | Perpetual |
+|----------|------|-----------|
+| **Binance** | Yes | Yes |
+| **Bybit** | Yes | Yes |
+| **OKX** | Yes | Yes |
+| **Kucoin** | Yes | Yes |
+| **Gate.io** | Yes | Yes |
+| **Kraken** | Yes | No |
+| **Coinbase** | Yes | No |
+| **Hyperliquid** | No | Yes |
+
+Any connector with credentials under [Settings → Keys and Wallets](/webui/settings#keys-and-wallets) shows up in the connector picker.
+
+## Via API
+
+The builders create executors, but the API also places orders directly — no executor, no exit conditions, no per-agent attribution:
+
+```bash
+# Market order
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/trading/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "account_name": "master_account",
+    "connector_name": "binance",
+    "trading_pair": "BTC-USDT",
+    "trade_type": "BUY",
+    "amount": 0.001,
+    "order_type": "MARKET"
+  }'
+
+# Cancel — account, connector, and client order id in the path
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST \
+  http://localhost:8000/trading/master_account/binance/orders/{client_order_id}/cancel
+
+# Leverage (perpetual)
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST \
+  http://localhost:8000/trading/master_account/binance_perpetual/leverage \
+  -H "Content-Type: application/json" \
+  -d '{"trading_pair": "BTC-USDT", "leverage": 5}'
+```
+
+Reach for direct orders for quick manual trades; reach for [executors](/executors/overview) when you want automatic exits (TP/SL/time) and P&L tagged to whoever created it.
+
 ## Learn more
 
 - [Executors](/executors/overview) — every executor type in depth
-- [Trade in Telegram](/other-features/trade) — the same flows as Telegram commands
+- In Telegram, `/trade` walks the same flows as button menus

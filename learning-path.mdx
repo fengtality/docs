@@ -13,7 +13,7 @@ New to Condor, or picking up where you left off? Use the tables below to find th
 |-------|------|--------------|------|
 | **Beginner** | Get Condor running on your own machine with no Telegram account, and build one Trading Agent from the browser | [Installing → Local](/getting-started/installing#local) → [Web Dashboard](/getting-started/web-dashboard) → [Credentials](/getting-started/credentials) → [First Agent](/getting-started/first-agent) | ~30–45 min |
 | **Intermediate** | Attach Telegram so agents can reach your phone with alerts and approval requests, add real exchange keys, understand Bots/Executors/Routines, and manage running sessions | [Add Telegram alerts](/getting-started/installing#add-telegram-to-a-local-install) → [Telegram](/getting-started/telegram) → [Bots](/bots/overview) → [Executors](/executors/overview) → [Routines](/routines/overview) → [Sessions](/getting-started/sessions) | ~1–2 hrs |
-| **Advanced (Server)** | Deploy to a VPS behind Tailscale, understand the multi-agent architecture, and build custom agents | [Installing → Server](/getting-started/installing#server) → [Trading Agents Architecture](/trading-agents/architecture) → [Agent Builder](/trading-agents/agent-builder) → [Managing Servers](/other-features/server) | ~2–4 hrs |
+| **Advanced (Server)** | Deploy to a VPS behind Tailscale, understand the multi-agent architecture, and build custom agents | [Installing → Server](/getting-started/installing#server) → [Trading Agents Architecture](/trading-agents/architecture) → [Agent Builder](/condor-agent/agent-builder) → [Servers](/webui/settings#servers) | ~2–4 hrs |
 
 ## Which install do you want?
 
@@ -64,26 +64,26 @@ What Condor actually does, and where each is documented. Most people arrive want
 | Feature | What it does | Docs |
 |---|---|---|
 | **Trading Agents** | LLM-driven agents that observe markets, reason about strategy, and execute through Hummingbot API | [Overview](/trading-agents/overview) |
-| **Agent Builder** | Build a custom agent — its playbooks, tools and risk limits — without writing the harness | [Agent Builder](/trading-agents/agent-builder) |
+| **Agent Builder** | Build a custom agent — its playbooks, tools and risk limits — without writing the harness | [Agent Builder](/condor-agent/agent-builder) |
 | **Hummingbot bots** | Always-on market making, grid and directional strategies via controllers and scripts, no LLM in the loop | [Bots](/bots/overview) · [Controllers](/bots/controllers) |
 | **Backtesting** | Replay a controller config against historical candles before it touches capital | [Backtesting](/bots/backtesting) |
 | **Executors** | Single operations — a trade, a stop-loss, a TWAP, an LP position — driven by you or an agent | [Executors](/executors/overview) |
 | **Routines** | Deterministic Python on a schedule or trigger: indicators, alerts, rebalances. No LLM cost | [Routines](/routines/overview) |
 | **Reports** | Build and schedule HTML reports with charts, tables and KPIs, then read them in the dashboard | [Reports](/routines/reports) |
 | **Research** | Ask an agent about markets, positions or a strategy, with your live portfolio as context | [MCP Tools](/trading-agents/mcp-tools) |
-| **Portfolio** | Unified balances, positions and P&L across every connected exchange and chain | [Portfolio](/other-features/portfolio) |
-| **Manual trading** | Place and cancel orders yourself, on CEX or DEX, from Telegram or the dashboard | [Trade](/other-features/trade) |
-| **DEX and liquidity** | Swaps and concentrated-liquidity positions through Gateway | [LP](/other-features/lp) · [Gateway](/other-features/gateway) |
+| **Portfolio** | Unified balances, positions and P&L across every connected exchange and chain | [Portfolio](/webui/portfolio) |
+| **Manual trading** | Place and cancel orders yourself, on CEX or DEX, from Telegram or the dashboard | [Trade](/webui/trade) |
+| **DEX and liquidity** | Swaps and concentrated-liquidity positions through Gateway | [DEX](/webui/dex) · [Gateway](/webui/settings#gateway) |
 | **Web dashboard** | Browser UI for bots, agents, portfolio and a live trade panel covering CEX and DEX | [Web Dashboard](/getting-started/web-dashboard) |
 | **Agent sessions** | Inspect, steer and stop running agents; see what each one decided and why | [Sessions](/getting-started/sessions) |
-| **Multiple servers** | Drive several Hummingbot API instances — separate accounts, venues or strategies — from one Condor | [Managing Servers](/other-features/server) |
+| **Multiple servers** | Drive several Hummingbot API instances — separate accounts, venues or strategies — from one Condor | [Servers](/webui/settings#servers) |
 | **Your choice of LLM** | Claude, Gemini, Codex, Copilot, OpenRouter, or a local model via Ollama/LM Studio | [LLM Integration](/llm-integration) |
 
 ## By use case
 
 <AccordionGroup>
   <Accordion title="Let AI manage a strategy for me">
-    [Trading Agents Overview](/trading-agents/overview) → [LLM Integration](/llm-integration) → [Build Your First Agent](/getting-started/first-agent) → [Managing Sessions](/getting-started/sessions) → [Agent Builder](/trading-agents/agent-builder)
+    [Trading Agents Overview](/trading-agents/overview) → [LLM Integration](/llm-integration) → [Build Your First Agent](/getting-started/first-agent) → [Managing Sessions](/getting-started/sessions) → [Agent Builder](/condor-agent/agent-builder)
   </Accordion>
   <Accordion title="Run an always-on bot without AI micromanagement">
     [Bots Overview](/bots/overview) → [Controllers](/bots/controllers) or [Scripts](/bots/scripts) → [Backtesting](/bots/backtesting)
@@ -101,10 +101,10 @@ What Condor actually does, and where each is documented. Most people arrive want
     [Installing → Local](/getting-started/installing#local) → [Web Dashboard](/getting-started/web-dashboard) → [Credentials](/getting-started/credentials) → [Build Your First Agent](/getting-started/first-agent)
   </Accordion>
   <Accordion title="Deploy for 24/7 production on a server">
-    [Installing](/getting-started/installing#secure-remote-access-with-tailscale) (remote install—**Tailscale required**) → [Managing Servers](/other-features/server) → [Managing Sessions](/getting-started/sessions)
+    [Installing](/getting-started/installing#secure-remote-access-with-tailscale) (remote install—**Tailscale required**) → [Servers](/webui/settings#servers) → [Managing Sessions](/getting-started/sessions)
   </Accordion>
   <Accordion title="Manage many agents or bots as a team or fund">
-    [Trading Agents Architecture](/trading-agents/architecture) (multi-agent via `controller_id`) → [Global Routines](/routines/global-routines) → [Managing Servers](/other-features/server)
+    [Trading Agents Architecture](/trading-agents/architecture) (multi-agent via `controller_id`) → [Global Routines](/routines/global-routines) → [Servers](/webui/settings#servers)
   </Accordion>
 </AccordionGroup>
 

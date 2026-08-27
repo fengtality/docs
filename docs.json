@@ -50,17 +50,6 @@
             ]
           },
           {
-            "group": "Trading Agents",
-            "pages": [
-              "trading-agents/overview",
-              "trading-agents/architecture",
-              "trading-agents/sessions",
-              "trading-agents/mcp-tools",
-              "trading-agents/inventory",
-              "trading-agents/agent-builder"
-            ]
-          },
-          {
             "group": "Web UI Pages",
             "pages": [
               "webui/agents",
@@ -107,14 +96,20 @@
             ]
           },
           {
-            "group": "Other Condor Features",
+            "group": "The Condor Agent",
             "pages": [
-              "other-features/portfolio",
-              "other-features/trade",
-              "other-features/keys",
-              "other-features/server",
-              "other-features/lp",
-              "other-features/gateway"
+              "condor-agent/overview",
+              "condor-agent/agent-builder"
+            ]
+          },
+          {
+            "group": "Agent Architecture",
+            "pages": [
+              "trading-agents/overview",
+              "trading-agents/architecture",
+              "trading-agents/sessions",
+              "trading-agents/mcp-tools",
+              "trading-agents/inventory"
             ]
           }
         ]
@@ -227,6 +222,34 @@
     {
       "source": "/podcast/:slug*",
       "destination": "/videos/:slug*"
+    },
+    {
+      "source": "/other-features/portfolio",
+      "destination": "/webui/portfolio"
+    },
+    {
+      "source": "/other-features/trade",
+      "destination": "/webui/trade"
+    },
+    {
+      "source": "/other-features/lp",
+      "destination": "/webui/dex"
+    },
+    {
+      "source": "/other-features/gateway",
+      "destination": "/webui/settings"
+    },
+    {
+      "source": "/other-features/keys",
+      "destination": "/webui/settings"
+    },
+    {
+      "source": "/other-features/server",
+      "destination": "/webui/settings"
+    },
+    {
+      "source": "/trading-agents/agent-builder",
+      "destination": "/condor-agent/agent-builder"
     }
   ]
 }

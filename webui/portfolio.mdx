@@ -19,7 +19,19 @@ The **Portfolio** page is the one-glance answer to "what do I hold and how is it
 
 Balances come from the Hummingbot API server selected in the top bar — switch servers there to see a different account set. If a token or network is missing, check that its credentials or wallet are configured under [Settings → Keys and Wallets](/webui/settings#keys-and-wallets).
 
+## Via API
+
+The page renders `POST /portfolio/state` — the same call works directly, and takes `account_names` / `connector_names` filters:
+
+```bash
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/portfolio/state \
+  -H "Content-Type: application/json" \
+  -d '{"connector_names": ["binance", "hyperliquid_perpetual"]}'
+```
+
+`POST /portfolio/history` and `POST /portfolio/distribution` back the chart and the allocation views — see the [API reference](/api-reference).
+
 ## Learn more
 
 - [Seeing Your Portfolio](/getting-started/portfolio) — first-run walkthrough
-- [Portfolio in Telegram](/other-features/portfolio) — the same data as Telegram commands
+- In Telegram, `/portfolio` renders the same data as a dashboard message
