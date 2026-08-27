@@ -100,7 +100,7 @@ If you're just testing locally, skip ahead—the Quick Install below works witho
 
 Interactive setup will prompt for, in order:
 
-1. **How you will use Condor** — **Telegram** or **Local**. See [Choosing Telegram or Local mode](#choosing-telegram-or-local-mode) below.
+1. **How you will use Condor** — **Telegram** or **Local**. See [Choose your install](#choose-your-install) below.
 2. **Telegram Bot Token** and **Telegram User ID** (Telegram mode only): create the bot via [@BotFather](https://t.me/botfather), get your id via [@userinfobot](https://t.me/userinfobot).
 3. **Tailscale, yes or no** — whether to secure the connection to Hummingbot API (and the dashboard) with Tailscale. Answer **`y`** for production or any remote setup. You paste the `tskey-auth-...` key later, at the point it is actually needed.
 4. **Public IP or hostname** (Telegram mode without Tailscale only) — press Enter if Condor runs on your own machine, or give the server's public address so the `/web` dashboard link works from your phone.
@@ -115,36 +115,70 @@ Interactive setup will prompt for, in order:
   Run it again any time. It re-checks everything the wizard only confirms once: dependencies (`uv`, `tmux`, `node`, `npm`, `tsc`), `.env`/`config.yml` sanity, the AI model, the dashboard's network binding, Tailscale, and whether each Hummingbot API server in `config.yml` is reachable **and** authenticating. It is read-only and safe to run at any time, and exits non-zero only on real failures—warnings do not.
 </Tip>
 
-## Choosing Telegram or Local mode
+## Choose your install
 
-Both modes run the same agents, bots, routines, and web dashboard. What differs is what drives them.
+Three paths. All three run the same agents, bots, routines and web dashboard — what differs is who can reach them and where alerts go.
 
-<Tabs>
-  <Tab title="Telegram (recommended)">
-    Condor runs as a Telegram bot. You control it with commands (`/portfolio`, `/trade`, `/agent`), agents push alerts and approval requests to your phone, and `/web` hands you a time-limited link to the browser dashboard.
+<CardGroup cols={3}>
+  <Card title="Local" icon="laptop" href="#local">
+    Your own machine, no Telegram account. Dashboard only, no login.
+  </Card>
+  <Card title="Local + Telegram alerts" icon="bell" href="#local--telegram-alerts">
+    Your own machine, plus a bot that pushes alerts and approvals to your phone.
+  </Card>
+  <Card title="Server" icon="server" href="#server">
+    A VPS running 24/7. Reachable from anywhere over Tailscale.
+  </Card>
+</CardGroup>
 
-    Needs a bot token from [@BotFather](https://t.me/botfather) and your numeric Telegram user id from [@userinfobot](https://t.me/userinfobot).
-  </Tab>
-  <Tab title="Local (no Telegram)">
-    No bot, no token, no Telegram account. The web dashboard runs on the machine you installed on and you are already logged in when you open it:
+| | **Local** | **Local + Telegram alerts** | **Server** |
+|---|---|---|---|
+| **Runs on** | Your machine | Your machine | A VPS, 24/7 |
+| **You need** | Nothing extra | A bot token and your Telegram user id | The above, plus [Tailscale](#secure-remote-access-with-tailscale) |
+| **How you drive it** | Dashboard at `localhost:8088` | Telegram commands, plus `/web` for the dashboard | Telegram from anywhere; dashboard over the tailnet |
+| **Login** | **None at all** — whoever reaches the port has full trading control | Telegram authenticates you; `/web` is a time-limited link | Same, and the tailnet is the outer boundary |
+| **Alerts and approvals** | Only while the dashboard is open | Pushed to your phone | Pushed to your phone |
+| **Survives you closing the laptop** | No | No | Yes |
+| **Best for** | Trying it out, or a machine you would rather not attach a bot to | Most people | Anything holding real capital |
 
-    ```
-    http://localhost:8088
-    ```
+### Local
 
-    <Warning>
-      **Local mode has no login.** Anyone who can reach the port has full trading control.
+No bot, no token, no Telegram account. The dashboard runs on the machine you installed on and you are already logged in when you open it:
 
-      - It binds **`127.0.0.1`** only: reachable from that machine, nowhere else.
-      - Exposing it takes an explicit **`WEB_HOST=0.0.0.0`** in `.env`. Only do that behind something that authenticates—[Tailscale](#secure-remote-access-with-tailscale), an SSH tunnel, or an authenticating reverse proxy.
-      - Alerts and approval requests are only visible while the dashboard is open; there is nothing to push them to.
-    </Warning>
+```
+http://localhost:8088
+```
 
-    Local mode logs in as `ADMIN_USER_ID`—the same id your servers, chat defaults, preferences and agent memory are already keyed to. An existing Telegram install that switches to local keeps all of it.
-  </Tab>
-</Tabs>
+<Warning>
+  **Local mode has no login.** Anyone who can reach the port has full trading control.
 
-The choice is recorded as `CONDOR_MODE` in `.env` (`telegram` or `local`) and is never inferred from whether a token happens to be present. To switch later, re-run `make setup` and pick the other mode—your `TELEGRAM_TOKEN` is left in place, so switching back costs nothing.
+  - It binds **`127.0.0.1`** only: reachable from that machine, nowhere else.
+  - Exposing it takes an explicit **`WEB_HOST=0.0.0.0`** in `.env`. Only do that behind something that authenticates — [Tailscale](#secure-remote-access-with-tailscale), an SSH tunnel, or an authenticating reverse proxy.
+  - Alerts and approval requests are only visible while the dashboard is open; there is nothing to push them to.
+</Warning>
+
+Local mode logs in as `ADMIN_USER_ID` — the same id your servers, chat defaults, preferences and agent memory are already keyed to. An existing Telegram install that switches to local keeps all of it.
+
+### Local + Telegram alerts
+
+The same install, with a bot attached. You control Condor with commands (`/portfolio`, `/trade`, `/agent`), agents push alerts and approval requests to your phone, and `/web` hands you a time-limited link to the browser dashboard.
+
+This is the difference that matters: an agent asking permission to place a trade reaches you when you are not at the machine. In Local mode that request waits until you next open the dashboard.
+
+Needs a bot token from [@BotFather](https://t.me/botfather) and your numeric Telegram user id from [@userinfobot](https://t.me/userinfobot) — both covered in [Create a Telegram Bot](#create-a-telegram-bot) below.
+
+### Server
+
+Condor and Hummingbot API on a VPS, running whether or not your laptop is on. Everything from the path above, plus:
+
+- **[Tailscale](#secure-remote-access-with-tailscale) is not optional here.** Declining it publishes port 8000 on the VPS's public IP, and Docker's published ports are not blocked by `ufw`. See [Do I Need Tailscale?](#do-i-need-tailscale) for why.
+- The dashboard binds `127.0.0.1` and is published to your tailnet through `tailscale serve` — see [The dashboard under Tailscale](#the-dashboard-under-tailscale).
+- Either mode works. Telegram is the usual choice, since it reaches you off the tailnet; Local mode on a server is only reachable through the tailnet.
+- Run `make doctor` on the VPS after setup. It is the fastest way to catch a public bind before it matters.
+
+<Info>
+  The Telegram/Local distinction is recorded as `CONDOR_MODE` in `.env` (`telegram` or `local`) and is never inferred from whether a token happens to be present. To switch later, re-run `make setup` and pick the other mode — your `TELEGRAM_TOKEN` is left in place, so switching back costs nothing. "Server" is not a mode; it is where you run one of the two.
+</Info>
 
 ## Create a Telegram Bot
 
@@ -342,7 +376,7 @@ CONDOR_SHARING=off          # in .env — destroys queued transcripts too
   `CONDOR_SHARING=off` reaches transcripts already queued and destroys them — but a queued **unshare** is still delivered, because a revocation is a deletion the install already promised.
 </Note>
 
-## Troubleshooting
+## Common failure modes
 
 Before working through the cases below, run **`make doctor`** in the Condor directory (and `make doctor` in `hummingbot-api` on the API host). Between them they cover most of what follows and name the fix directly.
 
@@ -411,6 +445,23 @@ Before working through the cases below, run **`make doctor`** in the Condor dire
     See also: [Hummingbot API Tailscale guide](https://hummingbot.org/hummingbot-api/tailscale/)
   </Accordion>
 </AccordionGroup>
+
+## Recovery toolkit
+
+The commands worth reaching for before reading anything above. All are safe to run at any time; none of them trade.
+
+| Command | Where | What it tells you |
+|---|---|---|
+| `make doctor` | Condor dir | Dependencies, `.env`/`config.yml`, AI model, dashboard bind, Tailscale, and whether each API server is reachable **and** authenticating |
+| `make doctor` | `hummingbot-api` dir | The same for the API host, including whether port 8000 is on a public interface |
+| `make status` | Condor dir | Whether Condor is running, and under which tmux session |
+| `make logs` | Condor dir | Attach to the running session (detach with <kbd>Ctrl+B</kbd> then <kbd>D</kbd>) |
+| `make restart` | Condor dir | Rebuild the frontend and restart — the fix for a stale dashboard |
+| `tailscale status` | Either host | Whether this machine is on the tailnet at all |
+| `tailscale serve status` | Condor host | What is actually published to the tailnet, including the dashboard |
+| `docker compose ps` | `hummingbot-api` dir | Whether the API, broker and database containers are up |
+
+If `make doctor` is clean and something is still wrong, that is worth reporting — it means a real gap in what the check covers.
 
 ## Next Step
 

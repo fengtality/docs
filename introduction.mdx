@@ -87,3 +87,18 @@ The Foundation is supported by exchange partners and community contributions. Th
     2-minute survey that shapes the roadmap
   </Card>
 </CardGroup>
+
+## Reading these docs with an agent
+
+These docs are published in a machine-readable form, so you can hand them to an LLM rather than paraphrasing them at it:
+
+| File | Contents |
+|---|---|
+| [`/llms.txt`](https://condor.hummingbot.org/llms.txt) | An index of every page with its description — small enough to paste whole |
+| [`/llms-full.txt`](https://condor.hummingbot.org/llms-full.txt) | The full text of every page in one file |
+
+Any page also serves as Markdown by appending `.md` to its URL — for example [`/getting-started/installing.md`](https://condor.hummingbot.org/getting-started/installing.md).
+
+<Tip>
+  Condor's own agents already read the parts of this that matter to them. This is for **your** assistant — pointing Claude, Codex or Cursor at `/llms.txt` is usually enough for it to answer setup questions against the current docs instead of its training data.
+</Tip>
