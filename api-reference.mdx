@@ -25,7 +25,7 @@ For remote deployments, replace `localhost` with your server's address.
 All endpoints require HTTP Basic Authentication:
 
 ```bash
-curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/accounts
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/accounts/
 ```
 
 The username and password are the `USERNAME` and `PASSWORD` you set when you
@@ -35,18 +35,22 @@ setup requires you to choose them, and an API left without them answers `401`.
 
 ## API Routers
 
+The tables below are an oriented tour of the API's routers, with the endpoints you will reach for first. The sidebar has the complete, playground-enabled reference for every endpoint, generated from the API's own OpenAPI spec.
+
 ### Accounts
 
-Manage trading accounts and exchange credentials.
+Manage trading accounts, exchange credentials, and Gateway wallets.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/accounts` | GET | List all account names |
+| `/accounts/` | GET | List all account names |
 | `/accounts/{account_name}/credentials` | GET | List configured connectors for an account |
 | `/accounts/add-account` | POST | Create a new account |
 | `/accounts/delete-account` | POST | Delete an account |
 | `/accounts/add-credential/{account_name}/{connector_name}` | POST | Add exchange credentials |
 | `/accounts/delete-credential/{account_name}/{connector_name}` | POST | Remove exchange credentials |
+| `/accounts/gateway/add-wallet` | POST | Add a Gateway (DEX) wallet |
+| `/accounts/gateway/wallets` | GET | List Gateway wallets |
 
 ### Portfolio
 
@@ -55,6 +59,9 @@ Real-time balances and portfolio analytics.
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/portfolio/state` | POST | Get portfolio balances across all accounts and connectors |
+| `/portfolio/history` | POST | Get historical portfolio states |
+| `/portfolio/distribution` | POST | Token distribution across accounts |
+| `/portfolio/accounts-distribution` | GET | Value distribution by account |
 
 ### Trading
 
@@ -64,8 +71,13 @@ Execute orders and manage positions.
 |----------|--------|-------------|
 | `/trading/orders` | POST | Place a new order |
 | `/trading/orders/active` | POST | Get active orders |
-| `/trading/{account_name}/{connector_name}/orders/{order_id}/cancel` | POST | Cancel an order |
+| `/trading/orders/search` | POST | Search order history |
+| `/trading/trades` | POST | Search trade fills |
+| `/trading/{account_name}/{connector_name}/orders/{client_order_id}/cancel` | POST | Cancel an order |
 | `/trading/positions` | POST | Get open positions (perpetual) |
+| `/trading/{account_name}/{connector_name}/leverage` | POST | Set leverage |
+| `/trading/{account_name}/{connector_name}/position-mode` | GET, POST | Get or set position mode |
+| `/trading/funding-payments` | POST | Get funding payment history |
 
 ### Connectors
 
@@ -73,52 +85,57 @@ Exchange connector information and trading rules.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/connectors` | GET | List available connectors |
+| `/connectors/` | GET | List available connectors |
 | `/connectors/{connector_name}/config-map` | GET | Get required credential fields |
 | `/connectors/{connector_name}/trading-rules` | GET | Get trading rules for pairs |
+| `/connectors/{connector_name}/order-types` | GET | Get supported order types |
 
 ### Market Data
 
-Prices, candles, order books, and funding rates.
+Prices, candles, order books, tickers, and conversion rates (the former Rate Oracle endpoints live here now).
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/market-data/candles` | POST | Get historical candles |
+| `/market-data/candles` | POST | Get real-time candles |
+| `/market-data/historical-candles` | POST | Get historical candles |
 | `/market-data/order-book` | POST | Get order book snapshot |
 | `/market-data/prices` | POST | Get current prices |
-| `/market-data/funding-rates` | POST | Get perpetual funding rates |
-
-### Rate Oracle
-
-Cross-exchange price feeds and conversion rates.
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/rate-oracle/sources` | GET | List available price sources |
-| `/rate-oracle/rate` | GET | Get conversion rate between assets |
+| `/market-data/tickers` | GET | Get 24h ticker stats |
+| `/market-data/funding-info` | POST | Get perpetual funding info |
+| `/market-data/rate/{trading_pair}` | GET | Get conversion rate between assets |
+| `/market-data/rates` | POST | Get conversion rates in bulk |
+| `/market-data/pool-prices` | GET | Get DEX pool prices |
 
 ### Executors
 
-Create and manage trading executors.
+Create and manage trading executors — single operations like an order, a TWAP, a grid, or an LP position.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/executors` | GET | List active executors |
-| `/executors` | POST | Create a new executor |
-| `/executors/{executor_id}` | DELETE | Stop an executor |
-| `/executors/{executor_id}/status` | GET | Get executor status |
+| `/executors/` | POST | Create a new executor |
+| `/executors/search` | POST | List and filter executors |
+| `/executors/{executor_id}` | GET | Get executor details |
+| `/executors/{executor_id}/stop` | POST | Stop an executor |
+| `/executors/{executor_id}/logs` | GET | Get executor logs |
+| `/executors/performance` | GET | Aggregate executor performance |
+| `/executors/positions/summary` | GET | Summary of executor-held positions |
+| `/executors/types/available` | GET | List available executor types |
 
 ### Bot Orchestration
 
-Deploy and manage Hummingbot trading bots.
+Deploy and manage containerized Hummingbot trading bots.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/bot-orchestration/status` | GET | Get status of all bots |
-| `/bot-orchestration/deploy` | POST | Deploy a new bot |
-| `/bot-orchestration/{bot_id}/start` | POST | Start a bot |
-| `/bot-orchestration/{bot_id}/stop` | POST | Stop a bot |
-| `/bot-orchestration/{bot_id}/logs` | GET | Get bot logs |
+| `/bot-orchestration/deploy-v2-controllers` | POST | Deploy a bot running V2 controllers |
+| `/bot-orchestration/deploy-v2-script` | POST | Deploy a bot running a V2 script |
+| `/bot-orchestration/start-bot` | POST | Start a bot |
+| `/bot-orchestration/stop-bot` | POST | Stop a bot |
+| `/bot-orchestration/stop-and-archive-bot/{bot_name}` | POST | Stop a bot and archive its database |
+| `/bot-orchestration/{bot_name}/status` | GET | Get one bot's status |
+| `/bot-orchestration/bot-runs` | GET | List bot runs |
+| `/bot-orchestration/controller-performance-latest` | GET | Latest per-controller performance |
 
 ### Controllers
 
@@ -126,8 +143,11 @@ V2 strategy controller management.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/controllers` | GET | List available controllers |
-| `/controllers/{controller_name}/config` | GET | Get controller configuration schema |
+| `/controllers/` | GET | List available controllers |
+| `/controllers/{controller_type}/{controller_name}` | GET, POST, DELETE | Read, save, or delete a controller |
+| `/controllers/configs/` | GET | List controller configs |
+| `/controllers/configs/{config_name}` | GET, POST, DELETE | Read, save, or delete a config |
+| `/controllers/{controller_type}/{controller_name}/config/template` | GET | Get a controller's config template |
 
 ### Scripts
 
@@ -135,49 +155,77 @@ V1 script management.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/scripts` | GET | List available scripts |
+| `/scripts/` | GET | List available scripts |
+| `/scripts/{script_name}` | GET, POST, DELETE | Read, save, or delete a script |
+| `/scripts/configs/` | GET | List script configs |
+| `/scripts/{script_name}/config/template` | GET | Get a script's config template |
 
 ### Gateway
 
-DEX infrastructure via Hummingbot Gateway.
+DEX infrastructure via Hummingbot Gateway: lifecycle, connectors, and network configuration (tokens and pools per network).
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/gateway/status` | GET | Get Gateway status |
+| `/gateway/start` / `/gateway/stop` / `/gateway/restart` | POST | Manage the Gateway container |
 | `/gateway/connectors` | GET | List Gateway connectors |
-| `/gateway/wallets` | GET | List configured wallets |
 | `/gateway/networks` | GET | List supported networks |
+| `/gateway/networks/{network_id}` | GET, POST | Read or update a network's config |
+| `/gateway/networks/{network_id}/tokens` | GET, POST | List or add tokens on a network |
+| `/gateway/networks/{network_id}/pools` | GET, POST | List or add pools on a network |
+| `/gateway/logs` | GET | Get Gateway logs |
 
-### Gateway Swaps
+### Gateway Swap
 
 DEX token swaps.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/gateway/swaps/quote` | POST | Get swap quote |
-| `/gateway/swaps/execute` | POST | Execute a swap |
+| `/gateway/swap/quote` | POST | Get swap quote |
+| `/gateway/swap/execute` | POST | Execute a swap |
+| `/gateway/swap/execute-quote` | POST | Execute a previously fetched quote |
+| `/gateway/swaps/search` | POST | Search past swaps |
+| `/gateway/swaps/{transaction_hash}/status` | GET | Get a swap's transaction status |
 
 ### Gateway CLMM
 
-Concentrated liquidity positions.
+Concentrated-liquidity positions.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/gateway/clmm/pools` | GET | List available pools |
-| `/gateway/clmm/positions_owned` | POST | Get LP positions owned in a pool |
+| `/gateway/clmm/pool-info` | GET | Get one pool's live state |
+| `/gateway/clmm/quote-position` | POST | Quote a new position |
 | `/gateway/clmm/open` | POST | Open a new position |
 | `/gateway/clmm/add` | POST | Add liquidity to a position |
 | `/gateway/clmm/remove` | POST | Remove liquidity from a position |
+| `/gateway/clmm/close` | POST | Close a position |
 | `/gateway/clmm/collect-fees` | POST | Collect accumulated fees |
+| `/gateway/clmm/positions_owned` | POST | Get LP positions owned in a pool |
 
-### Backtesting
+### Gateway AMM
 
-Strategy backtesting.
+Classic (full-range) AMM liquidity.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/backtesting/run` | POST | Run a backtest |
-| `/backtesting/results/{backtest_id}` | GET | Get backtest results |
+| `/gateway/amm/pool-info` | GET | Get one pool's live state |
+| `/gateway/amm/quote-liquidity` | POST | Quote adding liquidity |
+| `/gateway/amm/add-liquidity` | POST | Add liquidity |
+| `/gateway/amm/remove-liquidity` | POST | Remove liquidity |
+| `/gateway/amm/positions-owned` | POST | Get AMM positions owned |
+
+### Backtesting
+
+Strategy backtesting, synchronous or as background tasks.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/backtesting/run` | POST | Run a backtest synchronously |
+| `/backtesting/tasks` | POST | Start a backtest as a background task |
+| `/backtesting/tasks` | GET | List backtest tasks |
+| `/backtesting/tasks/{task_id}` | GET | Get a task's status and results |
+| `/backtesting/tasks/{task_id}` | DELETE | Cancel or delete a task |
 
 ### Archived Bots
 
@@ -185,8 +233,11 @@ Historical bot performance data.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/archived-bots/databases` | GET | List archived bot databases |
-| `/archived-bots/{database}/performance` | GET | Get historical performance |
+| `/archived-bots/` | GET | List archived bot databases |
+| `/archived-bots/{db_path}/summary` | GET | Summary of an archived run |
+| `/archived-bots/{db_path}/performance` | GET | Get historical performance |
+| `/archived-bots/{db_path}/trades` | GET | Trades from an archived run |
+| `/archived-bots/{db_path}` | DELETE | Delete an archived database |
 
 ### Docker
 
@@ -194,8 +245,20 @@ Container lifecycle management.
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/docker/status` | GET | Check if Docker is running |
-| `/docker/containers` | GET | List containers |
+| `/docker/running` | GET | Check if Docker is running |
+| `/docker/active-containers` | GET | List active containers |
+| `/docker/available-images/` | GET | List available bot images |
+| `/docker/pull-image/` | POST | Pull an image |
+| `/docker/clean-exited-containers` | POST | Remove exited containers |
+
+### Storage and System
+
+Disk usage of the API's data, and host resource stats.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/storage/` | GET | Storage overview: databases, archives, disk usage |
+| `/system/resources` | GET | CPU, memory, and disk for the API host |
 
 ## Response Format
 

@@ -67,58 +67,53 @@ flowchart LR
 
 ### Swaps
 
-Execute token swaps via the `/gateway/swaps` endpoints:
+Execute token swaps via the `/gateway/swap` endpoints:
 
 ```bash
 # Get a swap quote
-curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swaps/quote \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swap/quote \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
-    "network": "mainnet",
-    "connector": "jupiter",
-    "base_token": "SOL",
-    "quote_token": "USDC",
-    "amount": "1.0",
-    "side": "sell"
+    "connector": "jupiter/router",
+    "network": "solana-mainnet-beta",
+    "trading_pair": "SOL-USDC",
+    "side": "SELL",
+    "amount": 1.0
   }'
 
-# Execute the swap
-curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swaps/execute \
+# Execute the swap (same fields; wallet_address is optional — the default wallet is used)
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/swap/execute \
   -H "Content-Type: application/json" \
   -d '{
-    "chain": "solana",
-    "network": "mainnet",
-    "connector": "jupiter",
-    "base_token": "SOL",
-    "quote_token": "USDC",
-    "amount": "1.0",
-    "side": "sell",
-    "wallet_address": "your-wallet-address"
+    "connector": "jupiter/router",
+    "network": "solana-mainnet-beta",
+    "trading_pair": "SOL-USDC",
+    "side": "SELL",
+    "amount": 1.0,
+    "slippage_pct": 1.0
   }'
 ```
+
+Past swaps are searchable via `POST /gateway/swaps/search`, and a transaction's status via `GET /gateway/swaps/{transaction_hash}/status`.
 
 ### Liquidity Provision
 
 Manage CLMM positions via `/gateway/clmm` endpoints:
 
 ```bash
-# Get pool information
-curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/pools \
-  -H "Content-Type: application/json" \
-  -d '{
-    "chain": "solana",
-    "network": "mainnet",
-    "connector": "raydium",
-    "token_a": "SOL",
-    "token_b": "USDC"
-  }'
+# List pools for a connector
+curl -u YOUR_USERNAME:YOUR_PASSWORD \
+  "http://localhost:8000/gateway/clmm/pools?connector=raydium/clmm&search_term=SOL-USDC"
+
+# Get one pool's live state
+curl -u YOUR_USERNAME:YOUR_PASSWORD \
+  "http://localhost:8000/gateway/clmm/pool-info?connector=raydium/clmm&network=solana-mainnet-beta&pool_address=POOL_ADDRESS"
 
 # Add liquidity to an existing position (open a new one with /gateway/clmm/open)
 curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/add \
   -H "Content-Type: application/json" \
   -d '{
-    "connector": "raydium",
+    "connector": "raydium/clmm",
     "network": "solana-mainnet-beta",
     "position_address": "position-address",
     "base_token_amount": 1.0,
@@ -126,23 +121,23 @@ curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/clmm/a
   }'
 ```
 
+Full-range AMM liquidity has its own parallel router under `/gateway/amm` (pool-info, quote-liquidity, add/remove-liquidity).
+
 ## Setup
 
 ### 1. Configure Gateway
 
-Gateway requires RPC endpoints and wallet configuration:
+Gateway's per-network configuration (RPC endpoints, tokens, pools) is readable and writable through the API:
 
-```yaml
-# gateway/conf/gateway.yml
-chains:
-  solana:
-    network: mainnet
-    rpc_url: https://api.mainnet-beta.solana.com
+```bash
+# List networks Gateway knows about
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/gateway/networks
 
-  ethereum:
-    network: mainnet
-    rpc_url: https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+# Read one network's config (e.g. its RPC endpoint)
+curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/gateway/networks/solana-mainnet-beta
 ```
+
+Updating a network's config is a `POST` to the same path; tokens and pools have their own subpaths (`/gateway/networks/{network_id}/tokens`, `/gateway/networks/{network_id}/pools`).
 
 ### 2. Add Wallets
 
@@ -155,7 +150,7 @@ Add wallet credentials via Condor or API:
 
 **API:**
 ```bash
-curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/gateway/wallets/add \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/accounts/gateway/add-wallet \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "solana",
