@@ -122,23 +122,43 @@
         "openapi": "api-reference/openapi.json"
       },
       {
-        "tab": "🎙️ Podcast",
+        "tab": "📺 Videos",
         "groups": [
           {
-            "group": "Podcast",
+            "group": "Overview",
             "pages": [
-              "podcast/overview",
-              "podcast/ep11",
-              "podcast/ep10",
-              "podcast/ep9",
-              "podcast/ep8",
-              "podcast/ep7",
-              "podcast/ep6",
-              "podcast/ep5",
-              "podcast/ep4",
-              "podcast/ep3",
-              "podcast/ep2",
-              "podcast/ep1"
+              "videos/overview"
+            ]
+          },
+          {
+            "group": "Agent Builders Cup",
+            "pages": [
+              "videos/ep13",
+              "videos/agent-builders-cup/xrpl-1",
+              "videos/agent-builders-cup/derive",
+              "videos/agent-builders-cup/meteora",
+              "videos/agent-builders-cup/bitget",
+              "videos/agent-builders-cup/orca",
+              "videos/agent-builders-cup/xrpl-2",
+              "videos/agent-builders-cup/gate"
+            ]
+          },
+          {
+            "group": "The Bot Pod",
+            "pages": [
+              "videos/ep13",
+              "videos/ep12",
+              "videos/ep11",
+              "videos/ep10",
+              "videos/ep9",
+              "videos/ep8",
+              "videos/ep7",
+              "videos/ep6",
+              "videos/ep5",
+              "videos/ep4",
+              "videos/ep3",
+              "videos/ep2",
+              "videos/ep1"
             ]
           }
         ]
@@ -193,5 +213,11 @@
         ]
       }
     ]
-  }
+  },
+  "redirects": [
+    {
+      "source": "/podcast/:slug*",
+      "destination": "/videos/:slug*"
+    }
+  ]
 }
