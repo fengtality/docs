@@ -19,8 +19,6 @@ Multiple servers let one Condor drive separate accounts, venues, or strategies �
 curl -u YOUR_USERNAME:YOUR_PASSWORD http://localhost:8000/
 ```
 
-In Telegram, **`/servers`** manages the same list.
-
 ## Gateway
 
 The Gateway container on the selected server: its status, image, and age, with **Restart** and **Stop**. Below, three drawers: **Pull Image** (upgrade Gateway), **Networks & RPC** (per-network RPC endpoints), and **Logs**.
@@ -55,7 +53,7 @@ curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/accounts/add-c
   -d '{"binance_api_key": "your-api-key", "binance_api_secret": "your-api-secret"}'
 ```
 
-Multiple **accounts** (`/accounts/add-account`) keep credential sets apart — paper vs. live, one strategy per account, or per-teammate keys. In Telegram, **`/keys`** manages credentials and **`/gateway`** the wallets.
+Multiple **accounts** (`/accounts/add-account`) keep credential sets apart — paper vs. live, one strategy per account, or per-teammate keys.
 
 ## LLM Endpoints
 
@@ -93,3 +91,11 @@ Users and roles (admin, user, pending, blocked), and the **code execution** gran
 <Frame>
   <img src="/images/webui/settings-admin.jpg" alt="Settings → Admin: users, roles, and the code execution grant" />
 </Frame>
+
+## Using Telegram
+
+- **`/servers`** — the same server list: **➕ Add Server**, then set **📝 Name**, **🌐 Host**, **🔌 Port**, **👤 User**, **🔑 Pass** field by field; pick the default; live status per server.
+- **`/keys`** — **read-only**: it lists connected exchanges, and connecting or removing keys happens here in the dashboard — the command hands you a **🌐 Open Web Dashboard** login link, valid for 5 minutes.
+- **`/gateway`** — Gateway status and DEX connector configuration.
+- **`/admin`** — the user list and role approvals (Admin tab equivalent).
+- **`/update`** — check for updates and restart Condor.

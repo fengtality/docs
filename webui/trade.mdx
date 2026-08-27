@@ -53,7 +53,7 @@ Below the chart, two tables scoped to the current pair: **Executors** (live and 
 
 Any connector with credentials under [Settings → Keys and Wallets](/webui/settings#keys-and-wallets) shows up in the connector picker.
 
-## Via API
+## Using Hummingbot API
 
 The builders create executors, but the API also places orders directly — no executor, no exit conditions, no per-agent attribution:
 
@@ -83,7 +83,10 @@ curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST \
 
 Reach for direct orders for quick manual trades; reach for [executors](/executors/overview) when you want automatic exits (TP/SL/time) and P&L tagged to whoever created it.
 
+## Using Telegram
+
+**`/trade`** (and its alias **`/swap`**) opens one unified trading menu covering **CEX and DEX** venues. Pick the venue and pair, build the order with toggle buttons (side, order type, position mode) and text input — `$100` converts USD to token units — then **📊 Quote** before **✅ Execute**. The same menu reaches **📋 Orders** (view, filter, cancel) and **📊 Positions** (view, close with confirmation), and perpetual venues get leverage and position-mode controls.
+
 ## Learn more
 
 - [Executors](/executors/overview) — every executor type in depth
-- In Telegram, `/trade` walks the same flows as button menus

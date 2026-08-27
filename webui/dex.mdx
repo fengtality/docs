@@ -35,9 +35,15 @@ Condor manages concentrated-liquidity (CLMM) positions on:
 
 A position's whole lifecycle lives in the pool view: open in a chosen range, watch its in-range status and uncollected fees, add or remove liquidity (fully or by percentage), collect fees without closing, and close. For positions an agent should supervise — automatic out-of-range handling, P&L per agent — use the [LP Executor](/executors/lp-executor) instead of a bare position.
 
-The same operations are API calls under `/gateway/clmm/*` (`open`, `add`, `remove`, `collect-fees`, `positions_owned`) — see the [API reference](/api-reference/gateway). Classic full-range AMM liquidity has its parallel router under `/gateway/amm/*`.
+## Using Hummingbot API
 
-In Telegram, `/lp` walks the same flows: **My Positions**, **Add Liquidity**, remove, and collect.
+The same operations are API calls under `/gateway/clmm/*` (`open`, `add`, `remove`, `collect-fees`, `positions_owned`) — see the [API reference](/api-reference/gateway). Classic full-range AMM liquidity has its parallel router under `/gateway/amm/*`, and pool discovery is `GET /gateway/clmm/pools`.
+
+## Using Telegram
+
+- **`/trade`** (or **`/swap`**) — the unified trading menu's DEX side: pick chain and tokens, **📊 Quote**, then **✅ Execute**, with slippage control and a quick-swap that repeats your last swap.
+- **`/lp`** — the liquidity menu: **💱 Swap**, **💧 Liquidity Pools** with pool discovery and charts, **My Positions** (range, in-range status, uncollected fees), add or remove liquidity, and collect fees.
+- **`/gateway`** — Gateway status and DEX connector configuration.
 
 ## Learn more
 

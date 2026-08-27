@@ -69,7 +69,15 @@ source: chat
 ---
 ```
 
-The `source` field is worth a pause: `builtin` skills ship with Condor (`agent_builder`, `log_analyzer`), but `source: chat` means **Condor wrote this one itself** — it discovered a reusable procedure during a conversation and saved it with `manage_skill`. The library is self-editing: skills get created, refined, and deleted as the agent works, and you can open any of them in a text editor.
+The `source` field is worth a pause: `builtin` skills ship with Condor, but `source: chat` means **Condor wrote this one itself** — it discovered a reusable procedure during a conversation and saved it with `manage_skill`. The library is self-editing: skills get created, refined, and deleted as the agent works, and you can open any of them in a text editor.
+
+Here is the library on a real install:
+
+| Skill | When it fires | Source |
+|---|---|---|
+| **`agent_builder`** | You ask to create, edit, dry-run, launch, or delete an autonomous trading agent. Builds minimally — role and purpose first, routines and loop strategy layered on only when wanted. The full playbook: [Skill: Agent Builder](/condor-agent/agent-builder) | `builtin` |
+| **`log_analyzer`** | Any question about bot, executor, or gateway health — "any errors in the logs?", "why is my bot failing?" (its triggers include Spanish phrasings). Runs the `logs_summary` routine rather than hand-rolling log calls | `builtin`, `references_routine: logs_summary` |
+| **`verify_connector_support`** | Capability questions — "can I use connector X?", "does Y support Z?" — check what the connector actually supports before answering | `chat` — Condor wrote it |
 
 Two more mechanics:
 

@@ -19,7 +19,7 @@ The **Portfolio** page is the one-glance answer to "what do I hold and how is it
 
 Balances come from the Hummingbot API server selected in the top bar — switch servers there to see a different account set. If a token or network is missing, check that its credentials or wallet are configured under [Settings → Keys and Wallets](/webui/settings#keys-and-wallets).
 
-## Via API
+## Using Hummingbot API
 
 The page renders `POST /portfolio/state` — the same call works directly, and takes `account_names` / `connector_names` filters:
 
@@ -31,7 +31,10 @@ curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/portfolio/stat
 
 `POST /portfolio/history` and `POST /portfolio/distribution` back the chart and the allocation views — see the [API reference](/api-reference).
 
+## Using Telegram
+
+**`/portfolio`** renders the same dashboard as a message: total value with PNL indicators, token holdings with 24h changes, positions, LP positions, and open orders. Buttons drill into each connected connector (one per exchange or network), **🔄 Refresh** re-pulls live balances, and the settings flow changes the graph period (1d–30d).
+
 ## Learn more
 
 - [Seeing Your Portfolio](/getting-started/portfolio) — first-run walkthrough
-- In Telegram, `/portfolio` renders the same data as a dashboard message
