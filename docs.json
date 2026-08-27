@@ -61,36 +61,49 @@
             ]
           },
           {
-            "group": "Executors",
+            "group": "Web UI Pages",
             "pages": [
-              "executors/overview",
-              "executors/order-executor",
-              "executors/position-executor",
-              "executors/grid-executor",
-              "executors/dca-executor",
-              "executors/twap-executor",
-              "executors/xemm-executor",
-              "executors/arbitrage-executor",
-              "executors/lp-executor",
-              "executors/position-handover"
-            ]
-          },
-          {
-            "group": "Routines",
-            "pages": [
-              "routines/overview",
-              "routines/global-routines",
-              "routines/creating-routines",
-              "routines/reports"
-            ]
-          },
-          {
-            "group": "Bots",
-            "pages": [
-              "bots/overview",
-              "bots/controllers",
-              "bots/scripts",
-              "bots/backtesting"
+              "webui/agents",
+              "webui/portfolio",
+              "webui/trade",
+              "webui/dex",
+              {
+                "group": "Bots",
+                "pages": [
+                  "webui/bots",
+                  "bots/overview",
+                  "bots/controllers",
+                  "bots/scripts",
+                  "bots/backtesting"
+                ]
+              },
+              {
+                "group": "Executors",
+                "pages": [
+                  "webui/executors",
+                  "executors/overview",
+                  "executors/order-executor",
+                  "executors/position-executor",
+                  "executors/grid-executor",
+                  "executors/dca-executor",
+                  "executors/twap-executor",
+                  "executors/xemm-executor",
+                  "executors/arbitrage-executor",
+                  "executors/lp-executor",
+                  "executors/position-handover"
+                ]
+              },
+              {
+                "group": "Routines",
+                "pages": [
+                  "webui/routines",
+                  "routines/overview",
+                  "routines/global-routines",
+                  "routines/creating-routines",
+                  "routines/reports"
+                ]
+              },
+              "webui/settings"
             ]
           },
           {

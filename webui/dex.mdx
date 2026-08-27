@@ -1,0 +1,28 @@
+---
+title: "DEX"
+description: "Discover pools across DEXes, then chart, swap, and provide liquidity"
+---
+
+The **DEX** page is pool discovery: the pools Condor can trade through [Gateway](/other-features/gateway), ranked and filterable. Open a pool to chart it, swap in it, and provide liquidity to it.
+
+<Frame>
+  <img src="/images/webui/dex.jpg" alt="The DEX page: trending pools with TVL, volume, and 24h change" />
+</Frame>
+
+## Navigating the list
+
+- **Network selector** (left) — which chain you are browsing.
+- **Trending / Top / New / Search** — ranking modes; **Search** finds a pool by token or address. The extra chips (e.g. **Meteora**, **Orca**) filter to one venue, and **All DEXes** narrows by protocol.
+- **Favorites** — star a pool to pin it to your Favorites tab.
+- **Columns** — TVL, 24h volume, and 24h price change, sortable. The right-hand badge tells you what Condor can do there: **swap only**, or **LP** for pools whose venue supports liquidity positions.
+
+Market data comes from GeckoTerminal via Gateway; a pool doesn't need to be in Gateway's registry to show up here — Condor adds what it needs when you act on one.
+
+## Inside a pool
+
+Clicking a row opens the pool view: a price chart, a **swap** panel, and — on LP-capable venues — a **liquidity** panel where a concentrated-liquidity position's range is drawn and adjusted directly on the chart, then opened as an [LP Executor](/executors/lp-executor).
+
+## Learn more
+
+- [LP management](/other-features/lp) — positions, fees, and closing
+- [Gateway](/other-features/gateway) — the DEX middleware underneath, and its [Settings tab](/webui/settings#gateway)

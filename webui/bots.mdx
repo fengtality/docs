@@ -1,0 +1,50 @@
+---
+title: "Bots"
+description: "Deploy, monitor, edit, backtest, and archive long-running Hummingbot bots"
+---
+
+The **Bots** page manages long-running, containerized Hummingbot bots — always-on strategies with no LLM in the loop. Five tabs cover a bot's whole life: **Active**, **Runs**, **Editor**, **Backtest**, and **Archived**.
+
+## Active
+
+Live bots, with a stat strip for total PNL, volume, active bot count, and running controllers. **Deploy Bot** launches a new bot from a controller config.
+
+<Frame>
+  <img src="/images/webui/bots-active.jpg" alt="The Active tab: stat strip and Deploy Bot" />
+</Frame>
+
+## Runs
+
+Every bot run, past and present: status (**Deployed** or **Archived**), PNL, volume, start time, and duration. This is the audit trail — click a run to inspect its performance.
+
+<Frame>
+  <img src="/images/webui/bots-runs.jpg" alt="The Runs tab: bot run history with PNL and duration" />
+</Frame>
+
+## Editor
+
+A code editor for the strategy files on the server: **Controllers** (`.py`, grouped into directional trading, market making, and generic) and their **Configs** (`.yml`). Edit in the browser, save to the server, and the next deploy uses your version. New files and uploads happen from the explorer header.
+
+<Frame>
+  <img src="/images/webui/bots-editor.jpg" alt="The Editor tab: controller and config file explorer" />
+</Frame>
+
+## Backtest
+
+Replay a controller config against historical candles before it touches capital: pick the config, a time range (`1D/1W/1M/3M` presets), candle resolution, and a trade cost, then **Run Backtest**. Runs land in the **Tasks** list with their results.
+
+<Frame>
+  <img src="/images/webui/bots-backtest.jpg" alt="The Backtest tab: config, time range, resolution, and trade cost" />
+</Frame>
+
+## Archived
+
+Stopped bots whose databases were archived — each card shows its trades and orders, and opens into the full performance breakdown.
+
+<Frame>
+  <img src="/images/webui/bots-archived.jpg" alt="The Archived tab: archived bot run cards" />
+</Frame>
+
+## Learn more
+
+- [Bots Overview](/bots/overview) · [Controllers](/bots/controllers) · [Scripts](/bots/scripts) · [Backtesting](/bots/backtesting)

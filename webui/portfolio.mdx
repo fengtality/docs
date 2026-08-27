@@ -1,0 +1,25 @@
+---
+title: "Portfolio"
+description: "Balances, positions, and P&L across every connected exchange and chain"
+---
+
+The **Portfolio** page is the one-glance answer to "what do I hold and how is it doing?" — aggregated across every account, exchange, and chain connected to the selected server.
+
+<Frame>
+  <img src="/images/webui/portfolio.jpg" alt="The Portfolio page: stat strip, evolution chart, top holdings, and token table" />
+</Frame>
+
+## Reading the page
+
+- **Stat strip** — total portfolio value with its change over the selected window, plus live counts for **Bots**, **Executors** (with week volume), and **Agents**. Each card is a shortcut into its page.
+- **Time range** — the `1D / 1W / 1M` toggle (top right) drives the change figures and the chart. The **Keys** and **Servers** buttons jump straight to the matching [Settings](/webui/settings) tabs.
+- **Portfolio Evolution** — your total value over time; the toggle switches between a single line and a stacked per-source view.
+- **Top Holdings** — allocation bars for your largest tokens.
+- **Token table** — every balance, grouped by network or connector (`solana-mainnet-beta`, `ethereum-mainnet`, …) with amount, price, value, and allocation. Groups collapse.
+
+Balances come from the Hummingbot API server selected in the top bar — switch servers there to see a different account set. If a token or network is missing, check that its credentials or wallet are configured under [Settings → Keys and Wallets](/webui/settings#keys-and-wallets).
+
+## Learn more
+
+- [Seeing Your Portfolio](/getting-started/portfolio) — first-run walkthrough
+- [Portfolio in Telegram](/other-features/portfolio) — the same data as Telegram commands
