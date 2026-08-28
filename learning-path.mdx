@@ -123,7 +123,7 @@ What Condor actually does, and where each is documented. Most people arrive want
   If every client really is on that same VPS, you do not need a tailnet — edit that line in `hummingbot-api/docker-compose.yml` to `"127.0.0.1:8000:8000"` and `make deploy`. Otherwise, use Tailscale — and close port **8000** in your cloud provider's firewall or security group, which is enforced off-host and so cannot be bypassed the way `ufw` can.
 </Warning>
 
-See [Installing](/getting-started/installing#secure-remote-access-with-tailscale) for the full setup, or the [Tailscale security walkthrough](https://hummingbot.org/blog/posts/securing-condor-and-hummingbot-api-with-tailscale/) for a deeper guide.
+See [Installing](/getting-started/installing#secure-remote-access-with-tailscale) for the full setup, or the [Tailscale security walkthrough](https://hummingbot.org/blog/securing-condor-and-hummingbot-api-with-tailscale/) for a deeper guide.
 
 ## Something not working?
 
