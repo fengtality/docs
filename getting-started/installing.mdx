@@ -358,6 +358,60 @@ make tailscale-status    # when Tailscale is enabled
 make emqx-audit          # broker listeners, auth, ACL and any rule-engine rules
 ```
 
+## Keeping Condor updated
+
+### `/update` in Telegram (admin only)
+
+`/update` checks **both** repos at once — Condor and the `hummingbot-api` sitting
+next to it — and reports each one's branch, current commit, how many commits it
+is behind, and the log of what changed. From there:
+
+| Button | What it does |
+|--------|--------------|
+| **Update Condor** | `git pull`, then `uv sync` for new Python dependencies, then rebuilds the dashboard **only if the frontend actually changed**, then restarts |
+| **Update Hummingbot API** | `git pull` in `../hummingbot-api`, then `docker compose build` and `up -d` |
+| **Update All** | Hummingbot API first, then Condor — that order matters, because Condor reconnects to the API after its own restart |
+| **Force Restart** | Restarts without pulling anything |
+
+The restart is graceful, not a kill: Condor finishes its shutdown so running
+agents record their final state and MCP/ACP subprocesses are reaped, and only
+then re-execs. Nothing is orphaned.
+
+If the pull succeeds but `uv sync` fails, it tells you so and offers **Restart
+Anyway** — take that only if you understand the consequence, because the code is
+new and the dependencies are not. The safe move is to fix it on the box and then
+restart.
+
+### Update notifications
+
+Condor checks for updates in the background every hour and messages the admin
+when either repo is behind. Tune or disable it with `UPDATE_CHECK_INTERVAL` in
+`.env` — seconds, default `3600`, and `0` turns the checks off entirely. The
+first check runs 30 seconds after startup.
+
+<Warning>
+  **Local mode has neither.** `/update` is a Telegram command, and the update
+  notification is a Telegram message — an install running without a bot has no
+  way to receive either. Update a Local install by hand:
+
+  ```bash
+  cd condor
+  git pull
+  make install     # uv sync + frontend deps
+  make restart
+  ```
+
+  Adding Telegram to a Local install (see [Add Telegram to a Local
+  install](#add-telegram-to-a-local-install)) gets you both.
+</Warning>
+
+<Note>
+  Both paths are **git-based**, so they only work on a git checkout — which is
+  what the Quick Start and manual installs both produce. An install unpacked
+  some other way reports an error instead of a version, and updates by whatever
+  means it was installed.
+</Note>
+
 ## Privacy: telemetry and sharing
 
 Two separate things, with separate switches. Neither sends anything about your trading, your keys, or your balances.

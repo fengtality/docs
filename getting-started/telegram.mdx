@@ -149,6 +149,31 @@ Manage all system settings:
 | **Wallets** | Create or import blockchain wallets |
 | **Networks** | Configure blockchain network RPC endpoints |
 
+## /update - Updates and Restart
+
+Admin only. Checks **Condor** and the **Hummingbot API** next to it in one pass,
+showing each repo's branch, current commit, how far behind it is, and the log of
+what changed.
+
+Buttons let you update Condor (`git pull` → dependencies → rebuild the dashboard
+only if the frontend changed → restart), update Hummingbot API (`git pull` →
+`docker compose build` → `up -d`), update **both** (API first, so Condor
+reconnects to it after restarting), or force a restart with no pull.
+
+The restart is graceful — running agents record their final state and
+subprocesses are reaped before the process re-execs.
+
+Condor also checks hourly on its own and messages you when either repo falls
+behind; `UPDATE_CHECK_INTERVAL` in `.env` tunes that (seconds, default `3600`,
+`0` disables it).
+
+<Note>
+  Both are Telegram-only. A **Local mode** install has no bot to run the command
+  or receive the notification, so it updates by hand: `git pull && make install
+  && make restart`. See [Keeping Condor
+  updated](/getting-started/installing#keeping-condor-updated).
+</Note>
+
 ## Notifications
 
 Condor sends notifications for:
