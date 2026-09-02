@@ -51,15 +51,15 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
 | Situation | Tailscale needed? |
 |-----------|--------------------|
 | Testing locally—Condor and Hummingbot API on one machine | No |
-| Same VPS, both services together | **Yes** — unless you bind the API to `127.0.0.1` (see below) |
+| Same VPS, both services together | **No** — the API binds `127.0.0.1` by default; still worth it if anything ever needs off-box access |
 | Different machines (for example, laptop + VPS) | **Yes** |
 | A team or multiple devices need access | **Yes** |
 | You want the **web dashboard** from another device | **Yes** — it is the supported way; see [The dashboard under Tailscale](#the-dashboard-under-tailscale) |
 
 <Warning>
-  **"Same VPS" is not the same as "local".** Hummingbot API's `docker-compose.yml` publishes port **8000 on every interface** (`ports: "8000:8000"`) — including the VPS's public IP. Docker's published ports are also *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves the port reachable unless you write `DOCKER-USER` rules yourself.
+  **Installed before the API's port lockdown? Check it.** Hummingbot API used to publish port **8000 on every interface**, including a VPS's public IP. It now binds `127.0.0.1` by default (`${API_BIND:-127.0.0.1}` in `docker-compose.yml`), and so do Postgres and the EMQX broker — but an existing stack keeps its old bindings until the containers are recreated. Run `make deploy` in `hummingbot-api`, then `make doctor`, which flags any of those ports still sitting on a public interface.
 
-  If every client really is on that same VPS, you do not need a tailnet — edit that line in `hummingbot-api/docker-compose.yml` to `"127.0.0.1:8000:8000"` and `make deploy`. Otherwise, use Tailscale — and close port **8000** in your cloud provider's firewall or security group, which is enforced off-host and so cannot be bypassed the way `ufw` can.
+  If you *do* need the API reachable off-box, widen it deliberately with `API_BIND` in `hummingbot-api/.env` — prefer a specific interface over `0.0.0.0`, and with the Tailscale overlay `API_BIND=<your-tailscale-ip>` keeps MagicDNS working without publishing anything to the internet. Note that Docker's published ports are *not* blocked by `ufw`: its rules are evaluated before ufw's, so `ufw deny 8000` leaves a widened port reachable unless you write `DOCKER-USER` rules yourself. Close the port in your cloud provider's firewall instead — that is enforced off-host.
 </Warning>
 
 If you're just testing locally, skip ahead—the Quick Install below works without Tailscale. See [Learning Path](/learning-path#do-i-need-tailscale) for more use-case-based routing.
@@ -351,9 +351,11 @@ make doctor    # re-check dependencies, config, and API access
 **Hummingbot API (Docker):** From the `hummingbot-api` directory (sibling of `condor` when installed by the deploy script):
 
 ```bash
+make doctor              # containers, port exposure, credentials, Tailscale, API auth
 docker compose ps
 docker compose logs -f   # or your compose plugin equivalent
 make tailscale-status    # when Tailscale is enabled
+make emqx-audit          # broker listeners, auth, ACL and any rule-engine rules
 ```
 
 ## Privacy: telemetry and sharing
@@ -418,7 +420,7 @@ CONDOR_SHARING=off          # in .env — destroys queued transcripts too
 
 ## Common failure modes
 
-Before working through the cases below, run **`make doctor`** in the Condor directory — it covers most of what follows and names the fix directly. On the API host, `docker compose ps` and `make tailscale-status` (from the `hummingbot-api` directory) cover the execution side.
+Before working through the cases below, run **`make doctor`** in the Condor directory — it covers most of what follows and names the fix directly. On the API host, `hummingbot-api` ships its own **`make doctor`**: it checks the containers, which ports are on a public interface, the broker's credentials, Tailscale's tailnet *and* serve status, and whether the API answers an authenticated request.
 
 <AccordionGroup>
   <Accordion title="Local mode: dashboard is not reachable from another device">
