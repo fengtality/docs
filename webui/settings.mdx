@@ -92,10 +92,42 @@ Users and roles (admin, user, pending, blocked), and the **code execution** gran
   <img src="/images/webui/settings-admin.jpg" alt="Settings → Admin: users, roles, and the code execution grant" />
 </Frame>
 
+## Updates
+
+Admin only. Shows what **Condor** and the **Hummingbot API** are each running
+and what is available — for the API that is both its git checkout and its
+container image, since the repo governs the compose file and the bind-mounted
+`bots/` while the image governs the API's own code. **Refresh** re-checks past
+the 60-second cache.
+
+Starting a run reports its **blockers** first, with a resolution where one
+exists: a checkout with local changes offers **discard** or **stash** without
+leaving the panel, while a diverged checkout or an unreachable registry can only
+be cancelled and fixed by hand. **Warnings** are shown but never refuse —
+restarting the API stops its executors, and Condor keeps running the code it
+booted with until you relaunch.
+
+The run is journalled at every step, so the panel survives the restart it
+causes: it keeps polling, picks the result back up, and the next boot says
+whether the update worked. **Done** clears a finished run.
+
+This is the same engine behind Telegram's `/update`, and there is one run at a
+time — start it in either place and watch it in the other. On a **Local mode**
+install, where there is no bot, this panel is the update surface.
+
+<Warning>
+  An update stops one step short of running the new code: it lands the code,
+  syncs dependencies, rebuilds the dashboard, and then asks you to relaunch
+  (`make restart`). Condor is rarely the top of its own process tree, so
+  re-execing itself would race the parent into a second Condor on the same port
+  and token. Until you relaunch, every seat sees a **relaunch to apply** banner
+  — the browser is running the new bundle against the old API.
+</Warning>
+
 ## Using Telegram
 
 - **`/servers`** — the same server list: **➕ Add Server**, then set **📝 Name**, **🌐 Host**, **🔌 Port**, **👤 User**, **🔑 Pass** field by field; pick the default; live status per server.
 - **`/keys`** — **read-only**: it lists connected exchanges, and connecting or removing keys happens here in the dashboard — the command hands you a **🌐 Open Web Dashboard** login link, valid for 5 minutes.
 - **`/gateway`** — Gateway status and DEX connector configuration.
 - **`/admin`** — the user list and role approvals (Admin tab equivalent).
-- **`/update`** — check for updates and restart Condor. Reports both Condor and Hummingbot API, and can update either or both. There is no dashboard equivalent: this one is Telegram-only, so a Local install updates by hand — see [Keeping Condor updated](/getting-started/installing#keeping-condor-updated).
+- **`/update`** — the same update flow as **Settings → Updates**, over the same engine: a run started in either place is visible in the other. See [Keeping Condor updated](/getting-started/installing#keeping-condor-updated).

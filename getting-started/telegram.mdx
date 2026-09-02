@@ -151,27 +151,26 @@ Manage all system settings:
 
 ## /update - Updates and Restart
 
-Admin only. Checks **Condor** and the **Hummingbot API** next to it in one pass,
-showing each repo's branch, current commit, how far behind it is, and the log of
-what changed.
+Admin only. Checks **Condor** and the **Hummingbot API** beside it, showing what
+each is running and what is available — for the API, both its git checkout and
+its container image, since they answer different questions.
 
-Buttons let you update Condor (`git pull` → dependencies → rebuild the dashboard
-only if the frontend changed → restart), update Hummingbot API (`git pull` →
-`docker compose build` → `up -d`), update **both** (API first, so Condor
-reconnects to it after restarting), or force a restart with no pull.
+Before anything runs, a preflight reports **blockers** (a diverged checkout,
+local changes that would be overwritten, an unreachable registry) with a way out
+where one exists — a dirty checkout offers **discard** or **stash** — and
+**warnings** that never refuse, such as restarting the API reaping its
+executors.
 
-The restart is graceful — running agents record their final state and
-subprocesses are reaped before the process re-execs.
-
-Condor also checks hourly on its own and messages you when either repo falls
-behind; `UPDATE_CHECK_INTERVAL` in `.env` tunes that (seconds, default `3600`,
-`0` disables it).
+An update lands the code, syncs dependencies, rebuilds the dashboard, and then
+**asks you to relaunch** rather than restarting itself: Condor is rarely the top
+of its own process tree, so re-execing races the parent into a second Condor on
+the same port and token. Run `make restart` when it asks.
 
 <Note>
-  Both are Telegram-only. A **Local mode** install has no bot to run the command
-  or receive the notification, so it updates by hand: `git pull && make install
-  && make restart`. See [Keeping Condor
-  updated](/getting-started/installing#keeping-condor-updated).
+  The dashboard has the same panel at **Settings → Updates**, over the same
+  engine — an update started here can be watched to completion there, and a
+  **Local mode** install uses that panel instead of this command. See [Keeping
+  Condor updated](/getting-started/installing#keeping-condor-updated).
 </Note>
 
 ## Notifications
