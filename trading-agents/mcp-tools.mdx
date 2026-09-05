@@ -12,7 +12,7 @@ Condor runs two MCP servers:
 | Server | Purpose |
 |--------|---------|
 | **hummingbot-mcp** | Trading operations via Hummingbot API (13 tools) |
-| **condor-mcp** | Local operations: notifications, routines, journals (8 tools) |
+| **condor-mcp** | Local operations: skills, domain agents, memory, notifications, routines, journals |
 
 ```mermaid
 flowchart LR
@@ -93,32 +93,60 @@ DEX liquidity positions are created through `manage_executors()` (the `lp_execut
 
 ## Condor MCP Tools
 
-### Notifications
+### Skills and domain agents
+
+The routing model, and the part most worth knowing: before reaching for a raw
+tool, an assistant looks for a **skill** (a playbook, sometimes bound to a
+runnable routine) and then for a **domain agent** to hand the work to.
+
+| Tool | Description |
+|------|-------------|
+| `manage_skill()` | Read, search, list, create, edit and delete skills. Skills belong to the assistant, not to a user — they are the shared playbooks everyone using it gets |
+| `consult()` | Ask a domain agent a question and block for its answer. The agent runs in the main process, where the runtime and server credentials live, and may pause on a user confirmation before acting |
+| `delegate()` | The unattended sibling of `consult()`. Hands a goal-oriented task to a detached agent that runs until done and then notifies the user; returns a `task_id` to poll or stop |
+
+<Note>
+  Authoring or debugging a **routine** goes through `delegate()` to a background
+  Condor worker rather than being written by hand — the worker reads the routine
+  cookbook, writes the routine, tests it, and reports back. Running an existing
+  routine is not authoring: that is just `manage_routines()`.
+</Note>
+
+### Memory and code
+
+| Tool | Description |
+|------|-------------|
+| `manage_memory()` | What the assistant remembers about *you*. Per-user, keyed to the calling user, with the writing agent recorded for audit |
+| `run_code()` | Ad-hoc Python in the bot process, with the same primitives a routine gets — `context`, `client`, pandas, report builders, every `condor.*` module. The scratchpad below a routine: a snippet that failed is stored whole, read back, corrected and re-run |
+
+<Warning>
+  `run_code()` executes arbitrary Python inside the bot process. Granting it to
+  a non-admin is the `code_run` permission in **Settings → Admin**, which spells
+  out what it reaches before you grant it.
+</Warning>
+
+### Notifications and routines
 
 | Tool | Description |
 |------|-------------|
 | `send_notification()` | Send Telegram messages (Markdown/HTML) |
+| `manage_routines()` | Discover, run, create and edit routines |
 
-### Routine Management
-
-| Tool | Description |
-|------|-------------|
-| `manage_routines()` | Discover, run, create, edit routines |
-
-### Trading Agent Operations
+### Trading agent operations
 
 | Tool | Description |
 |------|-------------|
-| `manage_trading_agent()` | Strategy CRUD, agent lifecycle (start/stop/pause) |
-| `trading_agent_journal_read()` | Read journal: recent entries, learnings, state |
-| `trading_agent_journal_write()` | Write to journal: actions, learnings, state |
+| `manage_trading_agent()` | Strategy CRUD and agent lifecycle (start/stop/pause) |
+| `trading_agent_journal_read()` | Read the journal: recent entries, learnings, state |
+| `trading_agent_journal_write()` | Write to the journal: actions, learnings, state |
 
-### Utilities
+### Environment
 
 | Tool | Description |
 |------|-------------|
 | `manage_servers()` | List accessible API servers |
-| `get_user_context()` | Current user info, active server, permissions |
+| `get_user_context()` | Current user, active server, permissions |
+| `get_available_models()` | Which models and providers are actually usable right now — installed CLI bridges, cloud keys present, reachable local servers and what they have loaded. Read-only, and never returns a key value, only whether its variable is set |
 | `manage_notes()` | Key-value persistent storage |
 
 ## Progressive Disclosure
