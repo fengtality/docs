@@ -171,7 +171,7 @@ Needs a bot token from [@BotFather](https://t.me/botfather) and your numeric Tel
 
 Condor and Hummingbot API on a VPS, running whether or not your laptop is on. Everything from the path above, plus:
 
-- **[Tailscale](#secure-remote-access-with-tailscale) is not optional here.** Docker publishes port 8000 on every interface of the VPS, and its published ports are not blocked by `ufw`. Tailscale gives your devices a private path to the API; closing port **8000** in the cloud provider's firewall shuts the public one. See [Do I Need Tailscale?](#do-i-need-tailscale) for why.
+- **[Tailscale](#secure-remote-access-with-tailscale) is not optional here.** Hummingbot API binds `127.0.0.1` by default, so on a VPS your laptop cannot reach it at all — and the alternative, widening `API_BIND` to a public interface, is the thing you do not want: Docker's published ports are not blocked by `ufw`, whose rules are evaluated after Docker's own. Tailscale gives your devices a private path without opening anything. See [Do I Need Tailscale?](#do-i-need-tailscale) for why.
 - The dashboard binds `127.0.0.1` and is published to your tailnet through `tailscale serve` — see [The dashboard under Tailscale](#the-dashboard-under-tailscale).
 - Either mode works. Telegram is the usual choice, since it reaches you off the tailnet; Local mode on a server is only reachable through the tailnet.
 - Run `make doctor` on the VPS after setup. It is the fastest way to catch a public bind before it matters.
