@@ -56,6 +56,32 @@ Condor uses a [two-server architecture](/motivation): the **Condor Server** (age
 | A team or multiple devices need access | **Yes** |
 | You want the **web dashboard** from another device | **Yes** — it is the supported way; see [The dashboard under Tailscale](#the-dashboard-under-tailscale) |
 
+### What binds where by default
+
+Every port in the Hummingbot API stack is on loopback out of the box. The one
+port that is not is Condor's own dashboard, and only in Telegram mode — which
+is the mode that authenticates.
+
+| Service | Port | Default bind | Knob |
+|---------|------|--------------|------|
+| Hummingbot API | `8000` | `127.0.0.1` | `API_BIND` in `hummingbot-api/.env` |
+| PostgreSQL | `5432` | `127.0.0.1` | `DB_BIND` in `hummingbot-api/.env` |
+| EMQX broker (MQTT) | `1883` | `127.0.0.1` | not configurable |
+| EMQX dashboard | `18083` | `127.0.0.1` | not configurable |
+| Condor web dashboard | `8088` | `0.0.0.0` in Telegram mode, `127.0.0.1` in Local mode or with Tailscale | `WEB_HOST` in `condor/.env` |
+
+EMQX's other listeners — `8883`, `8083`, `8084`, `8081`, `61613` — are not
+published at all, since nothing in this stack speaks them.
+
+The Condor dashboard is the one thing that binds all interfaces by default, and
+only in **Telegram mode**, which authenticates. Local mode has no login, so it
+binds loopback and stays there unless you set `WEB_HOST` yourself; turning
+Tailscale on binds loopback too, because `tailscale serve` is then what exposes
+it — to your tailnet only.
+
+None of this is a substitute for the credentials. A loopback bind protects the
+port; it does nothing about anyone already on that machine.
+
 <Warning>
   **Installed before the API's port lockdown? Check it.** Hummingbot API used to publish port **8000 on every interface**, including a VPS's public IP. It now binds `127.0.0.1` by default (`${API_BIND:-127.0.0.1}` in `docker-compose.yml`), and so do Postgres and the EMQX broker — but an existing stack keeps its old bindings until the containers are recreated. Run `make deploy` in `hummingbot-api`, then `make doctor`, which flags any of those ports still sitting on a public interface.
 
