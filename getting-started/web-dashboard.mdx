@@ -7,6 +7,23 @@ The Web Interface provides a browser-based dashboard for managing trading bots, 
 
 ## Accessing the Dashboard
 
+<Tabs>
+  <Tab title="Local mode">
+    There is no login step. Open the dashboard directly on the machine running Condor:
+
+    ```
+    http://localhost:8088
+    ```
+
+    You are already signed in as `ADMIN_USER_ID`. Local mode binds `127.0.0.1`, so the dashboard is reachable from that machine only — see [Local](/getting-started/installing#local) before changing that.
+  </Tab>
+  <Tab title="Telegram mode">
+    Run `/web` in Telegram to get a time-limited login link — see below.
+  </Tab>
+</Tabs>
+
+### Telegram: the `/web` link
+
 Run `/web` in Telegram to get a login link:
 
 ```
@@ -163,6 +180,6 @@ Login tokens expire after 5 minutes but your session remains active once authent
 
 ## Next Step
 
-<Card title="Seeing Your Portfolio" icon="arrow-right" href="/other-features/portfolio">
+<Card title="Seeing Your Portfolio" icon="arrow-right" href="/webui/portfolio">
   View your balances and positions across all exchanges
 </Card>

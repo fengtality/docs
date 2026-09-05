@@ -1,0 +1,25 @@
+---
+title: "Routines"
+description: "Deterministic Python on schedules and triggers — yours and your agents'"
+---
+
+The **Routines** page lists every routine on the install: deterministic Python scripts that fetch data, compute indicators, emit alerts, and build reports — no LLM cost per run. Both the ones you wrote and the ones your agents authored for themselves.
+
+<Frame>
+  <img src="/images/webui/routines.jpg" alt="The Routines page: all routines with type, category, and run history" />
+</Frame>
+
+## Navigating the list
+
+- **Filter chips** — **All**, **Routines** (yours, from the `routines/` folder), **Agents** (routines belonging to agents), then one chip per agent to see just its toolkit. An agent-owned routine carries its agent's badge in the name column.
+- **Columns** — **Type** (`One-shot` runs once or on a schedule; `Continuous` runs until stopped), **Category**, **Reports** it has produced, **Last executed**, and **Last modified**. Sort by the column headers.
+
+Clicking a routine opens it: its typed configuration (a pydantic model, rendered as a form), a **Run** button, scheduling (interval or daily), and the reports it has generated. Multiple instances of one routine can run with different configs.
+
+## Using Telegram
+
+**`/routines`** lists the same library: pick a routine, fill its typed config field by field, run it once or schedule it (interval or daily), and stop continuous ones — **⏹ Stop All** included. **🔄 Reload** re-discovers scripts after you drop a new file into `routines/`. Reports a routine produces are delivered straight into the chat.
+
+## Learn more
+
+- [Routines Overview](/routines/overview) · [Creating Routines](/routines/creating-routines) · [Reports](/routines/reports) · [Global Routines](/routines/global-routines)

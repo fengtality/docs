@@ -1,0 +1,99 @@
+---
+title: "Configuration Reference"
+description: "Every environment variable Condor reads, what it defaults to, and when you would change it"
+---
+
+Condor is configured in two places. **`.env`** holds the settings below, and
+**`config.yml`** holds servers, users, permissions and chat defaults — written
+by `make setup` and by `/servers`, not by hand.
+
+Almost nothing here needs setting. The install wizard writes what a working
+install requires, and the rest exist for operators with a specific reason.
+
+<Note>
+  After editing `.env`, restart Condor for it to take effect — `make restart`.
+  `make doctor` re-reads it and reports what the running install would see.
+</Note>
+
+## Identity and mode
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `CONDOR_MODE` | `telegram` | `telegram` or `local`. Never inferred from whether a token is present — an install whose token went missing fails at boot rather than quietly becoming an unauthenticated dashboard. See [Choosing Telegram or Local mode](/getting-started/installing#choose-your-install) |
+| `TELEGRAM_TOKEN` | — | Bot token from [@BotFather](https://t.me/botfather). Required unless `CONDOR_MODE=local` |
+| `ADMIN_USER_ID` | — | Your numeric Telegram user id, and the id Local mode logs in as. Required. Everything — servers, preferences, memory, chat defaults — is keyed to it |
+
+## Web dashboard
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `WEB_PORT` | `8088` | Port the dashboard listens on |
+| `WEB_URL` | `http://localhost:<WEB_PORT>` | The full URL `/web` hands out. Set it to the address a browser can actually reach — a VPS's public address, or a tailnet name |
+| `WEB_HOST` | `0.0.0.0` in Telegram mode; `127.0.0.1` in Local mode or with Tailscale | Which interface the dashboard binds. The explicit opt-out from the loopback default — see [What binds where by default](/getting-started/installing#what-binds-where-by-default) before changing it |
+| `WEB_JWT_SECRET` | generated, stored in `config.yml` | Signs dashboard login tokens. Set it explicitly to keep sessions valid across instances, or to hold the secret outside `config.yml` |
+| `USE_TAILSCALE` | unset | `true` binds the dashboard to loopback and publishes it through `tailscale serve` — tailnet only, never a public interface |
+
+## Privacy
+
+Both are the operator-level kill switches. They override anything chosen in the
+dashboard, and neither needs to be set on a fresh install — see
+[Privacy: telemetry and sharing](/getting-started/installing#privacy-telemetry-and-sharing).
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `CONDOR_TELEMETRY` | unset | `off` disables telemetry entirely and suppresses the consent prompt. `ping` or `usage` sets the level and overrides the stored answer |
+| `CONDOR_SHARING` | unset | `off` stops any conversation leaving, and destroys anything already queued. A queued *unshare* is still delivered — a revocation is a deletion the install already promised |
+
+## Updates
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `UPDATE_CHECK_INTERVAL` | `3600` | Seconds between background update checks. `0` disables them. The first check runs 30 seconds after startup — see [Keeping Condor updated](/getting-started/installing#keeping-condor-updated) |
+
+## AI models
+
+Provider keys are covered in [Integrating your LLM](/llm-integration). One
+variable belongs here:
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `CONDOR_DEFAULT_AGENT` | set by `make pick-model` | Which model Condor thinks with. Normally written by the wizard rather than edited — `make pick-model` also verifies the model is actually reachable |
+
+## Retention and limits
+
+Every one of these has a working default. They exist for installs where disk,
+history depth or context size needs a different answer.
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `CONDOR_BACKTEST_RETENTION_DAYS` | `30` | How long backtest payloads are kept on disk |
+| `CONDOR_RUN_HISTORY_RETENTION_DAYS` | `60` | How long run-history payloads are kept |
+| `CONDOR_MAX_REPORTS` | `100` | Reports retained before the oldest are dropped |
+| `CONDOR_MAX_DELEGATION_RECORDS` | `500` | Background delegation records retained |
+| `CONDOR_MAX_CONSULT_RECORDS` | `300` | Domain-agent consult records retained |
+| `CONDOR_TRANSCRIPT_MAX_BYTES` | `2097152` (2 MiB) | Transcript size that triggers a trim |
+| `CONDOR_TRANSCRIPT_KEEP_BYTES` | `1048576` (1 MiB) | How much is kept when one is trimmed |
+| `CONDOR_REPLAY_MAX_CHARS` | `6000` | Characters of replay context handed to a model |
+
+<Warning>
+  A retention value is a floor on what you can look back at later. Lowering one
+  deletes history at the next sweep, and there is no undo — an over-small value
+  is history that is gone for good.
+</Warning>
+
+## Advanced
+
+Rarely set, and listed so a value you find in someone's `.env` is not a mystery.
+
+| Variable | Default | What it does |
+|----------|---------|--------------|
+| `CONDOR_PERSISTENCE_FILE` | `condor_bot_data.pickle` | Where preferences and conversation state are persisted |
+| `CONDOR_RUNTIME_MODE` | `local` | Session-runtime transport. `http` is reserved for a future process split and is not implemented |
+| `GATEWAY_URL` | unset | Condor does **not** reach Gateway through this — Gateway is configured in `hummingbot-api`'s own `.env` and driven via `/gateway`. Setting it here only flips a capability flag in telemetry |
+
+## Not in `.env`
+
+Servers, their credentials, users, roles and per-chat defaults live in
+`config.yml`, written by `make setup` and by `/servers`. The Hummingbot API's
+own settings — `API_BIND`, `DB_BIND`, broker credentials, `GATEWAY_PASSPHRASE` —
+live in `hummingbot-api/.env`, not here.

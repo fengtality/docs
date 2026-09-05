@@ -157,7 +157,7 @@ The usual flow is: create one or more controller configs (in the dashboard **Edi
 Deploy a bot from existing controller config files (without the `.yml` extension). You can pass several configs to run multiple controllers in one bot:
 
 ```bash
-curl -u admin:admin -X POST http://localhost:8000/bot-orchestration/deploy-v2-controllers \
+curl -u YOUR_USERNAME:YOUR_PASSWORD -X POST http://localhost:8000/bot-orchestration/deploy-v2-controllers \
   -H "Content-Type: application/json" \
   -d '{
     "instance_name": "hype-mm",
@@ -211,10 +211,10 @@ The Hummingbot API records a snapshot of every running controller every 5 minute
 
 ```bash
 # Latest snapshot per controller
-curl -u admin:admin "http://localhost:8000/bot-orchestration/controller-performance-latest?bot_name=hype-mm"
+curl -u YOUR_USERNAME:YOUR_PASSWORD "http://localhost:8000/bot-orchestration/controller-performance-latest?bot_name=hype-mm"
 
 # Time-series history (interval one of 5m, 15m, 30m, 1h, 4h, 12h, 1d)
-curl -u admin:admin "http://localhost:8000/bot-orchestration/controller-performance-history?bot_name=hype-mm&controller_id=pmm_simple_hype&interval=5m"
+curl -u YOUR_USERNAME:YOUR_PASSWORD "http://localhost:8000/bot-orchestration/controller-performance-history?bot_name=hype-mm&controller_id=pmm_simple_hype&interval=5m"
 ```
 
 In Condor, view this history under **Bots → Runs**, and the combined P&L across a bot's controllers under **Bots → Active**.

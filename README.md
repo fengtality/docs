@@ -1,6 +1,6 @@
-# Hummingbot API Documentation
+# Condor Documentation
 
-Documentation site for [Hummingbot API](https://github.com/hummingbot/hummingbot-api) and [Gateway](https://github.com/hummingbot/gateway), built with [Mintlify](https://mintlify.com).
+Documentation site for [Condor](https://github.com/hummingbot/condor), published at [condor.hummingbot.org](https://condor.hummingbot.org) and built with [Mintlify](https://mintlify.com). Also hosts the [Hummingbot API](https://github.com/hummingbot/hummingbot-api) and [Gateway](https://github.com/hummingbot/gateway) reference sections.
 
 ## Repository Structure
 
@@ -35,26 +35,52 @@ docs/
 └── logo/                        # Site logos
 ```
 
-## Local Development
+## Previewing these docs locally
+
+**There is no preview link on pull requests.** Mintlify only builds those on its Pro and
+Enterprise plans, so the local preview below is how you see your work before it merges —
+and how a reviewer sees it. It needs no Mintlify account.
 
 ### Prerequisites
 
 - Node.js 18+
-- [Mintlify CLI](https://www.npmjs.com/package/mintlify)
+- Nothing else — `npx` fetches the CLI on demand
 
-### Install Mintlify CLI
+### Preview
 
-```bash
-npm i -g mintlify
-```
-
-### Start Local Preview
+From the repository root, the directory containing `docs.json`:
 
 ```bash
-mintlify dev
+npx mint@latest dev
 ```
 
-View at http://localhost:3000
+View at http://localhost:3000. The page reloads as you edit, and `--port 3001` moves it if
+something already holds 3000. The CLI also prints a LAN address, which reaches someone on
+the same network but nobody else.
+
+> The CLI was renamed: it is `mint`, not `mintlify`. Older instructions saying
+> `npm i -g mintlify` still work by installing a deprecated package. `npx mint@latest`
+> always fetches the current version, so there is nothing to install or keep updated.
+
+### Check it before you push
+
+```bash
+npx mint@latest validate       # docs.json, navigation paths, frontmatter
+npx mint@latest broken-links   # every internal link and anchor
+```
+
+Both are quick, and between them they catch the two things that actually break a docs
+build: a page missing from `docs.json`, and a link to a heading that was renamed.
+
+### Reviewing someone else's branch
+
+```bash
+git fetch origin && git checkout <branch>
+npx mint@latest dev
+```
+
+> Search is inactive locally until you run `mint login` — the CLI says so on startup.
+> Everything else renders exactly as it will in production.
 
 ## Updating OpenAPI Specs
 
@@ -104,7 +130,7 @@ If you already have the OpenAPI JSON files:
 
 ### After Updating
 
-1. Run `mintlify dev` to preview changes
+1. Run `npx mint@latest dev` to preview changes
 2. Verify sidebar titles and URL paths look correct
 3. Commit all changes including both `openapi-sources/` and processed files
 
@@ -112,11 +138,11 @@ If you already have the OpenAPI JSON files:
 
 ### Dev server not starting
 ```bash
-mintlify update  # Update CLI to latest version
+npx mint@latest dev   # `npx ... @latest` always fetches the current CLI
 ```
 
 ### 404 on pages
-Ensure you're running `mintlify dev` in the directory containing `docs.json`.
+Ensure you're running `npx mint@latest dev` in the directory containing `docs.json`.
 
 ### Gateway sidebar shows ugly URLs
 Re-run `./scripts/generate-openapi.sh --gateway-only` to regenerate with proper operationIds.
