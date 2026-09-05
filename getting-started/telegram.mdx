@@ -53,6 +53,11 @@ Condor: Running technical analysis routine...
 | `/keys` | Configure exchange API credentials |
 | `/gateway` | Gateway for DEX trading |
 | `/web` | Open the web dashboard |
+| `/memory` | What each assistant remembers about you, grouped |
+| `/delegations` | Background agent tasks and their results |
+| `/stop` | Interrupt the answer in flight, keeping the session |
+| `/cancel` | Back out of any in-progress input flow |
+| `/admin` | User approvals and roles (admin) |
 | `/update` | Check for updates and restart (admin) |
 
 ## /start - Main Menu
@@ -126,28 +131,34 @@ Manage Concentrated Liquidity Market Maker (CLMM) positions.
 - Collect accumulated fees
 - Position range monitoring
 
-## /keys - Credential Management
+## /servers, /keys, /gateway - System Configuration
 
-Manage exchange API credentials securely.
+Configuration is three separate commands rather than one menu:
 
-1. Select **Perpetual** or **Spot**
-2. Choose the exchange to configure
-3. Enter API key and secret
+| Command | What it covers |
+|---------|----------------|
+| `/servers` | Add, edit, or remove Hummingbot API server connections, set the default, and see live status per server |
+| `/keys` | Which exchanges are connected. **Read-only in Telegram** — see below |
+| `/gateway` | Gateway for DEX trading: status, connectors, wallets, networks and RPC endpoints, pools and tokens |
+
+### Exchange credentials are dashboard-only
+
+`/keys` lists the exchanges currently connected and nothing more. Connecting a
+new one, or removing an existing one, happens in the web dashboard under
+**Settings → Keys** — the command hands you a login link, valid for 5 minutes,
+to get there. An API secret is never typed into a Telegram chat, where it would
+sit in message history on Telegram's servers.
 
 <Warning>
-For security, only enable **read + trade** permissions on your API keys. Do not enable withdraw or transfer permissions.
+  When creating the key at your exchange, enable **read + trade** only. Do not
+  enable withdrawal or transfer permissions.
 </Warning>
 
-## /config - System Configuration
-
-Manage all system settings:
-
-| Section | Description |
-|---------|-------------|
-| **API Servers** | Add, edit, or remove Hummingbot API server connections |
-| **Gateway** | Deploy and configure Gateway for DEX trading |
-| **Wallets** | Create or import blockchain wallets |
-| **Networks** | Configure blockchain network RPC endpoints |
+<Note>
+  Older material refers to a single `/config` command. It no longer exists —
+  use the three above, or the dashboard's [Settings page](/webui/settings),
+  which covers the same ground in one place.
+</Note>
 
 ## /update - Updates and Restart
 
@@ -173,6 +184,13 @@ the same port and token. Run `make restart` when it asks.
   Condor updated](/getting-started/installing#keeping-condor-updated).
 </Note>
 
+## /cancel - Back Out of a Flow
+
+Several flows ask for the next message as their answer — a server name, a
+price, an amount. `/cancel` abandons that flow and returns you to normal
+command handling. It is what the prompts themselves tell you to send, and it
+works from inside any of them.
+
 ## Notifications
 
 Condor sends notifications for:
@@ -181,8 +199,6 @@ Condor sends notifications for:
 - Risk limit violations
 - Bot status changes
 - Price alerts from routines
-
-Configure notification preferences in `/config`.
 
 ## Voice Commands
 
