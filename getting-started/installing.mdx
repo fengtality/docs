@@ -322,7 +322,7 @@ Run `make doctor` first—it reports dependencies, config, the AI model, the das
 1. Open `http://localhost:8088` in a browser on the machine running Condor
 2. You are logged in already—no token, no login screen
 
-> **Note:** After Condor starts successfully, **admins** should receive a Telegram message: **"Condor is online and ready."** If that does not appear within a minute or two, check the troubleshooting section below (for example attach to the `condor` tmux session after Quick Start).
+> **Note:** After Condor starts successfully, **admins** should receive a Telegram message: **"Condor is online and ready."** If that does not appear within a minute or two, see [Troubleshooting](/getting-started/troubleshooting) (for example attach to the `condor` tmux session after Quick Start).
 
 ```
 Welcome to Condor! 🦅
@@ -524,103 +524,9 @@ CONDOR_SHARING=off          # in .env — destroys queued transcripts too
   `CONDOR_SHARING=off` reaches transcripts already queued and destroys them — but a queued **unshare** is still delivered, because a revocation is a deletion the install already promised.
 </Note>
 
-## Common failure modes
+## Troubleshooting
 
-Before working through the cases below, run **`make doctor`** in the Condor directory — it covers most of what follows and names the fix directly. On the API host, `hummingbot-api` ships its own **`make doctor`**: it checks the containers, which ports are on a public interface, the broker's credentials, Tailscale's tailnet *and* serve status, and whether the API answers an authenticated request.
-
-<AccordionGroup>
-  <Accordion title="Local mode: dashboard is not reachable from another device">
-    That is intended. Local mode has **no login**, so it binds `127.0.0.1` and is reachable only from the machine running Condor.
-
-    If you need it from elsewhere, put something that authenticates in front of it rather than setting `WEB_HOST=0.0.0.0` on its own:
-
-    - **Tailscale** — re-run `make setup` and enable it. Condor then binds loopback and lets `tailscale serve` expose the dashboard to your tailnet only.
-    - **SSH tunnel** — `ssh -L 8088:localhost:8088 you@host`, then open `http://localhost:8088` locally.
-    - **Switch to Telegram mode** — re-run `make setup`; `/web` then issues time-limited login links that work from any device.
-  </Accordion>
-
-  <Accordion title="Exits at boot with `TELEGRAM_TOKEN is not set`">
-    Telegram mode requires a token, and Condor refuses to start without one rather than quietly falling back to the unauthenticated local dashboard.
-
-    Run `make setup` and either re-enter the bot token, or choose **Local** mode if you do not want a bot at all. `make doctor` reports the same thing before you try to start.
-  </Accordion>
-
-  <Accordion title="Bot not responding in Telegram">
-    1. **Confirm the process is running**
-       - *Quick Start / deploy:* `tmux attach -t condor` and look for tracebacks or exit messages.
-       - *Manual install:* Check the terminal where `make run` is running.
-    2. **Check `condor/.env`** on the machine that runs Condor: `TELEGRAM_TOKEN` must match [@BotFather](https://t.me/botfather), and `ADMIN_USER_ID` must be your numeric Telegram user id (from [@userinfobot](https://t.me/userinfobot)).
-    3. **Access still pending:** New users must be approved. An admin should use **`/admin`** (or the admin flow from **`/start`**) to approve you.
-    4. **Deploy installer hint:** If admins never see *"Condor is online and ready."*, attach to tmux (above) and fix errors shown there; the installer also reminds you to verify `.env` when that message is missing.
-  </Accordion>
-
-  <Accordion title="Active server is offline / Cannot reach server / API errors in commands">
-    Condor talks to the **Hummingbot API** over HTTP using the **host**, **port**, **username**, and **password** stored for each server (see **`/servers`** in Telegram or `condor/config.yml`). Status checks call `http://{host}:{port}` and list accounts; failures surface as **Offline** (*Cannot reach server*, *Connection timeout*) or **Auth Error** (*Invalid credentials*).
-
-    1. **Is the API stack up?** On the machine where Docker runs the API: `docker compose ps` (from the `hummingbot-api` repo directory). You want the API container healthy and port **8000** (default) listening.
-    2. **Smoke test from the Condor host:** `curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/docs` (same machine) or `curl -u USER:PASS http://hummingbot-api:8000/` (Tailscale). You should get **200**. If this fails, Condor will show offline until the API is reachable.
-    3. **Wrong host for your layout**
-       - API and Condor on the **same** machine: `host` is usually `localhost` or `127.0.0.1`.
-       - API on a **different** host or VPS: use **`hummingbot-api`** (MagicDNS) when Tailscale is enabled—not a public IP and not `localhost` (localhost would point at the Condor machine itself).
-       - **Docker Desktop / WSL:** If Condor runs in one environment and the API in another, `localhost` may not cross namespaces; use the host gateway IP or publish ports and use the reachable address from Condor's network namespace.
-    4. **Tailscale / firewall:** Prefer Tailscale over opening port **8000** on a public firewall. If you must use a public IP, allow inbound **8000** only from the Condor host—but [Tailscale is strongly recommended](https://hummingbot.org/hummingbot-api/tailscale/) instead.
-    5. **Credentials:** **Auth Error** means HTTP **401**—username/password in **`/servers`** must match the API's HTTP basic auth (the deploy flow syncs `config.yml` with `hummingbot-api/.env` when both are installed together; if you changed one side, align the other or re-save in **`/servers`**). The setup wizard requires real credentials and no longer seeds `config.yml` with a default pair, so an entry with a blank or placeholder password means it was never filled in—`make doctor` flags that case by name.
-  </Accordion>
-
-  <Accordion title="No servers configured / Server not found / No servers available">
-    - **`/servers`** shows *No servers configured* until at least one entry exists in **`condor/config.yml`** under `servers:` (and users need **access** to a server—admins own new entries; others must be **shared**).
-    - **Server not found** in the UI usually means the configured server name does not exist anymore (typo after edit, or deleted entry)—open **`/servers`**, pick a valid server, or add one again.
-    - **No servers available** (errors when running commands) often means your user has no server shared with them—ask an **owner** admin to share a server with your Telegram user id.
-    - After **Manual install**, you must add the real API URL (and auth) via **`/servers`** if `config.yml` was not pre-filled.
-  </Accordion>
-
-  <Accordion title="Docker or installer problems (API did not start)">
-    1. **Docker daemon:** The deploy script checks that Docker is running before bringing up the API. On Linux: `docker info`. On Mac/Windows: open **Docker Desktop** and wait until it is fully started.
-    2. **Compose:** You need either `docker compose` (plugin) or legacy `docker-compose` (the installer checks this).
-    3. **API-only recovery:** If Quick Start skipped or failed the API step, use the **Hummingbot API only** tab command, or from `hummingbot-api`: `make setup`, `docker compose pull`, `make deploy` (see [hummingbot-api](https://github.com/hummingbot/hummingbot-api) README).
-    4. **Sibling layout:** Condor's setup wizard expects **`hummingbot-api`** next to **`condor`** (`../hummingbot-api` from the Condor directory) when both are installed by the same flow—keep that layout unless you know how to point `config.yml` at a custom URL.
-  </Accordion>
-
-  <Accordion title="After an update, `make run` or `make restart` fails in the frontend build">
-    `make run` rebuilds the dashboard before starting, but it only installs frontend packages when `frontend/node_modules` is missing **entirely**. After a `git pull` or `/update` that added a new frontend dependency, the stale `node_modules` fails the build with an error naming the missing package.
-
-    ```bash
-    cd frontend && npm install
-    cd .. && make run
-    ```
-
-    `make doctor` warns when `node_modules` is absent, but cannot tell a stale one from a fresh one — a build error naming a package you never heard of is this case.
-  </Accordion>
-
-  <Accordion title="Tailscale not connecting">
-    | Problem | Try this |
-    |---------|----------|
-    | Name `hummingbot-api` does not work | Enable **MagicDNS** in [Tailscale DNS settings](https://login.tailscale.com/admin/dns) |
-    | Auth key rejected | Key must start with `tskey-auth-`; generate a new one if it expired |
-    | Connection refused | On the API server: `make tailscale-status` and `make deploy` again |
-    | Login fails (401) | Use the same username/password as in the API `.env` |
-    | Still reachable on public IP | Remove port **8000** from your cloud provider's firewall / security group |
-
-    See also: [Hummingbot API Tailscale guide](https://hummingbot.org/hummingbot-api/tailscale/)
-  </Accordion>
-</AccordionGroup>
-
-## Recovery toolkit
-
-The commands worth reaching for before reading anything above. All are safe to run at any time; none of them trade.
-
-| Command | Where | What it tells you |
-|---|---|---|
-| `make doctor` | Condor dir | Dependencies, `.env`/`config.yml`, AI model, dashboard bind, Tailscale, and whether each API server is reachable **and** authenticating |
-| `curl -s -o /dev/null -w "%{http_code}" localhost:8000/docs` | API host | Whether the API answers at all — **200** means up |
-| `make status` | Condor dir | Whether Condor is running, and under which tmux session |
-| `make logs` | Condor dir | Attach to the running session (detach with <kbd>Ctrl+B</kbd> then <kbd>D</kbd>) |
-| `make restart` | Condor dir | Rebuild the frontend and restart — the fix for a stale dashboard |
-| `tailscale status` | Either host | Whether this machine is on the tailnet at all |
-| `tailscale serve status` | Condor host | What is actually published to the tailnet, including the dashboard |
-| `docker compose ps` | `hummingbot-api` dir | Whether the API, broker and database containers are up |
-
-If `make doctor` is clean and something is still wrong, that is worth reporting — it means a real gap in what the check covers.
+Hit a snag—Condor can't reach the API, Telegram stays quiet, Tailscale won't connect—or want to check whether your broker needs securing? See the dedicated [Troubleshooting](/getting-started/troubleshooting) page, which also covers the [message broker security fix](/getting-started/troubleshooting#secure-the-message-broker).
 
 ## Next Step
 
